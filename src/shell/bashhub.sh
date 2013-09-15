@@ -2,7 +2,7 @@ update_prompt()
 {
     if [[ $1 != "bash_command=" ]]
     then
-        ~/git/bashhub-client/bashhub.py "$1"
+        ~/.bashhub/bashhub.py "$1"
     fi;
 }
 trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
