@@ -25,7 +25,7 @@ install_bashhub () {
 
 check_already_installed () {
     if [ -e ~/.bashhub ]; then
-        die "\nLooks like the bashhub client is already installed. 
+        die "\nLooks like the bashhub client is already installed.
         \nrm -r ~/.bashhub to install again" 1
     fi
 }
@@ -45,11 +45,13 @@ echo "Should be all setup. Good to go!"
 
 
 find_users_bash_file () {
-    bash_file_array=(~/.profile ~/.bash_profile ~/.bashrc)
-    
+
+    # possible bash files to use, order matters
+    bash_file_array=( ~/.bashrc ~/.bash_profile ~/.profile)
+
     for file in "${bash_file_array[@]}"
     do
-        if [ -e $file ]; then 
+        if [ -e $file ]; then
             echo $file
             return 0
         fi
@@ -72,7 +74,7 @@ check_install_dependencies () {
 
 check_dependency () {
     dep=`which $1 2>&1`
-    ret=$? 
+    ret=$?
     if [ $ret -eq 0 ] && [ -x "$dep" ]; then
         echo " $1 was found"
     else
@@ -80,6 +82,6 @@ check_dependency () {
     fi
 }
 
-die () { echo $1; exit $2; }
+die () { echo -e $1; exit $2; }
 
 install_bashhub
