@@ -7,7 +7,7 @@ import sys
 import requests
 from requests import *
 
-class Command:
+class Command(object):
     def __init__(self, command, path, context):
         self.id = ObjectId().__str__()
         self.command = command
@@ -18,8 +18,11 @@ class Command:
     def to_JSON(self):
         return jsonpickle.encode(self)
 
+    @staticmethod
+    def from_JSON(json):
+        return jsonpickle.decode(json)
 
-class User_Context:
+class User_Context(object):
     def __init__(self, process_id, start_time, user_id, system_id):
         self.process_id = long(process_id)
         self.start_time = mktime(strptime(start_time.strip(), "%c"))
@@ -28,6 +31,11 @@ class User_Context:
 
     def to_JSON(self):
         return jsonpickle.encode(self)
+
+    @staticmethod
+    def from_JSON(json):
+        return jsonpickle.decode(json)
+
 
 if __name__== "__main__":
 
