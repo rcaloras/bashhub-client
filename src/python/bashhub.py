@@ -5,7 +5,6 @@ import jsonpickle
 import json
 import sys
 import requests
-from requests import *
 
 class Command(object):
     def __init__(self, command, path, context):
