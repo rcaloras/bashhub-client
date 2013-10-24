@@ -8,8 +8,8 @@ update_prompt()
 
     if [[ $1 != "bash_command=" ]]
     then
-        ~/.bashhub/bashhub.py "$1" $USER_ID $SYSTEM_ID $PROCESS_ID \
-            "$PROCESS_START" "$WORKING_DIRECTORY"
+       (~/.bashhub/bashhub.py "$1" $USER_ID $SYSTEM_ID $PROCESS_ID \
+           "$PROCESS_START" "$WORKING_DIRECTORY"&)
     fi;
 }
 trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
