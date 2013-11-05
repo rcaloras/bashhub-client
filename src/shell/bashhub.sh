@@ -12,5 +12,6 @@ update_prompt()
            "$PROCESS_START" "$WORKING_DIRECTORY"&)
     fi;
 }
-trap 'previous_command=$this_command; this_command=$BASH_COMMAND' DEBUG
+
+trap 'previous_command=$this_command; this_command=$(history 1 | cut -d " " -f4-)' DEBUG
 PROMPT_COMMAND='bash_command=$previous_command; if [[ $bash_command ]]; then update_prompt "$bash_command"; bash_command=; fi;'
