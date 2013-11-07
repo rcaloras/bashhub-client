@@ -38,9 +38,7 @@ class MinCommand(object):
         return jsonpickle.decode(pickle)
 
     def __str__(self):
-        command = "Command: " + self.command
-        created = "Created: " + ctime(self.created)[:-1]
-        return command + " " + created
+        return self.command
 
 class User_Context(object):
     def __init__(self, process_id, start_time, user_id, system_id):
