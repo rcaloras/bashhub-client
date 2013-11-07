@@ -17,7 +17,7 @@ def bh(app):
     #url = "http://localhost:9000/command"
     r = requests.get(url, params=payload)
     commandsJson = r.json()
-    for command in commandsJson:
+    for command in reversed(commandsJson):
         minCommand = MinCommand.from_JSON(json.dumps(command))
         print minCommand
 
