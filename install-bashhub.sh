@@ -32,8 +32,11 @@ check_already_installed () {
 
 setup_bashhub_files () {
     mkdir ~/.bashhub
-    cp src/python/bashhub.py ~/.bashhub/
+    mkdir ~/.bashhub/.python
+    cp -r src/python/*.py ~/.bashhub/.python/
+    cp -r src/python/model ~/.bashhub/.python/
     cp src/shell/bashhub.sh ~/.bashhub/
+    cp src/shell/.config ~/.bashhub/.config
 
     local bashprofile=`find_users_bash_file`
 
