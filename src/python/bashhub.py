@@ -4,6 +4,7 @@ from time import *
 import jsonpickle
 import json
 import sys
+from requests import ConnectionError
 import requests
 
 class Command(object):
