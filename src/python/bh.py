@@ -8,18 +8,23 @@ import requests
 import cli.app
 sys.path.insert(0, 'model')
 from Command import *
+from bashhub_globals import *
 
 
 @cli.app.CommandLineApp
 def bh(app):
-    payload = {'userId' : '52364ac5b52d605f31a78c44', 'limit' : app.params.number}
-    url = 'http://bashhub.com/command/last'
-    #url = "http://localhost:9000/command"
+    payload = {'userId' : BH_USER_ID, 'limit' : app.params.number}
+    url = BH_URL + "/command/last"
     r = requests.get(url, params=payload)
     commandsJson = r.json()
     for command in reversed(commandsJson):
         minCommand = MinCommand.from_JSON(json.dumps(command))
         print minCommand
+
+
+#bh.add_param("query", help="query in regular expression format",
+#            default="", type=str)
+
 
 bh.add_param("-n", "--number", help="Number of previous commands",
             default=100, type=int)

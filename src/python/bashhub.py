@@ -6,6 +6,7 @@ import json
 import sys
 from requests import ConnectionError
 import requests
+from bashhub_globals import *
 
 class Command(object):
     def __init__(self, command, path, context):
@@ -38,13 +39,11 @@ class User_Context(object):
 
 
 if __name__== "__main__":
-
     if len(sys.argv) > 1:
         args = sys.argv
         context = User_Context(long(args[4]), args[5], args[2], args[3])
         command = Command(args[1], args[6], context)
-        url = "http://bashhub.com/command"
-        #url = "http://localhost:9000/command"
+        url = BH_URL + "/command"
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         try:
             r = requests.post(url, data=command.to_JSON(), headers=headers)

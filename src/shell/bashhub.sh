@@ -1,8 +1,7 @@
-export BH_EXEC_DIRECTORY=~/.bashhub/.python/
+source ~/.bashhub/.config
 
 bh_process_command()
 {
-    source ~/.bashhub/.config
     PROCESS_ID=$$
     PROCESS_START=`ps -p $$ -o lstart | sed -n 2p`
     USER_ID=$BH_USER_ID
