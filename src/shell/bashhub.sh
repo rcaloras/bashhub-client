@@ -11,7 +11,7 @@ bh_process_command()
     if [[ $1 != "bash_command=" ]]
     then
         PARSED_COMMAND=`echo $1 | sed -e 's/^ *//g' -e 's/ *$//g'`
-        (./bashhub.py "$PARSED_COMMAND" $USER_ID $SYSTEM_ID $PROCESS_ID \
+        (cd $BH_EXEC_DIRECTORY && ./bashhub.py "$PARSED_COMMAND" $USER_ID $SYSTEM_ID $PROCESS_ID \
            "$PROCESS_START" "$WORKING_DIRECTORY"&)
     fi;
 }
