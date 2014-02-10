@@ -39,4 +39,7 @@ bh.add_param("-n", "--number", help="Number of previous commands",
 
 
 if __name__ == "__main__":
-    bh.run()
+    try:
+        bh.run()
+    except Exception as e:
+        print "Oops, look like an exception occured: " + str(e)
