@@ -6,6 +6,7 @@ import json
 import sys
 import requests
 import getpass
+import uuid
 sys.path.insert(0, 'model')
 from Command import *
 from bashhub_globals import *
@@ -62,7 +63,27 @@ def register_new_user(register_user):
         else:
             print error
             print "Please try again..."
-    return "error"
+    return None
+
+def check_credentials(user_credentials):
+    url = BH_URL + "/user/credentials"
+    headers = {'content-type': 'application/json'}
+    try:
+        response = requests.post(url, data=user_credentials.to_JSON(), headers=headers)
+        response.raise_for_status()
+        return response.json()
+
+    except ConnectionError as error:
+        print "Looks like there's a connection error. Please try again later"
+    except HTTPError as error:
+        if response.status_code == 409:
+            print response.text
+        elif response.status_code == 400:
+            print "Bad password. Try again."
+        else:
+            print error
+            print "Please try again..."
+    return None
 
 def get_new_user_information():
     email = raw_input("What's your email? ")
@@ -75,18 +96,59 @@ def get_new_user_information():
     else:
         return get_new_user_information()
 
+def get_existing_user_information(attempts=0):
+    if attempts == 4:
+        print "Too many bad attempts"
+        return None
+
+    print "Please enter your bashhub credentials"
+    username = raw_input("Username: ")
+    password = getpass.getpass("Password: ")
+    credentials = UserCredentials(username, password)
+
+    url = BH_URL + "/user/credentials"
+    headers = {'content-type': 'application/json'}
+    try:
+        response = requests.post(url, data=credentials.to_JSON(), headers=headers)
+        response.raise_for_status()
+        return response.json()
+
+    except ConnectionError as error:
+        print "Looks like there's a connection error. Please try again later"
+    except HTTPError as error:
+        if response.status_code == 409:
+            print response.text
+            return get_existing_user_information(attempts+1)
+        elif response.status_code == 400:
+            print "Bad password. Try again."
+            return get_existing_user_information(attempts+1)
+        else:
+            print error
+            print "Please try again..."
+            return get_existing_user_information(attempts+1)
+
+
+def get_system_information():
+    system_id = uuid.getnode()
+    system_name = raw_input("What do you want to call this system? " + \
+            "For example Work Laptop, Home, File Server, ect.: ")
+
+
+
 if __name__== "__main__":
     print "Welcome to bashhub setup!"
     is_new_user = query_yes_no("Are you a new user?")
+    user_guid = ""
     if is_new_user:
-        ask_user = True
         register_user = get_new_user_information()
-        result = register_new_user(register_user)
-        print result
+        user_guid = register_new_user(register_user)
     else:
-        print "Please enter your bashhub credentials"
-        username = raw_input("Username: ")
-        password = getpass.getpass("Password: ")
-        credentials = UserCredentials(username, password)
-        print credentials.to_JSON()
+        user_guid = get_existing_user_information()
 
+    if user_guid == None:
+        print "Sorry looks like getting your info failed.\
+                Exiting..."
+        sys.exit(0)
+    else:
+        print user_guid
+        get_system_information()
