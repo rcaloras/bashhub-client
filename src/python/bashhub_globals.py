@@ -6,7 +6,7 @@ pulled in from environment variables or are just used across multiple files.
 import os
 
 
-# Should put this into an optional environment variable
+# Optional environment variable to configure for development
 BH_URL = "http://bashhub.com" if "BH_URL" not in os.environ.keys() \
         else os.environ["BH_URL"]
 
