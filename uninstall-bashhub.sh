@@ -30,10 +30,8 @@ find_users_bash_file () {
 
 
 rm -r ~/.bashhub
-export PROMPT_COMMAND=
 bashprofile=`find_users_bash_file`
 cp $bashprofile "$bashprofile.backup"
 
 grep -v "source ~/.bashhub/bashhub.sh" $bashprofile > temp
 mv temp $bashprofile
-rm -r ~/.bashhub
