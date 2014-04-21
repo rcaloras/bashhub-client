@@ -7,9 +7,8 @@ import sys
 import requests
 from requests import ConnectionError
 import cli.app
-sys.path.insert(0, 'model')
 
-from model.Command import MinCommand
+from model import MinCommand
 from bashhub_globals import *
 
 
@@ -27,9 +26,9 @@ def bh(app):
 
 def print_commands(commands_json):
     for command in (commands_json):
-        minCommand = MinCommand.from_JSON(json.dumps(command))
-        print minCommand
 
+        min_command = MinCommand.from_JSON(json.dumps(command))
+        print min_command
 
 #bh.add_param("query", help="query in regular expression format",
 #            default="", type=str)

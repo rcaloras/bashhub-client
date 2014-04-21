@@ -10,7 +10,7 @@ setup(name='bashhub',
       packages=['bashhub'],
       install_requires=[
           'requests==1.2.3',
-          'jsonpickle==0.5.0',
+          'jsonpickle==0.7.0',
           'pyCLI==2.0.3',
           'pymongo==2.6'],
       entry_points = {
