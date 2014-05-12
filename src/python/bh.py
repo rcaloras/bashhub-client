@@ -35,7 +35,7 @@ def print_commands(commands_json):
 
 
 bh.add_param("-n", "--number", help="Number of previous commands",
-            default=100, type=int)
+            default=1000, type=int)
 
 
 if __name__ == "__main__":
