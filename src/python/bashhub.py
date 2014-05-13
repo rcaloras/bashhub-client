@@ -10,7 +10,7 @@ if __name__== "__main__":
     if len(sys.argv) > 1:
         args = sys.argv
         context = User_Context(long(args[4]), args[5], args[2], args[3])
-        command = Command(args[1], args[6], context)
+        command = Command(args[1].strip(), args[6], context)
         url = BH_URL + "/command"
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         try:
