@@ -19,12 +19,12 @@ def check_already_installed(home_dir):
 
 def setup_bashhub_files(home_dir):
     bashhub_dir = home_dir + '.bashhub/'
-    os.mkdir(bashhub_dir)
     # move .sh files to appropriate place.
     exists = resource_exists(__name__, 'bashhub/shell')
     if exists:
         shell_scripts = resource_filename(__name__, 'bashhub/shell')
-        shutil.copytree(shell_scripts, bashhub_dir + '.shell')
+        # Should create our bashhub directory and copy our files there.
+        shutil.copytree(shell_scripts, bashhub_dir)
         # Add our file to .bashrc or .profile
         bash_config = find_users_bash_config(home_dir)
         with open(bash_config, "a") as config:
