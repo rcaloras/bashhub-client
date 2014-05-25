@@ -1,1 +1,3 @@
 include README.md
+include bashhub/shell/.config
+include bashhub/shell/*.sh
