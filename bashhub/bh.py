@@ -1,7 +1,4 @@
 #!/usr/bin/python
-from bson.objectid import ObjectId
-from time import *
-import jsonpickle
 import json
 import sys
 import requests
