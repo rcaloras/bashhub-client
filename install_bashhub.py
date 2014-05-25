@@ -25,10 +25,13 @@ def setup_bashhub_files(home_dir):
         shell_scripts = resource_filename(__name__, 'bashhub/shell')
         # Should create our bashhub directory and copy our files there.
         shutil.copytree(shell_scripts, bashhub_dir)
-        # Add our file to .bashrc or .profile
+
+        # Add our file to our bash config if it's not present
         bash_config = find_users_bash_config(home_dir)
-        with open(bash_config, "a") as config:
-            config.write("source ~/.bashhub/bashhub.sh")
+        with open(bash_config, "a+") as config:
+            source_hook = "source ~/.bashhub/bashhub.sh"
+            if source_hook not in config.read():
+                config.write(source_hook)
 
     else:
         raise RuntimeError("Couldn't install bashhub files in " + bashhub_dir)
