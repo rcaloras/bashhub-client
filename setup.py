@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import install_bashhub
 import sys
 from setuptools.command.install import install
@@ -35,7 +35,7 @@ setup(name='bashhub',
         author='Ryan Caloras',
         author_email='ryan@bashhub.com',
         license='MIT',
-        packages=['bashhub'],
+        packages= find_packages(),
         include_package_data=True,
         install_requires=[
             'requests==1.2.3',
