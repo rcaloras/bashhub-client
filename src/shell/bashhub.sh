@@ -1,4 +1,5 @@
 source ~/.bashhub/.config
+export BH_EXEC_DIRECTORY="~/.bashhub/env/bin/"
 
 BH_PROCESS_COMMAND()
 {
@@ -19,7 +20,7 @@ BH_PROCESS_COMMAND()
     # still not useful :)
     #local PARSED_COMMAND=`echo "$BH_COMMAND" | sed -e 's/^ *//g' -e 's/ *$//g'`
 
-    (cd $BH_EXEC_DIRECTORY && ./bashhub.py "$BH_COMMAND" $USER_ID $SYSTEM_ID $PROCESS_ID \
+    (cd $BH_EXEC_DIRECTORY && bashhub "$BH_COMMAND" $USER_ID $SYSTEM_ID $PROCESS_ID \
         "$PROCESS_START" "$WORKING_DIRECTORY"&)
 }
 
@@ -28,5 +29,5 @@ PROMPT_COMMAND='BH_PREV_HISTORY=$BH_RAW_HISTORY;
                 (BH_PROCESS_COMMAND);'
 bh()
 {
-    (cd $BH_EXEC_DIRECTORY && ./bh.py "$@")
+    (cd $BH_EXEC_DIRECTORY && bh "$@")
 }

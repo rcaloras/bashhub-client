@@ -36,7 +36,7 @@ download_and_install_env () {
 
     # --- Real work starts here ---
     echo $URL_BASE/virtualenv-$VERSION.tar.gz
-    wget $URL_BASE/virtualenv-$VERSION.tar.gz
+    wget --no-check-certificate $URL_BASE/virtualenv-$VERSION.tar.gz
     tar xzf virtualenv-$VERSION.tar.gz
     # Create the first "bootstrap" environment.
     $PYTHON virtualenv-$VERSION/virtualenv.py $ENV_OPTS $INITIAL_ENV
@@ -56,8 +56,41 @@ setup_bashhub_files () {
     mkdir ~/.bashhub
     cd ~/.bashhub
     download_and_install_env
-    # should kick off python from here
+    wget --no-check-certificate https://github.com/rcaloras/bashhub-client/tarball/SetupTools -O client.tar.gz
+    tar -xvf client.tar.gz
+    cd rcaloras*
+    cp src/shell/bashhub.sh ~/.bashhub/
+    cp src/shell/.config ~/.bashhub/.config
+    
+    # install our packages. bashhub and dependencies.
+    ../env/bin/pip install -e .
+
+    local bashprofile=`find_users_bash_file`
+    
+        # Add our file to .bashrc or .profile
+    echo "source ~/.bashhub/bashhub.sh" >> $bashprofile
+    
+    #Clean up what we downloaded
+    cd ~/.bashhub
+    rm client.tar.gz
+    rm -r rcaloras*
     echo "should be good to go"
+}
+
+find_users_bash_file () {
+
+    # possible bash files to use, order matters
+    bash_file_array=( ~/.bashrc ~/.bash_profile ~/.profile)
+
+    for file in "${bash_file_array[@]}"
+    do  
+        if [ -e $file ]; then
+            echo $file
+            return 0
+        fi  
+     done
+
+     die "No bashfile (e.g. .profile, .bashrc, ect) could be found" 1
 }
 
 die () { echo -e $1; exit $2; }

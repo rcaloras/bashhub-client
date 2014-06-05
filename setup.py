@@ -13,8 +13,9 @@ def postinstall(command_subclass):
     orig_run = command_subclass.run
 
     def modified_run(self):
+        # Need to run bashhub-setup here
+        #
         orig_run(self)
-        install_bashhub.main()
 
     command_subclass.run = modified_run
     return command_subclass
