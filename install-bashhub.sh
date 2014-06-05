@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 #
 # Bashhub.com Installation shell script
 #
@@ -17,12 +17,34 @@
 
 install_bashhub () {
     check_already_installed
-    check_install_dependencies
     setup_bashhub_files
     #wget bashhub.com/setup
     #python bashhub-setup.py
 }
 
+
+download_and_install_env () {
+    # Select current version of virtualenv:
+    VERSION=1.6.4
+    # Name your first "bootstrap" environment:
+    INITIAL_ENV=env
+    # Options for your first environment:
+    ENV_OPTS='--no-site-packages --distribute'
+    # Set to whatever python interpreter you want for your first environment:
+    PYTHON=$(which python)
+    URL_BASE=http://pypi.python.org/packages/source/v/virtualenv
+
+    # --- Real work starts here ---
+    echo $URL_BASE/virtualenv-$VERSION.tar.gz
+    wget $URL_BASE/virtualenv-$VERSION.tar.gz
+    tar xzf virtualenv-$VERSION.tar.gz
+    # Create the first "bootstrap" environment.
+    $PYTHON virtualenv-$VERSION/virtualenv.py $ENV_OPTS $INITIAL_ENV
+    # Don't need this anymore.
+    rm -rf virtualenv-$VERSION
+    # Install the environment.
+    $INITIAL_ENV/bin/pip install virtualenv-$VERSION.tar.gz
+}
 check_already_installed () {
     if [ -e ~/.bashhub ]; then
         die "\nLooks like the bashhub client is already installed.
@@ -32,57 +54,10 @@ check_already_installed () {
 
 setup_bashhub_files () {
     mkdir ~/.bashhub
-    mkdir ~/.bashhub/.python
-    cp -r src/python/*.py ~/.bashhub/.python/
-    cp -r src/python/model ~/.bashhub/.python/
-    cp src/shell/bashhub.sh ~/.bashhub/
-    cp src/shell/.config ~/.bashhub/.config
-
-    local bashprofile=`find_users_bash_file`
-
-# Add our file to .bashrc or .profile
-echo "source ~/.bashhub/bashhub.sh" >> $bashprofile
-
-echo "Should be all setup. Good to go!"
-}
-
-
-find_users_bash_file () {
-
-    # possible bash files to use, order matters
-    bash_file_array=( ~/.bashrc ~/.bash_profile ~/.profile)
-
-    for file in "${bash_file_array[@]}"
-    do
-        if [ -e $file ]; then
-            echo $file
-            return 0
-        fi
-     done
-
-     die "No bashfile (e.g. .profile, .bashrc, ect) could be found" 1
-}
-
-check_install_dependencies () {
-    dependency_array=(python wget pip virtualenv)
-    echo "Checking dependencies...."
-
-    for i in "${dependency_array[@]}"
-    do
-       #Check each dependency
-       check_dependency $i
-    done
-    echo "Awesome looks like we have everything we need!"
-}
-
-check_dependency () {
-    dep=`which $1 2>&1`
-    ret=$?
-    if [ $ret -eq 0 ] && [ -x "$dep" ]; then
-        echo " $1 was found"
-    else
-        die "$1 could not be found. please install $1 and retry this script."
-    fi
+    cd ~/.bashhub
+    download_and_install_env
+    # should kick off python from here
+    echo "should be good to go"
 }
 
 die () { echo -e $1; exit $2; }
