@@ -40,3 +40,5 @@ def main():
         bh.run()
     except Exception as e:
         print "Oops, look like an exception occured: " + str(e)
+
+main()

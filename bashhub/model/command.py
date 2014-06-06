@@ -44,10 +44,11 @@ class UserCredentials(object):
     def to_JSON(self):
         return jsonpickle.encode(self)
 
-class User_Context(object):
+class UserContext(object):
     def __init__(self, process_id, start_time, user_id, system_id):
         self.process_id = long(process_id)
-        self.start_time = mktime(strptime(start_time.strip(), "%c"))*1000
+        #self.start_time = mktime(strptime(start_time.strip(), "%c"))*1000
+        self.start_time = start_time
         self.user_id = user_id
         self.system_id = system_id
 
