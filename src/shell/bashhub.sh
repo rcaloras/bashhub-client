@@ -9,6 +9,13 @@ BH_PROCESS_COMMAND()
         exit 0;
     fi;
 
+    # Check to make sure bashhub is still installed. Otherwise, this will
+    # simply fail and spam the user that files dont exist.
+    if [[ ! -e $HOME/.bashhub ]];
+    then
+        exit 0;
+    fi;
+
     local BH_COMMAND=$(echo "$BH_RAW_HISTORY" |  cut -d " " -f4-)
     local PROCESS_ID=$$
     # Should get process start time in seconds.
