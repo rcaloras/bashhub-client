@@ -44,6 +44,8 @@ download_and_install_env () {
     rm -rf virtualenv-$VERSION
     # Install the environment.
     $INITIAL_ENV/bin/pip install virtualenv-$VERSION.tar.gz
+    # Don't need this anymore either.
+    rm virtualenv-$VERSION.tar.gz
 }
 check_already_installed () {
     if [ -e ~/.bashhub ]; then
@@ -61,15 +63,15 @@ setup_bashhub_files () {
     cd rcaloras*
     cp src/shell/bashhub.sh ~/.bashhub/
     cp src/shell/.config ~/.bashhub/.config
-    
+
     # install our packages. bashhub and dependencies.
     ../env/bin/pip install .
 
     local bashprofile=`find_users_bash_file`
-    
+
         # Add our file to .bashrc or .profile
     echo "source ~/.bashhub/bashhub.sh" >> $bashprofile
-    
+
     #Clean up what we downloaded
     cd ~/.bashhub
     rm client.tar.gz
@@ -83,11 +85,11 @@ find_users_bash_file () {
     bash_file_array=( ~/.bashrc ~/.bash_profile ~/.profile)
 
     for file in "${bash_file_array[@]}"
-    do  
+    do
         if [ -e $file ]; then
             echo $file
             return 0
-        fi  
+        fi
      done
 
      die "No bashfile (e.g. .profile, .bashrc, ect) could be found" 1
