@@ -1,5 +1,5 @@
 source ~/.bashhub/.config
-export BH_EXEC_DIRECTORY="~/.bashhub/env/bin/"
+export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
 BH_PROCESS_COMMAND()
 {
