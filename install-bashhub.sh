@@ -25,7 +25,7 @@ install_bashhub () {
 
 download_and_install_env () {
     # Select current version of virtualenv:
-    VERSION=1.6.4
+    VERSION=1.9.1
     # Name your first "bootstrap" environment:
     INITIAL_ENV=env
     # Options for your first environment:
@@ -63,7 +63,7 @@ setup_bashhub_files () {
     cp src/shell/.config ~/.bashhub/.config
     
     # install our packages. bashhub and dependencies.
-    ../env/bin/pip install -e .
+    ../env/bin/pip install .
 
     local bashprofile=`find_users_bash_file`
     
