@@ -12,7 +12,7 @@ BH_PROCESS_COMMAND()
     local BH_COMMAND=$(echo "$BH_RAW_HISTORY" |  cut -d " " -f4-)
     local PROCESS_ID=$$
     # Should get process start time in seconds.
-    local PROCESS_START=`ps -p $$ -o lstart | sed -n 2p | date +%s -f -`
+    local PROCESS_START=`ps -p $$ -o lstart | sed -n 2p | date +%s%3N -f -`
     local WORKING_DIRECTORY=`pwd`
 
     # Had this previously, think it was part of the trap. DELETE ME later if
