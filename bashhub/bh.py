@@ -4,6 +4,7 @@ import sys
 import requests
 from requests import ConnectionError
 import cli.app
+import os
 
 from model import MinCommand
 from bashhub_globals import *
@@ -11,6 +12,10 @@ from bashhub_globals import *
 
 @cli.app.CommandLineApp
 def bh(app):
+
+    limit = app.params.number
+    directory = os.getcwd() if app.params.directory else ""
+    is_interactive = app.params.interactive
     payload = {'userId' : BH_USER_ID, 'limit' : app.params.number}
     url = BH_URL + "/command/last"
     try:
@@ -27,13 +32,17 @@ def print_commands(commands_json):
         min_command = MinCommand.from_JSON(json.dumps(command))
         print min_command
 
-#bh.add_param("query", help="query in regular expression format",
-#            default="", type=str)
+bh.add_param("-n", "--number", help="Limit the number of previous commands. \
+        Default is 100.", default=100, type=int)
 
+bh.add_param("-d", "--directory", help="Search for commands within this \
+        directory.", default=False, type=bool)
 
-bh.add_param("-n", "--number", help="Number of previous commands",
-            default=100, type=int)
+bh.add_param("-i", "--interactive", help="Use interactive history search. \
+        Defaults to false", default=False, type=bool)
 
+bh.add_param("query", help="String to search through history for",
+            default="", type=str)
 
 def main():
     try:
