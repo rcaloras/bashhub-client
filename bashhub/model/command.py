@@ -4,11 +4,11 @@ from time import *
 import jsonpickle
 import json
 import sys
-import requests
+import uuid
 
 class Command(object):
     def __init__(self, command, path, context):
-        self.id = ObjectId().__str__()
+        self.uuid = uuid.uuid1().__str__()
         self.command = command
         self.created = time()*1000
         self.context = context
@@ -34,6 +34,15 @@ class RegisterUser(object):
     @staticmethod
     def from_JSON(json):
         return jsonpickle.decode(json)
+
+class RegisterSystem(object):
+    def __init__(self, name, mac, user_id):
+        self.name = name
+        self.mac = mac.__str__()
+        self.user_id = user_id
+
+    def to_JSON(self):
+        return jsonpickle.encode(self)
 
 class UserCredentials(object):
     def __init__(self, username, password):

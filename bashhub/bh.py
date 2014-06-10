@@ -41,9 +41,6 @@ bh.add_param("-d", "--directory", help="Search for commands within this \
 bh.add_param("-i", "--interactive", help="Use interactive history search. \
         Defaults to false", default=False, type=bool)
 
-bh.add_param("query", help="String to search through history for",
-            default="", type=str)
-
 def main():
     try:
         bh.run()

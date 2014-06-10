@@ -25,7 +25,7 @@ def bashhub(app):
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     try:
         r = requests.post(url, data=command.to_JSON(), headers=headers)
-        #print command.to_JSON()
+        print command.to_JSON()
     except ConnectionError as error:
         pass
 

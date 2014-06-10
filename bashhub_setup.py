@@ -7,7 +7,8 @@ import sys
 import requests
 import getpass
 import uuid
-from model import *
+sys.path.insert(0, 'model')
+from Command import *
 from bashhub_globals import *
 import requests
 from requests import ConnectionError
@@ -50,7 +51,7 @@ def register_new_user(register_user):
     url = BH_URL + "/user/register"
     headers = {'content-type': 'application/json'}
     try:
-        response = requests.post(url, data=register_user.to_JSON(), headers=headers)
+        response = requests.put(url, data=register_user.to_JSON(), headers=headers)
         response.raise_for_status()
         return response.json()
 
@@ -63,28 +64,6 @@ def register_new_user(register_user):
             print error
             print "Please try again..."
     return None
-
-def register_new_system(register_system):
-    url = BH_URL + "/system/register"
-    headers = {'content-type': 'application/json'}
-    try:
-        print register_system.to_JSON()
-        response = requests.post(url, data=register_system.to_JSON(), headers=headers)
-        response.raise_for_status()
-        return response.json()
-
-    except ConnectionError as error:
-        print "Looks like there's a connection error. Please try again later"
-    except HTTPError as error:
-        if response.status_code == 409:
-            print response.text
-        else:
-            print error
-            print "Please try again..."
-    return None
-
-
-
 
 def check_credentials(user_credentials):
     url = BH_URL + "/user/credentials"
@@ -127,7 +106,7 @@ def get_existing_user_information(attempts=0):
     password = getpass.getpass("Password: ")
     credentials = UserCredentials(username, password)
 
-    url = BH_URL + "/user/auth"
+    url = BH_URL + "/user/credentials"
     headers = {'content-type': 'application/json'}
     try:
         response = requests.post(url, data=credentials.to_JSON(), headers=headers)
@@ -149,54 +128,36 @@ def get_existing_user_information(attempts=0):
             return get_existing_user_information(attempts+1)
 
 
-def get_system_information(mac, user_id):
-
-    url = BH_URL + '/system'
-    payload = {'userId' : user_id, 'mac' : mac}
-    try:
-        response = requests.get(url, params=payload)
-        response.raise_for_status()
-        system_json = json.dumps(response.json())
-        return System.from_JSON(system_json)
-    except ConnectionError as error:
-        print "Looks like there's a connection error. Please try again later"
-    except HTTPError as error:
-        return None
-
-def handle_system_information(user_id):
-    mac = uuid.getnode()
-    system = get_system_information(mac, user_id)
-
-    # If this system is already registered
-    if system is not None:
-        print("Looks like this box is already registered as " + system.name)
-        return system.id
-    else:
-        name = raw_input("What do you want to call this system? " + \
+def get_system_information():
+    system_id = uuid.getnode()
+    system_name = raw_input("What do you want to call this system? " + \
             "For example Work Laptop, Home, File Server, ect.: ")
 
-        system = RegisterSystem(name, mac, user_id)
-        system_id = register_new_system(system)
-        return  system_id
+def main():
+    try:
+        print "Welcome to bashhub setup!"
+        is_new_user = query_yes_no("Are you a new user?")
+        user_guid = ""
+        if is_new_user:
+            register_user = get_new_user_information()
+            user_guid = register_new_user(register_user)
+        else:
+            user_guid = get_existing_user_information()
 
+        if user_guid == None:
+            print "Sorry looks like getting your info failed.\
+                    Exiting..."
+            sys.exit(0)
+        else:
+            print user_guid
+            get_system_information()
 
+    except Exception, err:
+        sys.stderr.write('Setup Error:\n%s\n' % str(err))
+        sys.exit(1)
 
 
 if __name__== "__main__":
-    print "Welcome to bashhub setup!"
-    is_new_user = query_yes_no("Are you a new user?")
-    user_id = None
-    if is_new_user:
-        register_user = get_new_user_information()
-        user_id = register_new_user(register_user)
-    else:
-        user_id = get_existing_user_information()
+    main()
 
-    if user_id == None:
-        print "Sorry looks like getting your info failed.\
-                Exiting..."
-        sys.exit(0)
-
-    system_id = handle_system_information(user_id)
-    print "(user_id, system_id) = (" + user_id + ", " + system_id + ")"
 
