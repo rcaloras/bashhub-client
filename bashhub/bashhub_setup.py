@@ -45,7 +45,6 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "\
                              "(or 'y' or 'n').\n")
 
-
 def register_new_user(register_user):
     url = BH_URL + "/user/register"
     headers = {'content-type': 'application/json'}
@@ -82,9 +81,6 @@ def register_new_system(register_system):
             print error
             print "Please try again..."
     return None
-
-
-
 
 def check_credentials(user_credentials):
     url = BH_URL + "/user/credentials"
@@ -148,7 +144,6 @@ def get_existing_user_information(attempts=0):
             print "Please try again..."
             return get_existing_user_information(attempts+1)
 
-
 def get_system_information(mac, user_id):
 
     url = BH_URL + '/system'
@@ -179,24 +174,28 @@ def handle_system_information(user_id):
         system_id = register_new_system(system)
         return  system_id
 
+def main():
+    try:
+        print "Welcome to bashhub setup!"
+        is_new_user = query_yes_no("Are you a new user?")
+        user_id = None
+        if is_new_user:
+            register_user = get_new_user_information()
+            user_id = register_new_user(register_user)
+        else:
+            user_id = get_existing_user_information()
 
+        if user_id == None:
+            print "Sorry looks like getting your info failed.\
+                    Exiting..."
+            sys.exit(0)
 
+        system_id = handle_system_information(user_id)
+        print "(user_id, system_id) = (" + user_id + ", " + system_id + ")"
+        # write to file
+    except Exception, err:
+        sys.stderr.write('Setup Error:\n%s\n' % str(err))
+        sys.exit(1)
 
 if __name__== "__main__":
-    print "Welcome to bashhub setup!"
-    is_new_user = query_yes_no("Are you a new user?")
-    user_id = None
-    if is_new_user:
-        register_user = get_new_user_information()
-        user_id = register_new_user(register_user)
-    else:
-        user_id = get_existing_user_information()
-
-    if user_id == None:
-        print "Sorry looks like getting your info failed.\
-                Exiting..."
-        sys.exit(0)
-
-    system_id = handle_system_information(user_id)
-    print "(user_id, system_id) = (" + user_id + ", " + system_id + ")"
-
+    main()
