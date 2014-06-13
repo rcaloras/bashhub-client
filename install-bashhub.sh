@@ -55,6 +55,9 @@ check_already_installed () {
 }
 
 setup_bashhub_files () {
+   
+   local bashprofile=`find_users_bash_file`
+
     mkdir ~/.bashhub
     cd ~/.bashhub
     download_and_install_env
@@ -67,9 +70,7 @@ setup_bashhub_files () {
     # install our packages. bashhub and dependencies.
     ../env/bin/pip install .
 
-    local bashprofile=`find_users_bash_file`
-
-        # Add our file to .bashrc or .profile
+    # Add our file to .bashrc or .profile
     echo "source ~/.bashhub/bashhub.sh" >> $bashprofile
 
     #Clean up what we downloaded
