@@ -15,7 +15,7 @@ class MinCommand(object):
     @staticmethod
     def from_JSON(response):
         temp = json.loads(response)
-        temp['py/object'] = 'model.MinCommand'
+        temp['py/object'] = 'bashhub.model.min_command.MinCommand'
         pickle = json.dumps(temp)
         return jsonpickle.decode(pickle)
 

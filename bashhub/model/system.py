@@ -5,7 +5,7 @@ import requests
 
 class System(object):
 
-    def __init__(self, name, uuid, user_id, id, created, updated):
+    def __init__(self, name, mac, user_id, id, created, updated):
         self.name = name
         self.mac = mac
         self.user_id = user_id
@@ -19,8 +19,9 @@ class System(object):
     @staticmethod
     def from_JSON(response):
         temp = json.loads(response)
-        temp['py/object'] = 'model.System'
+        temp['py/object'] = 'bashhub.model.system.System'
         temp['user_id'] = temp['userId']
+        del temp['userId']
         pickle = json.dumps(temp)
         return jsonpickle.decode(pickle)
 

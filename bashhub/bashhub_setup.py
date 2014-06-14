@@ -8,6 +8,7 @@ import requests
 import getpass
 import uuid
 from model import *
+from model import System
 from bashhub_globals import *
 import requests
 from requests import ConnectionError
@@ -152,6 +153,8 @@ def get_system_information(mac, user_id):
         response = requests.get(url, params=payload)
         response.raise_for_status()
         system_json = json.dumps(response.json())
+        print "System_Json"
+        print system_json
         return System.from_JSON(system_json)
     except ConnectionError as error:
         print "Looks like there's a connection error. Please try again later"
@@ -174,6 +177,17 @@ def handle_system_information(user_id):
         system_id = register_new_system(system)
         return  system_id
 
+
+def write_config_file(user_id, system_id):
+    exists = os.path.exists(BH_HOME)
+    if exists:
+        config_file = open(BH_HOME + '/.config', 'w')
+        config_file.write("export BH_USER_ID=\"" + user_id + "\"\n")
+        config_file.write("export BH_SYSTEM_ID=\"" + system_id + "\"\n")
+    else:
+        print "Couldn't find bashhub home directory. Sorry."
+
+
 def main():
     try:
         print "Welcome to bashhub setup!"
@@ -192,7 +206,9 @@ def main():
 
         system_id = handle_system_information(user_id)
         print "(user_id, system_id) = (" + user_id + ", " + system_id + ")"
-        # write to file
+        write_config_file(user_id, system_id)
+        sys.exit(0)
+
     except Exception, err:
         sys.stderr.write('Setup Error:\n%s\n' % str(err))
         sys.exit(1)
