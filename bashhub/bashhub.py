@@ -15,7 +15,7 @@ from bashhub_globals import *
 def bashhub(app):
 
     pid = app.params.pid
-    pid_start_time = app.params.pid_start_time
+    pid_start_time = iso_date_to_epoc_millis(app.params.pid_start_time)
     command = app.params.command
     path = app.params.path
 
@@ -32,6 +32,11 @@ bashhub.add_param("command", help="command to record", type=str)
 bashhub.add_param("path", help="the path the command was executed in", type=str)
 bashhub.add_param("pid", help="the pid of the shell this command executed in", type=long)
 bashhub.add_param("pid_start_time", help="start time of the parent pid", type=long)
+
+
+def iso_date_to_epoc_millis(iso_date):
+    return mktime(strptime(start_time.strip(), "%c"))*1000
+
 
 def main():
     try:
