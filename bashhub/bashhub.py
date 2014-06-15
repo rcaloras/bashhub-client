@@ -5,6 +5,7 @@ import requests
 from requests import ConnectionError
 import cli.app
 import os
+from time import *
 
 from model import Command
 from model import UserContext
@@ -31,11 +32,11 @@ def bashhub(app):
 bashhub.add_param("command", help="command to record", type=str)
 bashhub.add_param("path", help="the path the command was executed in", type=str)
 bashhub.add_param("pid", help="the pid of the shell this command executed in", type=long)
-bashhub.add_param("pid_start_time", help="start time of the parent pid", type=long)
+bashhub.add_param("pid_start_time", help="start time of the parent pid in ISO format", type=str)
 
 
-def iso_date_to_epoc_millis(iso_date):
-    return mktime(strptime(start_time.strip(), "%c"))*1000
+def iso_date_to_epoc_millis(iso_date_str):
+    return mktime(strptime(iso_date_str.strip(), "%c"))*1000
 
 
 def main():
