@@ -6,7 +6,7 @@ pulled in from environment variables or are just used across multiple files.
 import os
 
 def get_global_from_env(env_var, default):
-    default if env_var not in os.environ.keys() \
+    return default if env_var not in os.environ.keys() \
             else os.environ(env_var)
 
 

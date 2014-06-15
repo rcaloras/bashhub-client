@@ -6,6 +6,7 @@ import json
 import sys
 import requests
 import getpass
+import traceback
 import uuid
 from model import *
 from model import System
@@ -13,6 +14,7 @@ from bashhub_globals import *
 import requests
 from requests import ConnectionError
 from requests import HTTPError
+
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -211,6 +213,7 @@ def main():
 
     except Exception, err:
         sys.stderr.write('Setup Error:\n%s\n' % str(err))
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__== "__main__":
