@@ -7,7 +7,7 @@ import os
 
 def get_global_from_env(env_var, default):
     return default if env_var not in os.environ.keys() \
-            else os.environ(env_var)
+            else os.environ[env_var]
 
 
 # Optional environment variable to configure for development
