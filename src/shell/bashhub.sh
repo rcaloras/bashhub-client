@@ -11,7 +11,7 @@ BH_PROCESS_COMMAND()
 
     # Check to make sure bashhub is still installed. Otherwise, this will
     # simply fail and spam the user that files dont exist.
-    if [[ ! -e $BH_EXEC_DIRECTOR/bashhub ]];
+    if [[ ! -f $BH_EXEC_DIRECTORY/bashhub ]];
     then
         exit 0;
     fi;
