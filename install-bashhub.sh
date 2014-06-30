@@ -61,7 +61,10 @@ setup_bashhub_files () {
     mkdir ~/.bashhub
     cd ~/.bashhub
     download_and_install_env
-    wget --no-check-certificate https://github.com/rcaloras/bashhub-client/tarball/SetupTools -O client.tar.gz
+    # For SetupTools Branch
+    # wget --no-check-certificate https://github.com/rcaloras/bashhub-client/tarball/SetupTools -O client.tar.gz
+
+    wget --no-check-certificate https://github.com/rcaloras/bashhub-client/tarball/master -O client.tar.gz
     tar -xvf client.tar.gz
     cd rcaloras*
     cp src/shell/bashhub.sh ~/.bashhub/
