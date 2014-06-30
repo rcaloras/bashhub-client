@@ -155,8 +155,6 @@ def get_system_information(mac, user_id):
         response = requests.get(url, params=payload)
         response.raise_for_status()
         system_json = json.dumps(response.json())
-        print "System_Json"
-        print system_json
         return System.from_JSON(system_json)
     except ConnectionError as error:
         print "Looks like there's a connection error. Please try again later"

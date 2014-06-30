@@ -12,7 +12,6 @@ from bashhub_globals import *
 
 @cli.app.CommandLineApp
 def bh(app):
-
     limit = app.params.number
     directory = os.getcwd() if app.params.directory else ""
     is_interactive = app.params.interactive
@@ -28,9 +27,8 @@ def bh(app):
 
 def print_commands(commands_json):
     for command in (commands_json):
-
-        min_command = MinCommand.from_JSON(json.dumps(command))
-        print min_command
+       min_command = MinCommand.from_JSON(json.dumps(command))
+       print min_command
 
 bh.add_param("-n", "--number", help="Limit the number of previous commands. \
         Default is 100.", default=100, type=int)
