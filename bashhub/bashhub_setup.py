@@ -14,7 +14,7 @@ from bashhub_globals import *
 import requests
 from requests import ConnectionError
 from requests import HTTPError
-
+import hashlib
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -111,8 +111,9 @@ def get_new_user_information():
     password = getpass.getpass("What password? ")
     print "\nEmail: " + email + " Username: " + username
     all_good = query_yes_no("Are these correct?")
+    hashed_password = hash_and_salt_password(username, password)
     if all_good:
-        return RegisterUser(email, username, password)
+        return RegisterUser(email, username, hashed_password)
     else:
         return get_new_user_information()
 
@@ -123,7 +124,8 @@ def get_existing_user_information(attempts=0):
 
     print "Please enter your bashhub credentials"
     username = raw_input("Username: ")
-    password = getpass.getpass("Password: ")
+    plain_text = getpass.getpass("Password: ")
+    password = hash_and_salt_password(username, plain_text)
     credentials = UserCredentials(username, password)
 
     url = BH_URL + "/user/auth"
@@ -187,6 +189,10 @@ def write_config_file(user_id, system_id):
     else:
         print "Couldn't find bashhub home directory. Sorry."
 
+def hash_and_salt_password(username, password_plain_text):
+    salted_with_username = password_plain_text + username
+    password = hashlib.sha256(salted_with_username)
+    return password.hexdigest()
 
 def main():
     try:
