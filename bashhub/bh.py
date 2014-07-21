@@ -13,10 +13,17 @@ from bashhub_globals import *
 @cli.app.CommandLineApp
 def bh(app):
     limit = app.params.number
-    directory = os.getcwd() if app.params.directory else ""
-    is_interactive = app.params.interactive
     payload = {'userId' : BH_USER_ID, 'limit' : app.params.number}
-    url = BH_URL + "/command/last"
+    if app.params.directory:
+        payload["path"] = os.getcwd()
+
+    if app.params.query:
+        payload["command"] = app.params.query
+
+    if app.params.system:
+        payload["systemId"] = BH_SYSTEM_ID
+
+    url = BH_URL + "/command/search"
     try:
         r = requests.get(url, params=payload)
         print_commands(reversed(r.json()))
@@ -33,11 +40,14 @@ def print_commands(commands_json):
 bh.add_param("-n", "--number", help="Limit the number of previous commands. \
         Default is 100.", default=100, type=int)
 
-bh.add_param("-d", "--directory", help="Search for commands within this \
-        directory.", default=False, type=bool)
+bh.add_param("query", nargs='?', help="Like string to search for", \
+        default="", type=str)
 
-bh.add_param("-i", "--interactive", help="Use interactive history search. \
-        Defaults to false", default=False, type=bool)
+bh.add_param("-d", "--directory", help="Search for commands within this \
+        directory.", default=False, action='store_true')
+
+bh.add_param("-sys", "--system", help="Search for commands created on this \
+        system.", default= False, action='store_true')
 
 def main():
     try:

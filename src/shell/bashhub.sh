@@ -1,6 +1,9 @@
 source ~/.bashhub/.config
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
+# Alias to bind Ctrl + B
+bind -x '"\C-b":"bh"'
+
 BH_PROCESS_COMMAND()
 {
     # Check to make sure we have a new command
@@ -18,7 +21,7 @@ BH_PROCESS_COMMAND()
 
     local BH_COMMAND=$(echo "$BH_RAW_HISTORY" |  cut -d " " -f4-)
     local PROCESS_ID=$$
-    
+
     # Should get process start time in seconds.
     #local PROCESS_START=`ps -p $$ -o lstart | sed -n 2p | date +%s%3N -f -`
     # Converting back to old way in python
