@@ -8,7 +8,7 @@ import os
 from model import MinCommand
 from bashhub_globals import *
 
-def search(user_id, limit=100, path='', query='', system_id='',
+def search(user_id=BH_USER_ID, limit=100, path='', query='', system_id='',
         session_name=''):
 
     payload = {'userId' : user_id, 'limit' : limit }
