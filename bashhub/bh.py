@@ -8,34 +8,24 @@ import os
 
 from model import MinCommand
 from bashhub_globals import *
-
+import rest_client
 
 @cli.app.CommandLineApp
 def bh(app):
+    """Parse command line arguments and call our REST API"""
     limit = app.params.number
-    payload = {'userId' : BH_USER_ID, 'limit' : app.params.number}
-    if app.params.directory:
-        payload["path"] = os.getcwd()
+    user_id = BH_USER_ID
+    path = os.getcwd if app.params.directory else ''
+    query = app.params.query
+    system_id = BH_SYSTEM_ID if app.params.system else ''
 
-    if app.params.query:
-        payload["command"] = app.params.query
+    # Call our rest api to search for commands
+    commands = rest_client.search(user_id, limit, path, query, system_id)
+    print_commands(commands)
 
-    if app.params.system:
-        payload["systemId"] = BH_SYSTEM_ID
-
-    url = BH_URL + "/command/search"
-    try:
-        r = requests.get(url, params=payload)
-        print_commands(reversed(r.json()))
-
-    except ConnectionError as error:
-        print "Sorry, looks like there's a connection error. Please try again later"
-
-
-def print_commands(commands_json):
-    for command in (commands_json):
-       min_command = MinCommand.from_JSON(json.dumps(command))
-       print min_command
+def print_commands(commands):
+    for command in (commands):
+       print command
 
 bh.add_param("-n", "--number", help="Limit the number of previous commands. \
         Default is 100.", default=100, type=int)

@@ -17,3 +17,11 @@ class Serializable(object):
 
     pickle = json.dumps(temp)
     return jsonpickle.decode(pickle)
+
+
+  @classmethod
+  def from_JSON_list(cls, response):
+    # Use list comprehension to map every json object
+    # back to its object with from_JSON
+    items = [cls.from_JSON(json.dumps(item)) for item in response]
+    return items
