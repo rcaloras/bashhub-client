@@ -22,7 +22,7 @@ def search(user_id, limit=100, path='', query='', system_id='',
     if system_id:
         payload["systemId"] = BH_SYSTEM_ID
 
-    url = BH_URL + "/command/search"
+    url = BH_URL + "/command/v1/search"
 
     try:
         r = requests.get(url, params=payload)
