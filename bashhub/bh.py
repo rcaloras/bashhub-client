@@ -24,7 +24,7 @@ def bh(app):
     print_commands(commands)
 
 def print_commands(commands):
-    for command in (commands):
+    for command in reversed(commands):
        print command
 
 bh.add_param("-n", "--number", help="Limit the number of previous commands. \
