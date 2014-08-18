@@ -1,4 +1,6 @@
 #!/usr/bin/python
+
+from __future__ import print_function
 import json
 import sys
 import requests
@@ -9,6 +11,7 @@ import os
 from model import MinCommand
 from bashhub_globals import *
 import rest_client
+from interactive_search import InteractiveSearch
 
 @cli.app.CommandLineApp
 def bh(app):
@@ -21,11 +24,21 @@ def bh(app):
 
     # Call our rest api to search for commands
     commands = rest_client.search(user_id, limit, path, query, system_id)
-    print_commands(commands)
+
+    if app.params.interactive:
+        run_interactive(commands)
+    else:
+        print_commands(commands)
 
 def print_commands(commands):
     for command in (commands):
-       print command
+        print(command)
+
+def run_interactive(commands):
+    i_search = InteractiveSearch(commands)
+    command = i_search.run()
+    f = open(BH_HOME + '/response.bh','w+')
+    print(command, file=f)
 
 bh.add_param("-n", "--number", help="Limit the number of previous commands. \
         Default is 100.", default=100, type=int)
@@ -39,10 +52,13 @@ bh.add_param("-d", "--directory", help="Search for commands within this \
 bh.add_param("-sys", "--system", help="Search for commands created on this \
         system.", default= False, action='store_true')
 
+bh.add_param("-i", "--interactive", help="Use interactive search. Allows you \
+        to select commands to run.", default= False, action='store_true')
+
 def main():
     try:
         bh.run()
     except Exception as e:
-        print "Oops, look like an exception occured: " + str(e)
+        print("Oops, look like an exception occured: " + str(e))
 
 main()

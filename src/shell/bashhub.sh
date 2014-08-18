@@ -1,4 +1,5 @@
 source ~/.bashhub/.config
+export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
 # Alias to bind Ctrl + B
@@ -43,4 +44,17 @@ PROMPT_COMMAND='BH_PREV_HISTORY=$BH_RAW_HISTORY;
 bh()
 {
     ($BH_EXEC_DIRECTORY/bh "$@")
+}
+
+
+interactive_example()
+{
+    python ~/git/bashhub-client/bashhub/curses_scrolling.py
+    if [[ -e $BH_HOME_DIRECTORY/response.bh ]];
+    then
+        local COMMAND=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
+        rm $BH_HOME_DIRECTORY/response.bh
+        history -s $COMMAND
+        eval $line
+     fi;
 }
