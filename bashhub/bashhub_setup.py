@@ -196,6 +196,17 @@ def hash_and_salt_password(username, password_plain_text):
 
 def main():
     try:
+
+        ascii_art = """\
+          ____            _     _           _
+         |  _ \          | |   | |         | |
+         | |_) | __ _ ___| |__ | |__  _   _| |__   ___ ___  _ __ ___
+         |  _ < / _` / __| '_ \| '_ \| | | | '_ \ / __/ _ \| '_ ` _  \\
+         | |_) | (_| \__ \ | | | | | | |_| | |_) | (_| (_) | | | | | |
+         |____/ \__,_|___/_| |_|_| |_|\__,_|_.__(_)___\___/|_| |_| |_|
+
+        """
+        print ascii_art
         print "Welcome to bashhub setup!"
         is_new_user = query_yes_no("Are you a new user?")
         user_id = None
@@ -219,6 +230,10 @@ def main():
         sys.stderr.write('Setup Error:\n%s\n' % str(err))
         traceback.print_exc()
         sys.exit(1)
+    except KeyboardInterrupt:
+        # To allow Ctrl+C (^C). Print a new line to drop the prompt.
+        print
+        sys.exit()
 
 if __name__== "__main__":
     main()
