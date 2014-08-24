@@ -40,6 +40,8 @@ class InteractiveSearch:
     def _run(self, screen):
         self.screen = screen
         curses.cbreak()
+        curses.start_color()
+        curses.use_default_colors()
         self.screen.border(0)
         while True:
             self.displayScreen()
@@ -90,7 +92,7 @@ class InteractiveSearch:
             if index != self.highlightLineNum:
                 self.screen.addstr(index, 0, line)
             else:
-                self.screen.addstr(index, 0, line, curses.A_BOLD)
+                self.screen.addstr(index, 0, line, curses.A_STANDOUT)
         self.screen.refresh()
 
     # move highlight up/down one line
