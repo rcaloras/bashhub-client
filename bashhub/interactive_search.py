@@ -51,11 +51,9 @@ class InteractiveSearch:
                 self.updown(self.UP)
             elif c == curses.KEY_DOWN:
                 self.updown(self.DOWN)
-            elif c == self.SPACE_KEY:
-                self.markLine()
             elif c == self.ENTER_KEY:
                 return self.selectLine()
-            elif c == self.ESC_KEY:
+            elif c == self.ESC_KEY or c == ord('q'):
                 sys.exit()
 
 
@@ -80,13 +78,7 @@ class InteractiveSearch:
         top = self.topLineNum
         bottom = self.topLineNum+curses.LINES
         for (index,line,) in enumerate(self.outputLines[top:bottom]):
-            linenum = self.topLineNum + index
-            if linenum in self.markedLineNums:
-                prefix = self.PREFIX_SELECTED
-            else:
-                prefix = self.PREFIX_DESELECTED
-
-            line = '%s %s' % (prefix, line,)
+            line = '%s' % (line,)
 
             # highlight current line
             if index != self.highlightLineNum:
