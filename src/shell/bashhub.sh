@@ -3,7 +3,7 @@ export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
 # Alias to bind Ctrl + B
-bind -x '"\C-b":"bh -i"'
+bind '"\C-b":"\C-u\C-kbh -i\n"'
 
 BH_PROCESS_COMMAND()
 {
