@@ -1,8 +1,9 @@
 source ~/.bashhub/.config
+export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
 # Alias to bind Ctrl + B
-bind -x '"\C-b":"bh"'
+bind '"\C-b":"\C-u\C-kbh -i\n"'
 
 BH_PROCESS_COMMAND()
 {
@@ -42,5 +43,12 @@ PROMPT_COMMAND='BH_PREV_HISTORY=$BH_RAW_HISTORY;
                 (BH_PROCESS_COMMAND);'
 bh()
 {
-    ($BH_EXEC_DIRECTORY/bh "$@")
+    $BH_EXEC_DIRECTORY/bh "$@"
+    if [[ -e $BH_HOME_DIRECTORY/response.bh ]];
+    then
+        local COMMAND=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
+        rm $BH_HOME_DIRECTORY/response.bh
+        history -s $COMMAND
+        eval $COMMAND
+     fi;
 }

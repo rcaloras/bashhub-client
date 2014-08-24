@@ -18,7 +18,7 @@ BH_USER_ID = get_global_from_env('BH_USER_ID', '')
 
 BH_SYSTEM_ID = get_global_from_env('BH_SYSTEM_ID', '')
 
-BH_HOME = "~/.bashhub/" if "HOME" not in os.environ.keys() \
+BH_HOME = "~/.bashhub" if "HOME" not in os.environ.keys() \
         else os.environ["HOME"] + '/.bashhub'
 
 
