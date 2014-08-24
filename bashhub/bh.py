@@ -22,6 +22,10 @@ def bh(app):
     query = app.params.query
     system_id = BH_SYSTEM_ID if app.params.system else ''
 
+    # If we're interactive, make sure we have a query
+    if app.params.interactive and query == '':
+        query = raw_input("(bashhub-i-search): ")
+
     # Call our rest api to search for commands
     commands = rest_client.search(user_id, limit, path, query, system_id)
 
@@ -60,5 +64,9 @@ def main():
         bh.run()
     except Exception as e:
         print("Oops, look like an exception occured: " + str(e))
+    except KeyboardInterrupt:
+        # To allow Ctrl+C (^C). Print a new line to drop the prompt.
+        print()
+        pass
 
 main()
