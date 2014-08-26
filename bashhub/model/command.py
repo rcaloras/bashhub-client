@@ -5,6 +5,7 @@ import jsonpickle
 import json
 import sys
 import uuid
+from serializable import Serializable
 
 class Command(object):
     def __init__(self, command, path, context):
@@ -35,7 +36,7 @@ class RegisterUser(object):
     def from_JSON(json):
         return jsonpickle.decode(json)
 
-class RegisterSystem(object):
+class RegisterSystem(Serializable):
     def __init__(self, name, mac, user_id):
         self.name = name
         self.mac = mac.__str__()

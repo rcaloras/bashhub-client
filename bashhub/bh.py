@@ -35,7 +35,7 @@ def bh(app):
         print_commands(commands)
 
 def print_commands(commands):
-    for command in (commands):
+    for command in reversed(commands):
         print(command)
 
 def run_interactive(commands):
