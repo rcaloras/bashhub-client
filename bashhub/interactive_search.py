@@ -106,7 +106,6 @@ class InteractiveSearch:
             self.highlightLineNum = nextLineNum
 
     def restoreScreen(self):
-        curses.initscr()
         curses.nocbreak()
         curses.echo()
         curses.endwin()
