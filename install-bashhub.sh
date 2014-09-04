@@ -16,10 +16,9 @@
 
 
 install_bashhub () {
+    check_dependencies
     check_already_installed
     setup_bashhub_files
-    #wget bashhub.com/setup
-    #python bashhub-setup.py
 }
 
 
@@ -47,6 +46,13 @@ download_and_install_env () {
     # Don't need this anymore either.
     rm virtualenv-$VERSION.tar.gz
 }
+
+check_dependencies () {
+    if [ -z "$(which wget)" ]; then
+        die "\n Sorry you need to have wget instaleld. Please install wget and rerun this script." 1
+    fi
+}
+
 check_already_installed () {
     if [ -e ~/.bashhub ]; then
         die "\nLooks like the bashhub client is already installed.
