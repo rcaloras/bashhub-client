@@ -36,7 +36,7 @@ bashhub.add_param("pid_start_time", help="start time of the parent pid in ISO fo
 
 
 def iso_date_to_epoc_millis(iso_date_str):
-    return mktime(strptime(iso_date_str.strip(), "%c"))*1000
+    return int(iso_date_str.strip())*1000
 
 
 def main():

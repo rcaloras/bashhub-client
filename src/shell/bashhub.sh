@@ -26,7 +26,7 @@ BH_PROCESS_COMMAND()
     # Should get process start time in seconds.
     #local PROCESS_START=`ps -p $$ -o lstart | sed -n 2p | date +%s%3N -f -`
     # Converting back to old way in python
-    local PROCESS_START=`ps -p $$ -o lstart | sed -n 2p`
+    local PROCESS_START=`ps -p $$ -o lstart | sed -n 2p | date +"%s"`
 
     local WORKING_DIRECTORY=`pwd`
 
