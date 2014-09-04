@@ -17,7 +17,7 @@ def bashhub(app):
 
     pid = app.params.pid
     pid_start_time = iso_date_to_epoc_millis(app.params.pid_start_time)
-    command = app.params.command.strip()
+    command = parse_command_from_history_line(app.params.command)
     path = app.params.path
 
     context = UserContext(pid, pid_start_time, BH_USER_ID, BH_SYSTEM_ID)
@@ -34,10 +34,11 @@ bashhub.add_param("path", help="the path the command was executed in", type=str)
 bashhub.add_param("pid", help="the pid of the shell this command executed in", type=long)
 bashhub.add_param("pid_start_time", help="start time of the parent pid in ISO format", type=str)
 
+def parse_command_from_history_line(history_line):
+    return " ".join(history_line.strip().split(" ")[2:])
 
 def iso_date_to_epoc_millis(iso_date_str):
     return int(iso_date_str.strip())*1000
-
 
 def main():
     try:

@@ -20,7 +20,7 @@ BH_PROCESS_COMMAND()
         exit 0;
     fi;
 
-    local BH_COMMAND=$(echo "$BH_RAW_HISTORY" |  cut -d " " -f4-)
+    local BH_COMMAND=$(echo "$BH_RAW_HISTORY")
     local PROCESS_ID=$$
 
     # Should get process start time in seconds.
