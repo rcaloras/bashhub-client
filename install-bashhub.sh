@@ -55,8 +55,9 @@ check_dependencies () {
 
 check_already_installed () {
     if [ -e ~/.bashhub ]; then
-        die "\nLooks like the bashhub client is already installed.
-        \nrm -r ~/.bashhub to install again" 1
+        echo -e "\nLooks like the bashhub client is already installed.
+        \nLets go ahead and update it.\n"
+        rm -r ~/.bashhub
     fi
 }
 
