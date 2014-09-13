@@ -12,7 +12,7 @@ def get_global_from_env(env_var, default):
 
 # Optional environment variable to configure for development
 # export BH_URL='http://localhost:9000'
-BH_URL = get_global_from_env('BH_URL', 'http://bashhub.com')
+BH_URL = get_global_from_env('BH_URL', 'https://bashhub.com')
 
 BH_USER_ID = get_global_from_env('BH_USER_ID', '')
 
