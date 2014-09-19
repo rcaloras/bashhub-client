@@ -35,7 +35,7 @@ download_and_install_env () {
 
     # --- Real work starts here ---
     echo $URL_BASE/virtualenv-$VERSION.tar.gz
-    wget --no-check-certificate $URL_BASE/virtualenv-$VERSION.tar.gz
+    curl -OL  $URL_BASE/virtualenv-$VERSION.tar.gz
     tar xzf virtualenv-$VERSION.tar.gz
     # Create the first "bootstrap" environment.
     $PYTHON virtualenv-$VERSION/virtualenv.py $ENV_OPTS $INITIAL_ENV
@@ -48,8 +48,8 @@ download_and_install_env () {
 }
 
 check_dependencies () {
-    if [ -z "$(which wget)" ]; then
-        die "\n Sorry you need to have wget instaleld. Please install wget and rerun this script." 1
+    if [ -z "$(which python)" ]; then
+        die "\n Sorry you need to have 'python' installed. Please install python and rerun this script." 1
     fi
 }
 
@@ -71,7 +71,7 @@ setup_bashhub_files () {
     # For SetupTools Branch
     # wget --no-check-certificate https://github.com/rcaloras/bashhub-client/tarball/SetupTools -O client.tar.gz
 
-    wget --no-check-certificate https://github.com/rcaloras/bashhub-client/tarball/master -O client.tar.gz
+    curl -L https://github.com/rcaloras/bashhub-client/tarball/master -o client.tar.gz
     tar -xvf client.tar.gz
     cd rcaloras*
     cp src/shell/bashhub.sh ~/.bashhub/
