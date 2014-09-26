@@ -15,6 +15,13 @@
 # The only shell it won't ever work on is cmd.exe.
 
 
+profile_hook='
+### Bashhub.com Installation
+if [ -e ~/.bashhub/bashhub.sh ]; then
+    source ~/.bashhub/bashhub.sh
+fi
+'
+
 install_bashhub () {
     check_dependencies
     check_already_installed
@@ -68,10 +75,9 @@ setup_bashhub_files () {
     mkdir ~/.bashhub
     cd ~/.bashhub
     download_and_install_env
-    # For SetupTools Branch
-    # wget --no-check-certificate https://github.com/rcaloras/bashhub-client/tarball/SetupTools -O client.tar.gz
 
-    curl -L https://github.com/rcaloras/bashhub-client/tarball/master -o client.tar.gz
+    # Grab the code from master off github.
+    curl -sL https://github.com/rcaloras/bashhub-client/tarball/master -o client.tar.gz
     tar -xvf client.tar.gz
     cd rcaloras*
     cp src/shell/bashhub.sh ~/.bashhub/
@@ -83,10 +89,15 @@ setup_bashhub_files () {
     # Setup our config file
     ../env/bin/bashhub-setup
 
-    # Add our file to .bashrc or .profile
-    echo "source ~/.bashhub/bashhub.sh" >> $bashprofile
+    # Add our file to our bashprofile if it doesn't exist yet
+    if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile
+    then
+        :
+    else
+        echo "$profile_hook" >> $bashprofile
+    fi
 
-    #Clean up what we downloaded
+    # Clean up what we downloaded
     cd ~/.bashhub
     rm client.tar.gz
     rm -r rcaloras*
