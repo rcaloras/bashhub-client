@@ -81,7 +81,6 @@ setup_bashhub_files () {
     tar -xvf client.tar.gz
     cd rcaloras*
     cp src/shell/bashhub.sh ~/.bashhub/
-    cp src/shell/.config ~/.bashhub/.config
 
     # install our packages. bashhub and dependencies.
     ../env/bin/pip install .
