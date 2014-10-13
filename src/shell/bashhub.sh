@@ -7,8 +7,11 @@ bind '"\C-b":"\C-u\C-kbh -i\n"'
 
 BH_PROCESS_COMMAND()
 {
+
+    local BH_COMMAND=$@
+
     # Check to make sure we have a new command
-    if [[ $BH_PREV_HISTORY = $BH_RAW_HISTORY ]];
+    if [[ $BH_PREV_COMMAND = $BH_COMMAND ]];
     then
         exit 0;
     fi;
@@ -20,7 +23,6 @@ BH_PROCESS_COMMAND()
         exit 0;
     fi;
 
-    local BH_COMMAND=$(echo "$BH_RAW_HISTORY")
     local PROCESS_ID=$$
 
     # Should get process start time in seconds.
@@ -30,18 +32,29 @@ BH_PROCESS_COMMAND()
 
     local WORKING_DIRECTORY=`pwd`
 
-    # Had this previously, think it was part of the trap. DELETE ME later if
-    # still not useful :)
-    #local PARSED_COMMAND=`echo "$BH_COMMAND" | sed -e 's/^ *//g' -e 's/ *$//g'`
-
     ($BH_EXEC_DIRECTORY/bashhub "$BH_COMMAND" "$WORKING_DIRECTORY" \
     "$PROCESS_ID" "$PROCESS_START"&)
 }
 
+BH_TRIM_WHITESPACE() {
+    local var=$@
+    var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"   # remove trailing whitespace characters
+    echo -n "$var"
+}
+
+BH_GET_LAST_COMMAND() {
+    # GRAB LAST OF COMMAND
+    local HISTORY_LINE=$(history 1)
+    local TRIMMED_COMMAND=`BH_TRIM_WHITESPACE $HISTORY_LINE`
+    local NO_LINE_NUMBER=`echo "$TRIMMED_COMMAND" | cut -d " " -f2-`
+    BH_TRIM_WHITESPACE $NO_LINE_NUMBER
+}
+
 BH_ON_PROMPT_COMMAND() {
-    BH_PREV_HISTORY=$BH_RAW_HISTORY;
-    BH_RAW_HISTORY=$(history 1);
-    (BH_PROCESS_COMMAND);
+    BH_PREV_COMMAND=$BH_COMMAND;
+    BH_COMMAND=`BH_GET_LAST_COMMAND`;
+    (BH_PROCESS_COMMAND $BH_COMMAND);
 }
 
 PROMPT_COMMAND="BH_ON_PROMPT_COMMAND; $PROMPT_COMMAND"
