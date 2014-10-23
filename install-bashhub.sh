@@ -27,6 +27,7 @@ if [ -e ~/.bashhub/bashhub.zsh ]; then
     source ~/.bashhub/bashhub.zsh
 fi
 '
+zshprofile=~/.zshrc
 
 install_bashhub () {
     check_dependencies
@@ -77,11 +78,11 @@ check_already_installed () {
 install_hooks_for_zsh () {
     cp src/shell/bashhub.zsh ~/.bashhub/
     # Add our file to our bashprofile if it doesn't exist yet
-    if grep -q "source ~/.bashhub/bashhub.zsh" ~/.zshrc
+    if grep -q "source ~/.bashhub/bashhub.zsh" $zshprofile
     then
         :
     else
-        echo "$zsh_profile_hook" >> $bashprofile
+        echo "$zsh_profile_hook" >> $zshprofile
     fi
 
 }
