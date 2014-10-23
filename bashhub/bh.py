@@ -64,6 +64,7 @@ def main():
         bh.run()
     except Exception as e:
         print("Oops, look like an exception occured: " + str(e))
+        sys.exit(1)
     except KeyboardInterrupt:
         # To allow Ctrl+C (^C). Print a new line to drop the prompt.
         print()
