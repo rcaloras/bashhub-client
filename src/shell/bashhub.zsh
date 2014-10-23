@@ -12,6 +12,12 @@ BH_PROCESS_COMMAND()
     then
         exit 0;
     fi;
+    
+    # Check to make sure we have valid tokens
+    if [[ -z "$BH_USER_ID" ]] || [[ -z "$BH_SYSTEM_ID" ]];
+    then
+        exit 0;
+    fi;
 
     # Check to make sure bashhub is still installed. Otherwise, this will
     # simply fail and spam the user that files dont exist.

@@ -15,10 +15,16 @@
 # The only shell it won't ever work on is cmd.exe.
 
 
-profile_hook='
+bash_profile_hook='
 ### Bashhub.com Installation
 if [ -e ~/.bashhub/bashhub.sh ]; then
     source ~/.bashhub/bashhub.sh
+fi
+'
+zsh_profile_hook='
+### Bashhub.com Installation
+if [ -e ~/.bashhub/bashhub.zsh ]; then
+    source ~/.bashhub/bashhub.zsh
 fi
 '
 
@@ -68,6 +74,18 @@ check_already_installed () {
     fi
 }
 
+install_hooks_for_zsh () {
+    cp src/shell/bashhub.zsh ~/.bashhub/
+    # Add our file to our bashprofile if it doesn't exist yet
+    if grep -q "source ~/.bashhub/bashhub.zsh" ~/.zshrc
+    then
+        :
+    else
+        echo "$zsh_profile_hook" >> $bashprofile
+    fi
+
+}
+
 setup_bashhub_files () {
 
    local bashprofile=`find_users_bash_file`
@@ -80,7 +98,22 @@ setup_bashhub_files () {
     curl -sL https://github.com/rcaloras/bashhub-client/tarball/master -o client.tar.gz
     tar -xvf client.tar.gz
     cd rcaloras*
+
+
     cp src/shell/bashhub.sh ~/.bashhub/
+
+    # Add our file to our bashprofile if it doesn't exist yet
+    if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile
+    then
+        :
+    else
+        echo "$bash_profile_hook" >> $bashprofile
+    fi
+
+    # If we're using zsh, install our zsh hooks
+    if [ -e ~/.zshrc ]; then
+        install_hooks_for_zsh
+    fi
 
     # install our packages. bashhub and dependencies.
     ../env/bin/pip install .
@@ -88,15 +121,7 @@ setup_bashhub_files () {
     # Setup our config file
     ../env/bin/bashhub-setup
 
-    # Add our file to our bashprofile if it doesn't exist yet
-    if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile
-    then
-        :
-    else
-        echo "$profile_hook" >> $bashprofile
-    fi
-
-    # Clean up what we downloaded
+       # Clean up what we downloaded
     cd ~/.bashhub
     rm client.tar.gz
     rm -r rcaloras*
@@ -106,7 +131,7 @@ setup_bashhub_files () {
 find_users_bash_file () {
 
     # possible bash files to use, order matters
-    bash_file_array=( ~/.bashrc ~/.bash_profile ~/.profile)
+    bash_file_array=( ~/.bashrc ~/.profile)
 
     for file in "${bash_file_array[@]}"
     do
