@@ -18,6 +18,11 @@ def bashhub(app):
     pid = app.params.pid
     pid_start_time = iso_date_to_epoc_millis(app.params.pid_start_time)
     command = app.params.command.strip()
+
+    # Check if we should ignore this commannd or not.
+    if "#ignore" in command:
+        return
+
     path = app.params.path
 
     context = UserContext(pid, pid_start_time, BH_USER_ID, BH_SYSTEM_ID)
