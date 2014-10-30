@@ -76,7 +76,7 @@ check_already_installed () {
 }
 
 install_hooks_for_zsh () {
-    cp src/shell/bashhub.zsh ~/.bashhub/
+    cp bashhub/shell/bashhub.zsh ~/.bashhub/
     # Add our file to our bashprofile if it doesn't exist yet
     if grep -q "source ~/.bashhub/bashhub.zsh" $zshprofile
     then
@@ -101,7 +101,7 @@ setup_bashhub_files () {
     cd rcaloras*
 
 
-    cp src/shell/bashhub.sh ~/.bashhub/
+    cp bashhub/shell/bashhub.sh ~/.bashhub/
 
     # Add our file to our bashprofile if it doesn't exist yet
     if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile

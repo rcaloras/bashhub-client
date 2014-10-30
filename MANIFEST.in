@@ -1,4 +1,4 @@
 include README.md
-include bashhub/shell/.config
 include bashhub/shell/*.sh
+include bashhub/shell/*.zsh
 include bashhub/model/*
