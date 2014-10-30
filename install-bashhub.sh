@@ -17,17 +17,22 @@
 
 bash_profile_hook='
 ### Bashhub.com Installation
-if [ -e ~/.bashhub/bashhub.sh ]; then
+if [ -f ~/.bashhub/bashhub.sh ]; then
     source ~/.bashhub/bashhub.sh
 fi
 '
 zsh_profile_hook='
 ### Bashhub.com Installation
-if [ -e ~/.bashhub/bashhub.zsh ]; then
+if [ -f ~/.bashhub/bashhub.zsh ]; then
     source ~/.bashhub/bashhub.zsh
 fi
 '
+
 zshprofile=~/.zshrc
+
+# Optional parameter to specify a github branch
+# to pull from.
+github_branch=${1:-'master'}
 
 install_bashhub () {
     check_dependencies
@@ -96,7 +101,7 @@ setup_bashhub_files () {
     download_and_install_env
 
     # Grab the code from master off github.
-    curl -sL https://github.com/rcaloras/bashhub-client/tarball/master -o client.tar.gz
+    curl -sL https://github.com/rcaloras/bashhub-client/tarball/$github_branch -o client.tar.gz
     tar -xvf client.tar.gz
     cd rcaloras*
 
