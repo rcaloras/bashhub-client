@@ -94,7 +94,12 @@ install_hooks_for_zsh () {
 
 setup_bashhub_files () {
 
-   local bashprofile=`find_users_bash_file`
+    local bashprofile=$(find_users_bash_file)
+
+    # Have to have this. Error out otherwise.
+    if [ -z "$bashprofile" ]; then
+        die "No bashfile (e.g. .profile, .bashrc, ect) could be found" 1
+    fi
 
     mkdir ~/.bashhub
     cd ~/.bashhub
@@ -104,7 +109,6 @@ setup_bashhub_files () {
     curl -sL https://github.com/rcaloras/bashhub-client/tarball/$github_branch -o client.tar.gz
     tar -xvf client.tar.gz
     cd rcaloras*
-
 
     cp bashhub/shell/bashhub.sh ~/.bashhub/
 
@@ -134,20 +138,34 @@ setup_bashhub_files () {
     echo "should be good to go"
 }
 
+#
+# Find a users active bash file based on
+# which looks the largest. The idea being the
+# largest is probably the one they actively use.
+#
 find_users_bash_file () {
 
-    # possible bash files to use, order matters
-    bash_file_array=( ~/.bashrc ~/.profile)
+    bash_file_array=( ~/.profile ~/.bashrc ~/.bash_profile)
 
+    local largest_file_size=0
     for file in "${bash_file_array[@]}"
     do
         if [ -e $file ]; then
-            echo $file
-            return 0
+            # Get our file size.
+            local file_size=$(wc -c "$file" | cut -f 1 -d ' ')
+
+            if [ $file_size -gt $largest_file_size ]; then
+                local largest_file_size=$file_size
+                local largest_file=$file
+            fi
         fi
      done
 
-     die "No bashfile (e.g. .profile, .bashrc, ect) could be found" 1
+    # If we found the largest file, return it
+    if [ -n "$largest_file" ]; then
+        echo $largest_file
+        return 0
+    fi
 }
 
 die () { echo -e $1; exit $2; }
