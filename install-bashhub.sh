@@ -135,7 +135,7 @@ setup_bashhub_files () {
     cd ~/.bashhub
     rm client.tar.gz
     rm -r rcaloras*
-    echo "should be good to go"
+    echo "Should be good to go! Please close and restart your terminal session."
 }
 
 #

@@ -222,7 +222,6 @@ def main():
             sys.exit(0)
 
         system_id = handle_system_information(user_id)
-        print "(user_id, system_id) = (" + user_id + ", " + system_id + ")"
         write_config_file(user_id, system_id)
         sys.exit(0)
 
