@@ -54,9 +54,9 @@ if [[ -e $BH_HOME_DIRECTORY/response.bh ]];
      fi;
 }
 
-# Hook into preexec functions
-preexec_functions+=bh_preexec
-precmd_functions+=bh_precmd
+# Hook into preexec and precmd functions
+preexec_functions+=(bh_preexec)
+precmd_functions+=(bh_precmd)
 
 bh()
 {
