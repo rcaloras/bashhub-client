@@ -152,7 +152,7 @@ find_users_bash_file () {
     do
         if [ -e $file ]; then
             # Get our file size.
-            local file_size=$(wc -c "$file" | cut -f 1 -d ' ')
+            local file_size=$(wc -c "$file" | awk '{print $1}')
 
             if [ $file_size -gt $largest_file_size ]; then
                 local largest_file_size=$file_size
