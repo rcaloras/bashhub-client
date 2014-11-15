@@ -41,6 +41,8 @@ setup(name='bashhub',
         install_requires=[
             'requests==1.2.3',
             'jsonpickle==0.7.0',
+            'click==3.3',
+            'python-dateutil==2.2',
             'pyCLI==2.0.3',
             'pymongo==2.6'],
         entry_points={

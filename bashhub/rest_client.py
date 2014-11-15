@@ -32,4 +32,13 @@ def search(user_id=BH_USER_ID, limit=100, path='', query='', system_id='',
         print "Sorry, looks like there's a connection error. Please try again later"
         return []
 
+def save_command(command):
+    url = BH_URL + "/command"
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    try:
+        r = requests.post(url, data=command.to_JSON(), headers=headers)
+    except ConnectionError as error:
+        print "Sorry, looks like there's a connection error"
+        pass
+
 
