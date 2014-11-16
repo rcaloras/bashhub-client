@@ -31,14 +31,15 @@ BH_PROCESS_COMMAND()
 
     local PROCESS_ID=$$
 
-    # Should get process start time in seconds.
-    #local PROCESS_START=`ps -p $$ -o lstart | sed -n 2p | date +%s%3N -f -`
-    # Converting back to old way in python
-    local PROCESS_START=`ps -p $$ -o lstart | sed -n 2p | date +"%s"`
+    # This is non-standard across systems. GNU Date and BSD Date
+    # both convert to epoch differently. Using python for cross system
+    # compatibility.
+    local PROCESS_START_STAMP=`ps -p $$ -o lstart | sed -n 2p`
+    local PROCESS_START=$($BH_EXEC_DIRECTORY/bashhub util parsedate "$PROCESS_START_STAMP")
 
     local WORKING_DIRECTORY=`pwd`
 
-    ($BH_EXEC_DIRECTORY/bashhub "$BH_COMMAND" "$WORKING_DIRECTORY" \
+    ($BH_EXEC_DIRECTORY/bashhub save "$BH_COMMAND" "$WORKING_DIRECTORY" \
     "$PROCESS_ID" "$PROCESS_START"&)
 }
 
