@@ -31,10 +31,12 @@ BH_PROCESS_COMMAND()
     # This is non-standard across systems. GNU Date and BSD Date
     # both convert to epoch differently. Using python for cross system
     # compatibility.
-    local PROCESS_START_STAMP=`ps -p $$ -o lstart | sed -n 2p`
+    local PROCESS_START_STAMP
+    PROCESS_START_STAMP=$(ps -p $$ -o lstart | sed -n 2p)
+
     local PROCESS_START=$($BH_EXEC_DIRECTORY/bashhub util parsedate "$PROCESS_START_STAMP")
 
-    local WORKING_DIRECTORY=`pwd`
+    local WORKING_DIRECTORY=$(pwd)
 
     ($BH_EXEC_DIRECTORY/bashhub save "$BH_COMMAND" "$WORKING_DIRECTORY" \
     "$PROCESS_ID" "$PROCESS_START"&)
