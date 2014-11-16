@@ -103,7 +103,9 @@ setup_bashhub_files () {
     tar -xvf client.tar.gz
     cd rcaloras*
 
+    # Copy over our sh files
     cp bashhub/shell/bashhub.sh ~/.bashhub/
+    cp bashhub/shell/lib-bashhub.sh ~/.bashhub/
 
     # Add our file to our bashprofile if it doesn't exist yet
     if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile

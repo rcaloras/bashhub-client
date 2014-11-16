@@ -7,7 +7,14 @@
 BH_PROCESS_COMMAND()
 {
 
-    local BH_COMMAND=$@
+    local BH_COMMAND
+    BH_COMMAND=$(BH_TRIM_WHITESPACE $@)
+
+    # Sanity empty check
+    if [[ -z "$BH_COMMAND" ]];
+    then
+        exit 0;
+    fi;
 
     # Check to make sure we have a new command
     if [[ $BH_PREV_COMMAND = $BH_COMMAND ]];
