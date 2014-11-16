@@ -4,7 +4,6 @@ source ~/.bashhub/lib-bashhub.sh
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
-
 # Alias to bind Ctrl + B
 bind '"\C-b":"\C-u\C-kbh -i\n"'
 BH_GET_LAST_COMMAND() {

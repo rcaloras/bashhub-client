@@ -4,6 +4,8 @@
 # shell functions between bash and zsh
 #
 
+export PATH=$PATH:"$HOME/.bashhub/bin"
+
 BH_PROCESS_COMMAND()
 {
 
