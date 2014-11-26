@@ -1,21 +1,19 @@
 source ~/.bashhub/.config
 source ~/.bashhub/lib-bashhub.sh
+
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
 function bh_preexec() {
-    BH_PREV_COMMAND=$BH_COMMAND;
-    BH_COMMAND=$1;
-    (BH_PROCESS_COMMAND $BH_COMMAND);
+  (BH_PREEXEC $1)
 }
 
 function bh_precmd() {
-if [[ -e $BH_HOME_DIRECTORY/response.bh ]];
-    then
+    if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
         local COMMAND="`head -n 1 $BH_HOME_DIRECTORY/response.bh`"
         rm $BH_HOME_DIRECTORY/response.bh
         print -z $COMMAND
-     fi;
+    fi;
 }
 
 # Hook into preexec and precmd functions

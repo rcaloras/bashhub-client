@@ -6,20 +6,29 @@
 
 export PATH=$PATH:"$HOME/.bashhub/bin"
 
-BH_PROCESS_COMMAND()
-{
+#
+# Prepare and send our command to be processed.
+#
+# @param The command just entered.
+#
+BH_PREEXEC() {
+    local command
+    command=$(BH_TRIM_WHITESPACE "$1")
+    (BH_PROCESS_COMMAND "$command"&)
+}
 
-    local BH_COMMAND
-    BH_COMMAND=$(BH_TRIM_WHITESPACE $@)
+#
+# Send our command to the server if everything
+# looks good.
+#
+# @param A trimmed command from the command line
+#
+BH_PROCESS_COMMAND() {
+
+    local bh_command="$1"
 
     # Sanity empty check
-    if [[ -z "$BH_COMMAND" ]];
-    then
-        exit 0;
-    fi;
-
-    # Check to make sure we have a new command
-    if [[ $BH_PREV_COMMAND = $BH_COMMAND ]];
+    if [[ -z "$bh_command" ]];
     then
         exit 0;
     fi;
@@ -37,20 +46,20 @@ BH_PROCESS_COMMAND()
         exit 0;
     fi;
 
-    local PROCESS_ID=$$
+    local process_id=$$
 
     # This is non-standard across systems. GNU Date and BSD Date
     # both convert to epoch differently. Using python for cross system
     # compatibility.
-    local PROCESS_START_STAMP
-    PROCESS_START_STAMP=$(ps -p $$ -o lstart | sed -n 2p)
+    local process_start_stamp
+    process_start_stamp=$(ps -p $$ -o lstart | sed -n 2p)
 
-    local PROCESS_START=$($BH_EXEC_DIRECTORY/bashhub util parsedate "$PROCESS_START_STAMP")
+    local process_start=$($BH_EXEC_DIRECTORY/bashhub util parsedate "$process_start_stamp")
 
-    local WORKING_DIRECTORY=$(pwd)
+    local working_directory=$(pwd)
 
-    ($BH_EXEC_DIRECTORY/bashhub save "$BH_COMMAND" "$WORKING_DIRECTORY" \
-    "$PROCESS_ID" "$PROCESS_START"&)
+    ($BH_EXEC_DIRECTORY/bashhub save "$bh_command" "$working_directory" \
+    "$process_id" "$process_start"&)
 }
 
 BH_TRIM_WHITESPACE() {
