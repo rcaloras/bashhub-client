@@ -34,9 +34,9 @@ bh()
 {
     $BH_EXEC_DIRECTORY/bh "$@"
     if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
-        local COMMAND=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
+        local command=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
         rm $BH_HOME_DIRECTORY/response.bh
-        history -s $COMMAND
-        eval $COMMAND
+        history -s "$command"
+        eval "$command"
      fi;
 }
