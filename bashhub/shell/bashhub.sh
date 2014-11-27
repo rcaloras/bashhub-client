@@ -37,6 +37,7 @@ bh()
         local command=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
         rm $BH_HOME_DIRECTORY/response.bh
         history -s "$command"
+        echo "$command"
         eval "$command"
      fi;
 }
