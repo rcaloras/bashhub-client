@@ -25,7 +25,7 @@ zshprofile=~/.zshrc
 
 # Optional parameter to specify a github branch
 # to pull from.
-github_branch=${1:-'master'}
+github_branch=${1:-'0.1'}
 
 install_bashhub () {
     check_dependencies
@@ -54,7 +54,7 @@ download_and_install_env () {
     # Don't need this anymore.
     rm -rf virtualenv-$VERSION
     # Install the environment.
-    $INITIAL_ENV/bin/pip install virtualenv-$VERSION.tar.gz
+    $INITIAL_ENV/bin/pip -q install virtualenv-$VERSION.tar.gz
     # Don't need this anymore either.
     rm virtualenv-$VERSION.tar.gz
 }
@@ -99,9 +99,9 @@ setup_bashhub_files () {
     download_and_install_env
 
     # Grab the code from master off github.
-    curl -sL https://github.com/rcaloras/bashhub-client/tarball/$github_branch -o client.tar.gz
+    curl -sL https://github.com/rcaloras/bashhub-client/archive/${github_branch}.tar.gz -o client.tar.gz
     tar -xvf client.tar.gz
-    cd rcaloras*
+    cd bashhub-client*
 
     # Copy over our sh files
     cp bashhub/shell/bashhub.sh ~/.bashhub/
@@ -121,7 +121,8 @@ setup_bashhub_files () {
     fi
 
     # install our packages. bashhub and dependencies.
-    ../env/bin/pip install .
+    echo "Pulling down a few dependencies...(this may take a moment)"
+    ../env/bin/pip -q install .
 
     # Setup our config file
     ../env/bin/bashhub-setup
@@ -135,7 +136,7 @@ setup_bashhub_files () {
     # Clean up what we downloaded
     cd ~/.bashhub
     rm client.tar.gz
-    rm -r rcaloras*
+    rm -r bashhub-client*
     echo "Should be good to go! Please close and restart your terminal session."
 }
 
