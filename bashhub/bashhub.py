@@ -3,6 +3,7 @@ from time import *
 import click
 import traceback
 import dateutil.parser
+import sys
 
 from model import Command
 from model import UserContext
@@ -62,5 +63,6 @@ def main():
     except Exception as e:
         formatted = traceback.format_exc(e)
         click.echo("Oops, look like an exception occured: " + str(e))
+        sys.exit(1)
 
 main()
