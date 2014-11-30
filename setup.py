@@ -30,7 +30,7 @@ class BashhubDevelop(develop):
 
 
 setup(name='bashhub',
-        version='0.0.1',
+        version='0.0.3',
         description='Bashhub.com python client',
         url='http://github.com/rcaloras',
         author='Ryan Caloras',

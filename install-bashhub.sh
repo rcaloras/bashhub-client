@@ -25,7 +25,7 @@ zshprofile=~/.zshrc
 
 # Optional parameter to specify a github branch
 # to pull from.
-github_branch=${1:-'0.0.2'}
+github_branch=${1:-'0.0.3'}
 
 install_bashhub () {
     check_dependencies
@@ -126,7 +126,7 @@ setup_bashhub_files () {
     ../env/bin/pip -q install .
 
     # Setup our config file
-    ../env/bin/bashhub-setup
+    ../env/bin/bashhub setup
 
     # Wire up our bin directory
     mkdir ~/.bashhub/bin
