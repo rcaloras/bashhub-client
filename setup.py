@@ -47,8 +47,7 @@ setup(name='bashhub',
             'pymongo==2.6'],
         entry_points={
             'console_scripts':['bh=bashhub.bh:main',
-            'bashhub=bashhub.bashhub:main',
-            'bashhub-setup=bashhub.bashhub_setup:main']
+            'bashhub=bashhub.bashhub:main']
             },
         cmdclass={
             'install': BashhubInstall,

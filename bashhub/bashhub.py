@@ -7,8 +7,8 @@ import dateutil.parser
 from model import Command
 from model import UserContext
 import rest_client
+import bashhub_setup
 from bashhub_globals import *
-
 
 @click.group()
 def bashhub():
@@ -33,6 +33,12 @@ def save(command, path, pid, process_start_time):
     context = UserContext(pid, pid_start_time, BH_USER_ID, BH_SYSTEM_ID)
     command = Command(command, path, context)
     rest_client.save_command(command)
+
+@bashhub.command()
+def setup():
+    """Run bashhub user and system setup"""
+    bashhub_setup.main()
+
 
 @bashhub.group()
 def util():
