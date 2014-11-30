@@ -91,7 +91,7 @@ setup_bashhub_files () {
 
     # Have to have this. Error out otherwise.
     if [ -z "$bashprofile" ]; then
-        die "No bashfile (e.g. .profile, .bashrc, ect) could be found" 1
+        die "No bashfile (e.g. .profile, .bashrc, etc) could be found" 1
     fi
 
     mkdir ~/.bashhub
@@ -103,9 +103,10 @@ setup_bashhub_files () {
     tar -xvf client.tar.gz
     cd bashhub-client*
 
-    # Copy over our sh files
+    # Copy over our sh files.
     cp bashhub/shell/bashhub.sh ~/.bashhub/
-    cp bashhub/shell/lib-bashhub.sh ~/.bashhub/
+    # Copy over our dependencies.
+    cp -r bashhub/shell/deps ~/.bashhub/
 
     # Add our file to our bashprofile if it doesn't exist yet
     if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile

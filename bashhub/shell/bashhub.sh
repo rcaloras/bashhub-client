@@ -1,34 +1,30 @@
-source ~/.bashhub/.config
-source ~/.bashhub/lib-bashhub.sh
+#
+# bashhub.sh
+# Main file that is sourced onto our path for Bash.
+#
 
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
+BH_DEPS_DIRECTORY=$BH_HOME_DIRECTORY/deps
+
+# Import our dependencies
+if [[ -f $BH_DEPS_DIRECTORY/lib-bashhub.sh ]]; then
+    source $BH_DEPS_DIRECTORY/lib-bashhub.sh
+fi
+
+# Import prexec
+if [[ -f $BH_DEPS_DIRECTORY/preexec.sh ]]; then
+    source $BH_DEPS_DIRECTORY/preexec.sh
+    preexec_install
+fi
+
 # Alias to bind Ctrl + B
 bind '"\C-b":"\C-u\C-kbh -i\n"'
-BH_GET_LAST_COMMAND() {
-    # GRAB LAST OF COMMAND
-    local HISTORY_LINE=$(history 1)
-    local TRIMMED_COMMAND=`BH_TRIM_WHITESPACE $HISTORY_LINE`
-    local NO_LINE_NUMBER=`echo "$TRIMMED_COMMAND" | cut -d " " -f2-`
-    BH_TRIM_WHITESPACE $NO_LINE_NUMBER
+
+preexec() {
+    BH_PREEXEC "$1" &> ~/.bashhub/log.txt
 }
-
-BH_ON_PROMPT_COMMAND() {
-
-    BH_PREV_COMMAND="$BH_COMMAND"
-    BH_COMMAND=$(BH_GET_LAST_COMMAND)
-
-    # Check to make sure we have a new command
-    if [[ "$BH_COMMAND" = "$BH_PREV_COMMAND" ]]; then
-        return 0
-    fi;
-
-    BH_PREEXEC "$BH_COMMAND"
-}
-
-# Hook into Bash's PROMPT_COMMAND.
-PROMPT_COMMAND="BH_ON_PROMPT_COMMAND; $PROMPT_COMMAND"
 
 bh()
 {

@@ -6,6 +6,13 @@
 
 export PATH=$PATH:"$HOME/.bashhub/bin"
 
+BH_INCLUDE() {
+    [[ -f "$1" ]] && source "$1"
+}
+
+# Include our user configuration
+BH_INCLUDE ~/.bashhub/.config
+
 #
 # Prepare and send our command to be processed.
 #
