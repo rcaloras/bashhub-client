@@ -6,7 +6,7 @@
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
-BH_DEPS_DIRECTORY=$BH_HOME_DIRECTORY/deps
+BH_DEPS_DIRECTORY=${BH_DEPS_DIRECTORY:=$BH_HOME_DIRECTORY/deps}
 
 # Import our dependencies
 if [[ -f $BH_DEPS_DIRECTORY/lib-bashhub.sh ]]; then
@@ -16,15 +16,16 @@ fi
 # Import prexec
 if [[ -f $BH_DEPS_DIRECTORY/preexec.sh ]]; then
     source $BH_DEPS_DIRECTORY/preexec.sh
-    preexec_install
 fi
 
 # Alias to bind Ctrl + B
 bind '"\C-b":"\C-u\C-kbh -i\n"'
 
-preexec() {
+BH_PREEXEC_WRAPPER() {
     BH_PREEXEC "$1" &> ~/.bashhub/log.txt
 }
+
+preexec_functions+=(BH_PREEXEC_WRAPPER)
 
 bh()
 {
