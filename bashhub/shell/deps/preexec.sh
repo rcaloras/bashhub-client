@@ -49,7 +49,6 @@ precmd_invoke_cmd() {
     for precmd_function in ${precmd_functions[@]}; do
         $precmd_function
     done
-
     preexec_interactive_mode="on";
 }
 
@@ -58,6 +57,7 @@ precmd_invoke_cmd() {
 # environment to attempt to detect if the current command is being invoked
 # interactively, and invoke 'preexec' if so.
 preexec_invoke_exec() {
+
     if [[ -n "$COMP_LINE" ]]
     then
         # We're in the middle of a completer.  This obviously can't be
@@ -117,8 +117,12 @@ preexec_invoke_exec() {
 # Execute this to set up preexec and precmd execution.
 preexec_and_precmd_install() {
 
-    # Finally, install the actual traps.
-    PROMPT_COMMAND="${PROMPT_COMMAND} precmd_invoke_cmd";
+    # Take our existing prompt command and append a semicolon to it
+    # if it doesn't already have one.
+    local existing_prompt_command=$(echo "$PROMPT_COMMAND" | sed '/; *$/!s/$/;/')
+
+    # Finally install our traps.
+    PROMPT_COMMAND="${existing_prompt_command} precmd_invoke_cmd";
     trap 'preexec_invoke_exec' DEBUG;
 }
 
