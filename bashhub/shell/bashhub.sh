@@ -25,11 +25,7 @@ BH_PREEXEC_WRAPPER() {
     BH_PREEXEC "$1" &> ~/.bashhub/log.txt
 }
 
-preexec_functions+=(BH_PREEXEC_WRAPPER)
-
-bh()
-{
-    $BH_EXEC_DIRECTORY/bh "$@"
+BH_PRECMD() {
     if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
         local command=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
         rm $BH_HOME_DIRECTORY/response.bh
@@ -38,3 +34,7 @@ bh()
         eval "$command"
      fi;
 }
+
+# Hook into preexec and precmd functions
+preexec_functions+=(BH_PREEXEC_WRAPPER)
+precmd_functions+=(BH_PRECMD)
