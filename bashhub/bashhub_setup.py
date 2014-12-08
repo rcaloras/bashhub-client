@@ -169,7 +169,8 @@ def handle_system_information(user_id):
 
     # If this system is already registered
     if system is not None:
-        print("Looks like this box is already registered as " + system.name)
+        print("Welcome back! Looks like this box is already registered as " +
+                system.name + ".")
         return system.id
     else:
         name = raw_input("What do you want to call this system? " + \

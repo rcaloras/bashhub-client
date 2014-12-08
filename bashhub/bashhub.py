@@ -10,8 +10,18 @@ from model import UserContext
 import rest_client
 import bashhub_setup
 from bashhub_globals import *
+from version import __version__
+
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo('Bashhub %s' % __version__)
+    ctx.exit()
 
 @click.group()
+@click.option('-V', '--version', default=False, is_flag=True, callback=print_version,
+        help='Show version and exit', expose_value=False, is_eager=True)
+
 def bashhub():
     """Bashhub command line client"""
     pass

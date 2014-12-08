@@ -28,9 +28,10 @@ class BashhubInstall(install):
 class BashhubDevelop(develop):
     pass
 
+exec(open('bashhub/version.py').read())
 
 setup(name='bashhub',
-        version='0.0.3',
+        version='__version__',
         description='Bashhub.com python client',
         url='http://github.com/rcaloras',
         author='Ryan Caloras',
