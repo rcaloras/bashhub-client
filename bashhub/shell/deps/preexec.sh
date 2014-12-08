@@ -119,7 +119,13 @@ preexec_and_precmd_install() {
 
     # Take our existing prompt command and append a semicolon to it
     # if it doesn't already have one.
-    local existing_prompt_command=$(echo "$PROMPT_COMMAND" | sed '/; *$/!s/$/;/')
+    local existing_prompt_command
+
+    if [ -n "$PROMPT_COMMAND" ]; then
+        existing_prompt_command=$(echo "$PROMPT_COMMAND" | sed '/; *$/!s/$/;/')
+    else
+        existing_prompt_command=""
+    fi
 
     # Finally install our traps.
     PROMPT_COMMAND="${existing_prompt_command} precmd_invoke_cmd";
