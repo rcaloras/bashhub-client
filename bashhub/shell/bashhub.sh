@@ -14,8 +14,8 @@ if [[ -f $BH_DEPS_DIRECTORY/lib-bashhub.sh ]]; then
 fi
 
 # Import prexec
-if [[ -f $BH_DEPS_DIRECTORY/preexec.sh ]]; then
-    source $BH_DEPS_DIRECTORY/preexec.sh
+if [[ -f $BH_DEPS_DIRECTORY/bash-preexec.sh ]]; then
+    source $BH_DEPS_DIRECTORY/bash-preexec.sh
 fi
 
 # Alias to bind Ctrl + B
