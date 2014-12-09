@@ -69,6 +69,10 @@ check_already_installed () {
     if [ -e ~/.bashhub ]; then
         echo -e "\nLooks like the bashhub client is already installed.
         \nLets go ahead and update it.\n"
+        # copy our user credentials so we don't have to ask you for them again.
+        if [ -e ~/.bashhub/.config ]; then
+            cp ~/.bashhub/.config ~/.bashhub.config.backup
+        fi
         rm -r ~/.bashhub
     fi
 }
@@ -125,8 +129,14 @@ setup_bashhub_files () {
     echo "Pulling down a few dependencies...(this may take a moment)"
     ../env/bin/pip -q install .
 
-    # Setup our config file
-    ../env/bin/bashhub setup
+    # Check if we already have a config. If not run setup.
+    if [ -e ~/.bashhub.config.backup ]; then
+        cp ~/.bashhub.config.backup ~/.bashhub/.config
+        rm ~/.bashhub.config.backup
+    else
+        # Setup our config file
+        ../env/bin/bashhub setup
+    fi
 
     # Wire up our bin directory
     mkdir ~/.bashhub/bin
