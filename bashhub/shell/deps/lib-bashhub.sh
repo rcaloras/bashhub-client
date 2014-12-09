@@ -14,14 +14,13 @@ BH_INCLUDE() {
 BH_INCLUDE ~/.bashhub/.config
 
 #
-# Prepare and send our command to be processed.
+# Prepare and send our command to be processed redirecting
+# all output to our log file.
 #
 # @param The command just entered.
 #
 BH_PREEXEC() {
-    local command
-    command=$(BH_TRIM_WHITESPACE "$1")
-    (BH_PROCESS_COMMAND "$command"&)
+    (BH_PROCESS_COMMAND "$1"&) >> $BH_HOME_DIRECTORY/log.txt 2>&1
 }
 
 #
@@ -32,7 +31,8 @@ BH_PREEXEC() {
 #
 BH_PROCESS_COMMAND() {
 
-    local bh_command="$1"
+    local bh_command
+    bh_command=$(BH_TRIM_WHITESPACE "$1")
 
     # Sanity empty check
     if [[ -z "$bh_command" ]];

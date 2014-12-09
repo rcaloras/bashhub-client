@@ -21,10 +21,6 @@ fi
 # Alias to bind Ctrl + B
 bind '"\C-b":"\C-u\C-kbh -i\n"'
 
-BH_PREEXEC_WRAPPER() {
-    BH_PREEXEC "$1" &> ~/.bashhub/log.txt
-}
-
 BH_PRECMD() {
     if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
         local command=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
@@ -36,5 +32,5 @@ BH_PRECMD() {
 }
 
 # Hook into preexec and precmd functions
-preexec_functions+=(BH_PREEXEC_WRAPPER)
+preexec_functions+=(BH_PREEXEC)
 precmd_functions+=(BH_PRECMD)

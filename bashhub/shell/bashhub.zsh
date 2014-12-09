@@ -6,17 +6,12 @@
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
-BH_DEPS_DIRECTORY=$BH_HOME_DIRECTORY/deps
+BH_DEPS_DIRECTORY=${BH_DEPS_DIRECTORY:=$BH_HOME_DIRECTORY/deps}
 
 # Import our dependencies
 if [[ -f $BH_DEPS_DIRECTORY/lib-bashhub.sh ]]; then
     source $BH_DEPS_DIRECTORY/lib-bashhub.sh
 fi
-
-
-function bh_preexec() {
-  BH_PREEXEC $1 &> ~/.bashhub/log.txt
-}
 
 function bh_precmd() {
     if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
@@ -27,5 +22,5 @@ function bh_precmd() {
 }
 
 # Hook into preexec and precmd functions
-preexec_functions+=(bh_preexec)
+preexec_functions+=(BH_PREEXEC)
 precmd_functions+=(bh_precmd)
