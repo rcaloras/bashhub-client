@@ -11,6 +11,9 @@ import rest_client
 import bashhub_setup
 from bashhub_globals import *
 from version import __version__
+import shutil
+import requests
+import subprocess
 
 def print_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
@@ -25,6 +28,7 @@ def print_version(ctx, param, value):
 def bashhub():
     """Bashhub command line client"""
     pass
+
 
 @bashhub.command()
 @click.argument('command', type=str)
@@ -50,6 +54,15 @@ def setup():
     """Run bashhub user and system setup"""
     bashhub_setup.main()
 
+@bashhub.command()
+def update():
+    """Update your bashhub installation"""
+    url = 'http://bashhub.com/setup'
+    response = requests.get(url, stream=True)
+    filename = 'update-bashhub.sh'
+    with open(filename, 'wb') as out_file:
+        shutil.copyfileobj(response.raw, out_file)
+    subprocess.call("bash " + filename, shell=True)
 
 @bashhub.group()
 def util():
