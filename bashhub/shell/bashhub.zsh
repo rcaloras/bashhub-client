@@ -21,6 +21,12 @@ function bh_precmd() {
     fi;
 }
 
-# Hook into preexec and precmd functions
-preexec_functions+=(BH_PREEXEC)
-precmd_functions+=(bh_precmd)
+# Hook into preexec and precmd functions if they're not already
+# present there.
+if ! contains_element BH_PREEXEC $preexec_functions; then
+    preexec_functions+=(BH_PREEXEC)
+fi
+
+if ! contains_element bh_precmd $precmd_functions; then
+    precmd_functions+=(bh_precmd)
+fi

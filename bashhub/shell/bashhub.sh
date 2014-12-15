@@ -13,8 +13,9 @@ if [[ -f $BH_DEPS_DIRECTORY/lib-bashhub.sh ]]; then
     source $BH_DEPS_DIRECTORY/lib-bashhub.sh
 fi
 
-# Import prexec
-if [[ -f $BH_DEPS_DIRECTORY/bash-preexec.sh ]]; then
+# Import prexec if not already present
+if [[ -f $BH_DEPS_DIRECTORY/bash-preexec.sh ]] && \
+   [[ -z $(type -t preexec_and_precmd_install) ]]; then
     source $BH_DEPS_DIRECTORY/bash-preexec.sh
 fi
 
@@ -32,5 +33,10 @@ BH_PRECMD() {
 }
 
 # Hook into preexec and precmd functions
-preexec_functions+=(BH_PREEXEC)
-precmd_functions+=(BH_PRECMD)
+if ! contains_element BH_PREEXEC $preexec_functions; then
+    preexec_functions+=(BH_PREEXEC)
+fi
+
+if ! contains_element BH_PRECMD $precmd_functions; then
+    precmd_functions+=(BH_PRECMD)
+fi
