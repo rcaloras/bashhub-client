@@ -4,6 +4,7 @@ import click
 import traceback
 import dateutil.parser
 import sys
+import os
 
 from model import Command
 from model import UserContext
@@ -63,6 +64,7 @@ def update():
     with open(filename, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
     subprocess.call("bash " + filename, shell=True)
+    os.remove(filename)
 
 @bashhub.group()
 def util():
