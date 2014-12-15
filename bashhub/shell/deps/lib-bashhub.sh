@@ -10,6 +10,19 @@ BH_INCLUDE() {
     [[ -f "$1" ]] && source "$1"
 }
 
+#
+# Checks if an element is present in an array.
+#
+# @param The element to check if present
+# @param the array to check in
+# @return 0 if present 1 otherwise
+#
+contains_element() {
+  local e
+  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+  return 1
+}
+
 # Include our user configuration
 BH_INCLUDE ~/.bashhub/.config
 
