@@ -21,6 +21,8 @@ if [ -f ~/.bashhub/bashhub.zsh ]; then
 fi
 '
 
+bashhub_config=~/.bashhub/.config
+backup_config=~/.bashhub.config.backup
 zshprofile=~/.zshrc
 
 # Optional parameter to specify a github branch
@@ -69,10 +71,12 @@ check_already_installed () {
     if [ -e ~/.bashhub ]; then
         echo -e "\nLooks like the bashhub client is already installed.
         \nLets go ahead and update it.\n"
-        # copy our user credentials so we don't have to ask you for them again.
-        if [ -e ~/.bashhub/.config ]; then
-            cp ~/.bashhub/.config ~/.bashhub.config.backup
+
+        # Copy our user credentials so we don't have to ask you for them again.
+        if [ -e "$bashhub_config" ]; then
+            cp "$bashhub_config" "$backup_config"
         fi
+
         rm -r ~/.bashhub
     fi
 }
@@ -80,11 +84,11 @@ check_already_installed () {
 install_hooks_for_zsh () {
     cp bashhub/shell/bashhub.zsh ~/.bashhub/
     # Add our file to our bashprofile if it doesn't exist yet
-    if grep -q "source ~/.bashhub/bashhub.zsh" $zshprofile
+    if grep -q "source ~/.bashhub/bashhub.zsh" "$zshprofile"
     then
         :
     else
-        echo "$zsh_profile_hook" >> $zshprofile
+        echo "$zsh_profile_hook" >> "$zshprofile"
     fi
 
 }
@@ -130,9 +134,9 @@ setup_bashhub_files () {
     ../env/bin/pip -q install .
 
     # Check if we already have a config. If not run setup.
-    if [ -e ~/.bashhub.config.backup ]; then
-        cp ~/.bashhub.config.backup ~/.bashhub/.config
-        rm ~/.bashhub.config.backup
+    if [ -e $backup_config ]; then
+        cp $backup_config $bashhub_config
+        rm $backup_config
     else
         # Setup our config file
         ../env/bin/bashhub setup
