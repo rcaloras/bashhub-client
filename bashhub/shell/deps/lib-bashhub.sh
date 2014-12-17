@@ -33,7 +33,11 @@ BH_INCLUDE ~/.bashhub/.config
 # @param The command just entered.
 #
 BH_PREEXEC() {
-    (BH_PROCESS_COMMAND "$1"&) >> $BH_HOME_DIRECTORY/log.txt 2>&1
+    local bashhub_dir
+    bashhub_dir=${BH_HOME_DIRECTORY:=~/.bashhub}
+    if [[ -e "$bashhub_dir" ]]; then
+        (BH_PROCESS_COMMAND "$1"&) >> $BH_HOME_DIRECTORY/log.txt 2>&1
+    fi;
 }
 
 #
