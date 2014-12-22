@@ -65,6 +65,10 @@ check_dependencies () {
     if [ -z "$(which python)" ]; then
         die "\n Sorry you need to have 'python' installed. Please install python and rerun this script." 1
     fi
+
+    if [ -z "$(detect_shell_type)" ]; then
+        die "\n Sorry, couldn't detect your shell type. Bashhub only supports bash or zsh. Your defualt shell is $SHELL." 1
+    fi;
 }
 
 check_already_installed () {
@@ -81,8 +85,12 @@ check_already_installed () {
     fi
 }
 
-install_hooks_for_zsh () {
-    cp bashhub/shell/bashhub.zsh ~/.bashhub/
+install_hooks_for_zsh() {
+    # If we're using zsh, install our zsh hooks
+    if [ ! -e ~/.zshrc ]; then
+        die "No zshfile (.zshrc could be found)" 1
+    fi
+
     # Add our file to our bashprofile if it doesn't exist yet
     if grep -q "source ~/.bashhub/bashhub.zsh" "$zshprofile"
     then
@@ -93,14 +101,52 @@ install_hooks_for_zsh () {
 
 }
 
-setup_bashhub_files () {
-
+install_hooks_for_bash() {
     local bashprofile=$(find_users_bash_file)
 
     # Have to have this. Error out otherwise.
     if [ -z "$bashprofile" ]; then
         die "No bashfile (e.g. .profile, .bashrc, etc) could be found" 1
     fi
+
+    # Add our file to our bashprofile if it doesn't exist yet
+    if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile
+    then
+        :
+    else
+        echo "$bash_profile_hook" >> $bashprofile
+    fi
+
+}
+
+detect_shell_type() {
+    if [ -n "$($SHELL -c 'echo $ZSH_VERSION')" ]; then
+        echo 'zsh'
+    elif [ -n "$($SHELL -c 'echo $BASH_VERSION')" ]; then
+        echo 'bash'
+    else
+        :
+    fi
+}
+
+install_hooks_for_shell() {
+    local shell_type
+    shell_type=$(detect_shell_type)
+
+    case $shell_type in
+        "zsh")
+            install_hooks_for_zsh
+            ;;
+        "bash")
+            install_hooks_for_bash
+            ;;
+        *)
+        die "\n Bashhub only supports bash or zsh. Your defualt shell is $SHELL." 1
+    esac
+}
+
+
+setup_bashhub_files () {
 
     mkdir ~/.bashhub
     cd ~/.bashhub
@@ -111,23 +157,13 @@ setup_bashhub_files () {
     tar -xvf client.tar.gz
     cd bashhub-client*
 
-    # Copy over our sh files.
-    cp bashhub/shell/bashhub.sh ~/.bashhub/
     # Copy over our dependencies.
     cp -r bashhub/shell/deps ~/.bashhub/
 
-    # Add our file to our bashprofile if it doesn't exist yet
-    if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile
-    then
-        :
-    else
-        echo "$bash_profile_hook" >> $bashprofile
-    fi
+    # Copy over our bashhub sh and zsh files.
+    cp bashhub/shell/bashhub.* ~/.bashhub/
 
-    # If we're using zsh, install our zsh hooks
-    if [ -e ~/.zshrc ]; then
-        install_hooks_for_zsh
-    fi
+    install_hooks_for_shell
 
     # install our packages. bashhub and dependencies.
     echo "Pulling down a few dependencies...(this may take a moment)"
@@ -187,4 +223,7 @@ find_users_bash_file () {
 
 die () { echo -e $1; exit $2; }
 
-install_bashhub
+# Run our install so long as we're not in test.
+if [[ -z "$bashhub_install_test" ]]; then
+    install_bashhub
+fi;
