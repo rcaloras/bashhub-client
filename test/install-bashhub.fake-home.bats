@@ -19,7 +19,6 @@ teardown() {
 }
 
 install_bashhub() {
-  #echo "$HOME" >> $HOME/.bashrc
   bash "${BATS_TEST_DIRNAME}"/../install-bashhub.sh
 }
 
