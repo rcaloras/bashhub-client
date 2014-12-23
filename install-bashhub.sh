@@ -21,6 +21,13 @@ if [ -f ~/.bashhub/bashhub.zsh ]; then
 fi
 '
 
+python_command='
+import sys
+if (2, 6, 0) < sys.version_info < (3,0):
+  sys.exit(0)
+else:
+  sys.exit(-1)'
+
 bashhub_config=~/.bashhub/.config
 backup_config=~/.bashhub.config.backup
 zshprofile=~/.zshrc
@@ -41,8 +48,6 @@ get_and_check_python_version() {
 
     for python_version in "${python_version_array[@]}"
     do
-        python_command="import sys; sys.exit() if (2, 6, 0) < sys.version_info < (3,0) else sys.exit(-1)"
-
         if [[ $(which "$python_version") ]]; then
             if "$python_version" -c "$python_command"; then
                 echo $python_version
