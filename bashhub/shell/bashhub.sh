@@ -10,7 +10,6 @@ BH_DEPS_DIRECTORY=${BH_DEPS_DIRECTORY:=$BH_HOME_DIRECTORY/deps}
 
 __bh_setup_bashhub() {
 
-    echo "in here"
     # check that we're using bash and that all our
     # dependencies are satisfied.
     if [[ -n $BASH_VERSION ]] && \
