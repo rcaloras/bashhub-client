@@ -7,21 +7,23 @@
 # function is executed before each prompt is displayed.
 #
 # Author: Ryan Caloras (ryan@bashhub.com)
-# Original Author: Glyph Lefkowitz
+# Forked from Original Author: Glyph Lefkowitz
 #
 # General Usage:
 #
 #  1. Source this file at the end of your bash profile so as not to interfere
 #     with anything else that's using PROMPT_COMMAND.
 #
-#  2. Add any precmd or preexec functions by appending them to their arrays:
+#  2. Invoke 'preexec_and_precmd_install' after the file has been sourced.
+#
+#  3. Add any precmd or preexec functions by appending them to their arrays:
 #       e.g.
 #       precmd_functions+=(my_precmd_function)
 #       precmd_functions+=(some_other_precmd_function)
 #
 #       preexec_functions+=(my_preexec_function)
 #
-#  3. If you have anything that's using the Debug Trap, change it to use
+#  4. If you have anything that's using the Debug Trap, change it to use
 #     preexec. (Optional) change anything using PROMPT_COMMAND to now use
 #     precmd instead.
 #
@@ -47,7 +49,11 @@ precmd_invoke_cmd() {
     # For every function defined in our function array. Invoke it.
     local precmd_function
     for precmd_function in ${precmd_functions[@]}; do
-        $precmd_function
+
+        # Only execute this function if it actually exists.
+        if [[ -n $(type -t $precmd_function) ]]; then
+            $precmd_function
+        fi
     done
     preexec_interactive_mode="on";
 }
@@ -110,12 +116,26 @@ preexec_invoke_exec() {
     # For every function defined in our function array. Invoke it.
     local preexec_function
     for preexec_function in "${preexec_functions[@]}"; do
-        $preexec_function "$this_command"
+
+        # Only execute each function if it actually exists.
+        if [[ -n $(type -t $preexec_function) ]]; then
+            $preexec_function "$this_command"
+        fi
     done
 }
 
 # Execute this to set up preexec and precmd execution.
 preexec_and_precmd_install() {
+
+    # Make sure this is bash that's running this and return otherwise.
+    if [ -z "$BASH_VERSION" ]; then
+        return 1;
+    fi
+
+    # Exit if we already have this installed.
+    if [[ "$PROMPT_COMMAND" == *"precmd_invoke_cmd"* ]]; then
+        return 1;
+    fi
 
     # Take our existing prompt command and append a semicolon to it
     # if it doesn't already have one.
@@ -131,6 +151,3 @@ preexec_and_precmd_install() {
     PROMPT_COMMAND="${existing_prompt_command} precmd_invoke_cmd";
     trap 'preexec_invoke_exec' DEBUG;
 }
-
-# Install our trap and define PROMPT_COMMAND.
-preexec_and_precmd_install
