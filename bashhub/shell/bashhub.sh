@@ -10,6 +10,7 @@ BH_DEPS_DIRECTORY=${BH_DEPS_DIRECTORY:=$BH_HOME_DIRECTORY/deps}
 
 __bh_setup_bashhub() {
 
+    echo "in here"
     # check that we're using bash and that all our
     # dependencies are satisfied.
     if [[ -n $BASH_VERSION ]] && \
@@ -22,6 +23,7 @@ __bh_setup_bashhub() {
         # Check to make sure preexec isn't already installed.
         if [[ -z $(type -t preexec_and_precmd_install) ]]; then
             source $BH_DEPS_DIRECTORY/bash-preexec.sh
+            preexec_and_precmd_install
         fi
 
         # Hook bashhub into preexec and precmd.
