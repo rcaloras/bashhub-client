@@ -29,22 +29,48 @@ zshprofile=~/.zshrc
 # to pull from.
 github_branch=${1:-'0.0.5'}
 
-install_bashhub () {
+install_bashhub() {
     check_dependencies
     check_already_installed
     setup_bashhub_files
 }
 
+get_and_check_python_version() {
+    # Only supporting 2.6 - 2.7 right now. Eventually bump this to include 3.
+    python_version_array=( "python" "python2" "python26" "python2.6" "python27" "python2.7")
 
-download_and_install_env () {
+    for python_version in "${python_version_array[@]}"
+    do
+        python_command="import sys; sys.exit() if (2, 6, 0) < sys.version_info < (3,0) else sys.exit(-1)"
+
+        if [[ $(which "$python_version") ]]; then
+            if "$python_version" -c "$python_command"; then
+                echo $python_version
+                return 0
+            fi
+        fi
+
+     done
+     return 1
+}
+
+download_and_install_env() {
     # Select current version of virtualenv:
     VERSION=1.9.1
     # Name your first "bootstrap" environment:
     INITIAL_ENV=env
     # Options for your first environment:
     ENV_OPTS='--no-site-packages --distribute'
-    # Set to whatever python interpreter you want for your first environment:
-    PYTHON=$(which python)
+
+    # Only supporting python 2.6 - 2.7 right now.
+    python_command=$(get_and_check_python_version)
+
+    if [[ -z "$python_command" ]]; then
+        die "\n Sorry you need to have 'python' installed. Please install python and rerun this script." 1
+    fi
+
+    # Set to whatever python interpreter you want for your first environment
+    PYTHON=$(which $python_command)
     URL_BASE=http://pypi.python.org/packages/source/v/virtualenv
 
     # --- Real work starts here ---
@@ -61,9 +87,9 @@ download_and_install_env () {
     rm virtualenv-$VERSION.tar.gz
 }
 
-check_dependencies () {
-    if [ -z "$(which python)" ]; then
-        die "\n Sorry you need to have 'python' installed. Please install python and rerun this script." 1
+check_dependencies() {
+    if [ -z "$(get_and_check_python_version)" ]; then
+        die "\n Sorry can't seem to find a version of python 2.7 installed" 1
     fi
 
     if [ -z "$(detect_shell_type)" ]; then
@@ -71,7 +97,7 @@ check_dependencies () {
     fi;
 }
 
-check_already_installed () {
+check_already_installed() {
     if [ -e ~/.bashhub ]; then
         echo -e "\nLooks like the bashhub client is already installed.
         \nLets go ahead and update it.\n"
@@ -146,7 +172,7 @@ install_hooks_for_shell() {
 }
 
 
-setup_bashhub_files () {
+setup_bashhub_files() {
 
     mkdir ~/.bashhub
     cd ~/.bashhub
@@ -196,7 +222,7 @@ setup_bashhub_files () {
 # which looks the largest. The idea being the
 # largest is probably the one they actively use.
 #
-find_users_bash_file () {
+find_users_bash_file() {
 
     bash_file_array=( ~/.profile ~/.bashrc ~/.bash_profile)
 
