@@ -40,7 +40,7 @@ install_bashhub() {
 }
 
 @test "install_hooks_for_shell should fail for unsupported" {
-  SHELL=$(which sh)
+  unset SHELL
   run 'install_hooks_for_shell'
   [[ $status == 1 ]]
 }
