@@ -25,6 +25,9 @@ __bh_setup_bashhub() {
 
 __bh_hook_bashhub() {
 
+    # Bind ctrl + b to bh -i
+    bindkey -s '^b' "bh -i\n"
+
     # Hook into preexec and precmd functions if they're not already
     # present there.
     if ! contains_element BH_PREEXEC $preexec_functions; then
