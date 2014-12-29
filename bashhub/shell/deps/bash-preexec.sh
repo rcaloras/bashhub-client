@@ -87,7 +87,7 @@ preexec_invoke_exec() {
         fi
     fi
 
-    if [[ "preexec_invoke_cmd" == "$BASH_COMMAND" ]]
+    if [[ "precmd_invoke_cmd" == "$BASH_COMMAND" ]]
     then
         # Sadly, there's no cleaner way to detect two prompts being displayed
         # one after another.  This makes it important that PROMPT_COMMAND
