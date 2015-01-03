@@ -14,16 +14,14 @@
 #  1. Source this file at the end of your bash profile so as not to interfere
 #     with anything else that's using PROMPT_COMMAND.
 #
-#  2. Invoke 'preexec_and_precmd_install' after the file has been sourced.
-#
-#  3. Add any precmd or preexec functions by appending them to their arrays:
+#  2. Add any precmd or preexec functions by appending them to their arrays:
 #       e.g.
 #       precmd_functions+=(my_precmd_function)
 #       precmd_functions+=(some_other_precmd_function)
 #
 #       preexec_functions+=(my_preexec_function)
 #
-#  4. If you have anything that's using the Debug Trap, change it to use
+#  3. If you have anything that's using the Debug Trap, change it to use
 #     preexec. (Optional) change anything using PROMPT_COMMAND to now use
 #     precmd instead.
 #
@@ -32,12 +30,26 @@
 # prexec_and_precmd_install will override these and if you override one or
 # the other this will most likely break.
 
+# Avoid duplicate inclusion
+if [[ "$__bp_imported" == "defined" ]]; then
+    return 0
+fi
+__bp_imported="defined"
+
+
 # This variable describes whether we are currently in "interactive mode";
 # i.e. whether this shell has just executed a prompt and is waiting for user
 # input.  It documents whether the current command invoked by the trace hook is
 # run interactively by the user; it's set immediately after the prompt hook,
 # and unset as soon as the trace hook is run.
-preexec_interactive_mode=""
+__bp_preexec_interactive_mode=""
+
+__bp_trim_whitespace() {
+    local var=$@
+    var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"   # remove trailing whitespace characters
+    echo -n "$var"
+}
 
 # This function is installed as the PROMPT_COMMAND; it is invoked before each
 # interactive prompt display.  It sets a variable to indicate that the prompt
@@ -45,7 +57,7 @@ preexec_interactive_mode=""
 # command is likely interactive.
 #
 # It will invoke any functions defined in the precmd_functions array.
-precmd_invoke_cmd() {
+__bp_precmd_invoke_cmd() {
     # For every function defined in our function array. Invoke it.
     local precmd_function
     for precmd_function in ${precmd_functions[@]}; do
@@ -55,14 +67,36 @@ precmd_invoke_cmd() {
             $precmd_function
         fi
     done
-    preexec_interactive_mode="on";
+    __bp_preexec_interactive_mode="on";
+}
+
+
+__bp_in_prompt_command() {
+
+    local prompt_command_array
+    IFS=';' read -ra prompt_command_array <<< "$PROMPT_COMMAND"
+
+    local trimmed_arg
+    trimmed_arg=$(__bp_trim_whitespace "$1")
+
+    local prompt_command_function
+    for command in "${prompt_command_array[@]}"; do
+        local trimmed_command
+        trimmed_command=$(__bp_trim_whitespace "$command")
+        # Only execute each function if it actually exists.
+        if [[ "$trimmed_command" == "$trimmed_arg" ]]; then
+            return 0
+        fi
+    done
+
+    return 1
 }
 
 # This function is installed as the DEBUG trap.  It is invoked before each
 # interactive prompt display.  Its purpose is to inspect the current
 # environment to attempt to detect if the current command is being invoked
 # interactively, and invoke 'preexec' if so.
-preexec_invoke_exec() {
+__bp_preexec_invoke_exec() {
 
     if [[ -n "$COMP_LINE" ]]
     then
@@ -70,7 +104,7 @@ preexec_invoke_exec() {
         # an interactively issued command.
         return
     fi
-    if [[ -z "$preexec_interactive_mode" ]]
+    if [[ -z "$__bp_preexec_interactive_mode" ]]
     then
         # We're doing something related to displaying the prompt.  Let the
         # prompt set the title instead of me.
@@ -83,12 +117,11 @@ preexec_invoke_exec() {
         # You want to see the 'sleep 2' as a set_command_title as well.
         if [[ 0 -eq "$BASH_SUBSHELL" ]]
         then
-            preexec_interactive_mode=""
+            __bp_preexec_interactive_mode=""
         fi
     fi
 
-    if [[ "precmd_invoke_cmd" == "$BASH_COMMAND" ]]
-    then
+    if  __bp_in_prompt_command "$BASH_COMMAND"; then
         # Sadly, there's no cleaner way to detect two prompts being displayed
         # one after another.  This makes it important that PROMPT_COMMAND
         # remain set _exactly_ as below in preexec_install.  Let's switch back
@@ -97,7 +130,7 @@ preexec_invoke_exec() {
 
         # Given their buggy interaction between BASH_COMMAND and debug traps,
         # versions of bash prior to 3.1 can't detect this at all.
-        preexec_interactive_mode=""
+        __bp_preexec_interactive_mode=""
         return
     fi
 
@@ -133,7 +166,7 @@ preexec_and_precmd_install() {
     fi
 
     # Exit if we already have this installed.
-    if [[ "$PROMPT_COMMAND" == *"precmd_invoke_cmd"* ]]; then
+    if [[ "$PROMPT_COMMAND" == *"__bp_precmd_invoke_cmd"* ]]; then
         return 1;
     fi
 
@@ -148,6 +181,11 @@ preexec_and_precmd_install() {
     fi
 
     # Finally install our traps.
-    PROMPT_COMMAND="${existing_prompt_command} precmd_invoke_cmd";
-    trap 'preexec_invoke_exec' DEBUG;
+    PROMPT_COMMAND="${existing_prompt_command} __bp_precmd_invoke_cmd";
+    trap '__bp_preexec_invoke_exec' DEBUG;
 }
+
+# Run our install so long as we're not delaying it.
+if [[ -z "$__bp_delay_install" ]]; then
+    preexec_and_precmd_install
+fi;

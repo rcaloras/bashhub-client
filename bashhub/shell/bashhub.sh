@@ -16,14 +16,9 @@ __bh_setup_bashhub() {
        [[ -f $BH_DEPS_DIRECTORY/lib-bashhub.sh ]] && \
        [[ -f $BH_DEPS_DIRECTORY/bash-preexec.sh ]]; then
 
-        # Pull in our library.
+        # Pull in our libs
         source $BH_DEPS_DIRECTORY/lib-bashhub.sh
-
-        # Check to make sure preexec isn't already installed.
-        if [[ -z $(type -t preexec_and_precmd_install) ]]; then
-            source $BH_DEPS_DIRECTORY/bash-preexec.sh
-            preexec_and_precmd_install
-        fi
+        source $BH_DEPS_DIRECTORY/bash-preexec.sh
 
         # Hook bashhub into preexec and precmd.
         __bh_hook_bashhub
