@@ -71,7 +71,7 @@ download_and_install_env() {
     python_command=$(get_and_check_python_version)
 
     if [[ -z "$python_command" ]]; then
-        die "\n Sorry you need to have 'python' installed. Please install python and rerun this script." 1
+        die "\n Sorry you need to have python 2.7 installed. Please install it and rerun this script." 1
     fi
 
     # Set to whatever python interpreter you want for your first environment
