@@ -45,7 +45,8 @@ setup(name='bashhub',
             'click==3.3',
             'python-dateutil==2.2',
             'pyCLI==2.0.3',
-            'pymongo==2.6'],
+            'pymongo==2.6',
+            'inflection==0.2.1'],
         entry_points={
             'console_scripts':['bh=bashhub.bh:main',
             'bashhub=bashhub.bashhub:main']
