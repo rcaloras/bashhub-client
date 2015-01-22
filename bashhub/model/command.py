@@ -36,7 +36,7 @@ class RegisterUser(object):
     def from_JSON(json):
         return jsonpickle.decode(json)
 
-class RegisterSystem(Serializable):
+class RegisterSystem(object):
     def __init__(self, name, mac, user_id):
         self.name = name
         self.mac = mac.__str__()
