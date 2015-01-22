@@ -75,9 +75,13 @@ def util():
 @click.argument('date_string', type=str)
 def parsedate(date_string):
     """date string to seconds since the unix epoch"""
-    date = dateutil.parser.parse(date_string)
-    unix_time = int(mktime(date.timetuple()))
-    click.echo(unix_time)
+    try:
+        date = dateutil.parser.parse(date_string)
+        unix_time = int(mktime(date.timetuple()))
+        click.echo(unix_time)
+    except Exception as e:
+        # Should really log an error here
+        click.echo(0)
 
 def unix_time_to_epoc_millis(unix_time):
     return int(unix_time)*1000
