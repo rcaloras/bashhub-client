@@ -19,7 +19,7 @@ class Serializable(object):
   def convert_json(cls, d, convert):
     new_d = {}
     for k, v in d.iteritems():
-        new_d[convert(k)] = convert_json(v,convert) if isinstance(v,dict) else v
+        new_d[convert(k)] = cls.convert_json(v,convert) if isinstance(v,dict) else v
     return new_d
 
   @classmethod
