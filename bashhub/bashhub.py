@@ -60,7 +60,7 @@ def setup():
 
 @bashhub.command()
 def status():
-    """Show status information for this session and user."""
+    """Status information for this session and user."""
     # Get our user and session information from our context
     user_context = shell_utils.build_user_context()
     status_view = rest_client.get_status_view(user_context)

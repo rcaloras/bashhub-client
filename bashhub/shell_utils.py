@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import os
 from bashhub_globals import *
 from model import UserContext
