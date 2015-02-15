@@ -4,14 +4,14 @@ import humanize
 
 status_view ="""\
 === Bashhub Status
-Logged in as {}
-Total Commands: {}
-Total Sessions: {}
-Total Systems:  {}
+http://bashhub.com/u/{0}
+Total Commands: {1}
+Total Sessions: {2}
+Total Systems:  {3}
 ===
-Session PID {} Started {}
-Commands In Session: {}
-Commands Today: {}
+Session PID {4} Started {5}
+Commands In Session: {6}
+Commands Today: {7}
 """
 
 def build_status_view(model):
