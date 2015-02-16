@@ -26,7 +26,7 @@ def print_version(ctx, param, value):
 
 @click.group()
 @click.option('-V', '--version', default=False, is_flag=True, callback=print_version,
-        help='display version', expose_value=False, is_eager=True)
+        help='Display version', expose_value=False, is_eager=True)
 
 def bashhub():
     """Bashhub command line client"""
@@ -34,7 +34,7 @@ def bashhub():
 
 @bashhub.command()
 def version():
-    """display version"""
+    """Display version"""
     click.echo('Bashhub %s' % __version__)
 
 @bashhub.command()
@@ -64,7 +64,7 @@ def setup():
 
 @bashhub.command()
 def status():
-    """Status information for this session and user."""
+    """Stats for this session and user"""
     # Get our user and session information from our context
     user_context = shell_utils.build_user_context()
     status_view = rest_client.get_status_view(user_context)
@@ -83,7 +83,7 @@ def update():
 
 @bashhub.group()
 def util():
-    """misc utils for the command line"""
+    """Misc utils for the command line"""
     pass
 
 @util.command()
