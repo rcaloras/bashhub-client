@@ -26,12 +26,16 @@ def print_version(ctx, param, value):
 
 @click.group()
 @click.option('-V', '--version', default=False, is_flag=True, callback=print_version,
-        help='Show version and exit', expose_value=False, is_eager=True)
+        help='display version', expose_value=False, is_eager=True)
 
 def bashhub():
     """Bashhub command line client"""
     pass
 
+@bashhub.command()
+def version():
+    """display version"""
+    click.echo('Bashhub %s' % __version__)
 
 @bashhub.command()
 @click.argument('command', type=str)
