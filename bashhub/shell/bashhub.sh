@@ -3,6 +3,12 @@
 # Main file that is sourced onto our path for Bash.
 #
 
+# Avoid duplicate inclusion
+if [[ "$__bh_imported" == "defined" ]]; then
+    return 0
+fi
+__bh_imported="defined"
+
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
@@ -31,16 +37,17 @@ __bh_hook_bashhub() {
     bind '"\C-b":"\C-u\C-kbh -i\n"'
 
     # Hook into preexec and precmd functions
-    if ! contains_element BH_PREEXEC $preexec_functions; then
-        preexec_functions+=(BH_PREEXEC)
+    if ! contains_element __bh_preexec $preexec_functions; then
+        preexec_functions+=(__bh_preexec)
     fi
 
-    if ! contains_element BH_PRECMD $precmd_functions; then
+    if ! contains_element __bh_precmd $precmd_functions; then
         precmd_functions+=(__bh_precmd)
+        precmd_functions+=(__bh_bash_precmd)
     fi
 }
 
-__bh_precmd() {
+__bh_bash_precmd() {
     if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
         local command=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
         rm $BH_HOME_DIRECTORY/response.bh

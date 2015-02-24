@@ -8,12 +8,14 @@ import uuid
 from serializable import Serializable
 
 class Command(object):
-    def __init__(self, command, path, context):
+    def __init__(self, command, path, exit_status, context):
         self.uuid = uuid.uuid1().__str__()
         self.command = command
         self.created = time()*1000
-        self.context = context
         self.path = path
+        # change to underscore when we replace with Serializable parent
+        self.exitStatus = exit_status
+        self.context = context
 
     def to_JSON(self):
         return jsonpickle.encode(self)

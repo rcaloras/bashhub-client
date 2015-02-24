@@ -3,11 +3,17 @@
 # Main file that is sourced onto our path for Zsh.
 #
 
+# Avoid duplicate inclusion
+if [[ "$__bh_imported" == "defined" ]]; then
+    return 0
+fi
+__bh_imported="defined"
+
+
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
 export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
 BH_DEPS_DIRECTORY=${BH_DEPS_DIRECTORY:=$BH_HOME_DIRECTORY/deps}
-
 
 __bh_setup_bashhub() {
 
@@ -30,16 +36,17 @@ __bh_hook_bashhub() {
 
     # Hook into preexec and precmd functions if they're not already
     # present there.
-    if ! contains_element BH_PREEXEC $preexec_functions; then
-        preexec_functions+=(BH_PREEXEC)
+    if ! contains_element __bh_preexec $preexec_functions; then
+        preexec_functions+=(__bh_preexec)
     fi
 
     if ! contains_element __bh_precmd  $precmd_functions; then
         precmd_functions+=(__bh_precmd)
+        precmd_functions+=(__bh_zsh_precmd)
     fi
 }
 
-function __bh_precmd() {
+function __bh_zsh_precmd() {
     if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
         local COMMAND="`head -n 1 $BH_HOME_DIRECTORY/response.bh`"
         rm $BH_HOME_DIRECTORY/response.bh

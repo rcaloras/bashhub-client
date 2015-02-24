@@ -27,16 +27,44 @@ contains_element() {
 BH_INCLUDE ~/.bashhub/.config
 
 #
-# Prepare and send our command to be processed redirecting
-# all output to our log file.
+# Function to be run by our preexec hook.
 #
-# @param The command just entered.
+# Saves the directory this command is being executed in to track (cd-ing), and
+# sets a variable so we know that a command was just executed and should be
+# saved.
 #
-BH_PREEXEC() {
+# GLOBALS:
+#   __BH_PWD The directory this command is being executed in
+#   __BH_SAVE_COMMAND The command that is being executed and to be saved.
+#
+# Arguments:
+#  $1 The command just entered, about to be executed.
+#
+__bh_preexec() {
+    __BH_PWD="$PWD"
+    __BH_SAVE_COMMAND="$1"
+}
+
+__bh_precmd() {
+
+    # Set this initially to properly catch the exit status.
+    __BH_EXIT_STATUS="$?"
+
     local bashhub_dir
     bashhub_dir=${BH_HOME_DIRECTORY:=~/.bashhub}
+
+    local command="$__BH_SAVE_COMMAND"
+
+    # Check if we need to process a command. If so, unset it as it will be
+    # processed and saved.
+    if [[ -n "$__BH_SAVE_COMMAND" ]]; then
+        unset __BH_SAVE_COMMAND
+    else
+        return 0
+    fi
+
     if [[ -e "$bashhub_dir" ]]; then
-        (BH_PROCESS_COMMAND "$1"&) >> $BH_HOME_DIRECTORY/log.txt 2>&1
+        (__bh_process_command "$command"&) >> "$bashhub_dir"/log.txt 2>&1
     fi;
 }
 
@@ -46,7 +74,7 @@ BH_PREEXEC() {
 #
 # @param A trimmed command from the command line
 #
-BH_PROCESS_COMMAND() {
+__bh_process_command() {
 
     local bh_command
     bh_command=$(BH_TRIM_WHITESPACE "$1")
@@ -79,11 +107,11 @@ BH_PROCESS_COMMAND() {
     process_start_stamp=$(ps -p $$ -o lstart | sed -n 2p)
 
     local process_start=$($BH_EXEC_DIRECTORY/bashhub util parsedate "$process_start_stamp")
-
-    local working_directory=$(pwd)
+    local working_directory="$__BH_PWD"
+    local exit_status="$__BH_EXIT_STATUS"
 
     ($BH_EXEC_DIRECTORY/bashhub save "$bh_command" "$working_directory" \
-    "$process_id" "$process_start"&)
+    "$process_id" "$process_start" "$exit_status"&)
 }
 
 BH_TRIM_WHITESPACE() {

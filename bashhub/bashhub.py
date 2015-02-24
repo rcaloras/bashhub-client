@@ -42,7 +42,8 @@ def version():
 @click.argument('path', type=click.Path(exists=True))
 @click.argument('pid', type=long)
 @click.argument('process_start_time', type=long)
-def save(command, path, pid, process_start_time):
+@click.argument('exit_status', type=int)
+def save(command, path, pid, process_start_time, exit_status):
     """Save a command to bashhub.com"""
 
     pid_start_time = unix_time_to_epoc_millis(process_start_time)
@@ -53,14 +54,13 @@ def save(command, path, pid, process_start_time):
         return
 
     context = UserContext(pid, pid_start_time, BH_USER_ID, BH_SYSTEM_ID)
-    command = Command(command, path, context)
+    command = Command(command, path, exit_status, context)
     rest_client.save_command(command)
 
 @bashhub.command()
 def setup():
     """Run bashhub user and system setup"""
     bashhub_setup.main()
-
 
 @bashhub.command()
 def status():
