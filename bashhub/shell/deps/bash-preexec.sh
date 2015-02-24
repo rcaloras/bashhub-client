@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 # bash-preexec.sh -- Bash support for ZSH-like 'preexec' and 'precmd' functions.
+# https://github.com/rcaloras/bash-preexec
+#
 #
 # 'preexec' functions are executed before each interactive command is
 # executed, with the interactive command as its argument.  The 'precmd'
@@ -9,6 +11,9 @@
 # Author: Ryan Caloras (ryan@bashhub.com)
 # Forked from Original Author: Glyph Lefkowitz
 #
+# V0.2.0
+#
+
 # General Usage:
 #
 #  1. Source this file at the end of your bash profile so as not to interfere
@@ -25,17 +30,15 @@
 #     preexec. (Optional) change anything using PROMPT_COMMAND to now use
 #     precmd instead.
 #
-# Note: This module requires two bash features which you must not otherwise be
-# using: the "DEBUG" trap, and the "PROMPT_COMMAND" variable.
-# prexec_and_precmd_install will override these and if you override one or
-# the other this will most likely break.
+#  Note: This module requires two bash features which you must not otherwise be
+#  using: the "DEBUG" trap, and the "PROMPT_COMMAND" variable. prexec_and_precmd_install
+#  will override these and if you override one or the other this will most likely break.
 
 # Avoid duplicate inclusion
 if [[ "$__bp_imported" == "defined" ]]; then
     return 0
 fi
 __bp_imported="defined"
-
 
 # This variable describes whether we are currently in "interactive mode";
 # i.e. whether this shell has just executed a prompt and is waiting for user
@@ -58,18 +61,29 @@ __bp_trim_whitespace() {
 #
 # It will invoke any functions defined in the precmd_functions array.
 __bp_precmd_invoke_cmd() {
+
+    # Should be available to each precmd function, should it want it.
+    local ret_value="$?"
+
     # For every function defined in our function array. Invoke it.
     local precmd_function
     for precmd_function in ${precmd_functions[@]}; do
 
         # Only execute this function if it actually exists.
         if [[ -n $(type -t $precmd_function) ]]; then
+            __bp_set_ret_value $ret_value
             $precmd_function
         fi
     done
     __bp_preexec_interactive_mode="on";
 }
 
+# Sets a return value in $?. We may want to get access to the $? variable in our
+# precmd functions. This is available for instance in zsh. We can simulate it in bash
+# by setting the value here.
+__bp_set_ret_value() {
+    return $1
+}
 
 __bp_in_prompt_command() {
 
@@ -122,20 +136,14 @@ __bp_preexec_invoke_exec() {
     fi
 
     if  __bp_in_prompt_command "$BASH_COMMAND"; then
-        # Sadly, there's no cleaner way to detect two prompts being displayed
-        # one after another.  This makes it important that PROMPT_COMMAND
-        # remain set _exactly_ as below in preexec_install.  Let's switch back
-        # out of interactive mode and not trace any of the commands run in
-        # precmd.
+        # If we're executing something inside our prompt_command then we don't
+        # want to call preexec. Bash prior to 3.1 can't detect this at all :/
 
-        # Given their buggy interaction between BASH_COMMAND and debug traps,
-        # versions of bash prior to 3.1 can't detect this at all.
         __bp_preexec_interactive_mode=""
         return
     fi
 
-    local hist_ent="$(history 1)";
-    local this_command="$(echo "$hist_ent" | sed -e "s/^[ ]*[0-9]*[ ]*//g")";
+    local this_command="$(history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//g")";
 
     # Sanity check to make sure we have something to invoke our function with.
     if [ -z "$this_command" ]; then
@@ -158,7 +166,7 @@ __bp_preexec_invoke_exec() {
 }
 
 # Execute this to set up preexec and precmd execution.
-preexec_and_precmd_install() {
+__bp_preexec_and_precmd_install() {
 
     # Make sure this is bash that's running this and return otherwise.
     if [ -z "$BASH_VERSION" ]; then
@@ -181,11 +189,16 @@ preexec_and_precmd_install() {
     fi
 
     # Finally install our traps.
-    PROMPT_COMMAND="${existing_prompt_command} __bp_precmd_invoke_cmd";
+    PROMPT_COMMAND="__bp_precmd_invoke_cmd; ${existing_prompt_command}"
     trap '__bp_preexec_invoke_exec' DEBUG;
+
+    # Add two functions to our arrays for convenience
+    # of definition.
+    precmd_functions+=(precmd)
+    preexec_functions+=(preexec)
 }
 
 # Run our install so long as we're not delaying it.
 if [[ -z "$__bp_delay_install" ]]; then
-    preexec_and_precmd_install
+    __bp_preexec_and_precmd_install
 fi;
