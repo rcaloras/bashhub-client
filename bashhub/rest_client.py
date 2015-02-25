@@ -43,10 +43,12 @@ def save_command(command):
         pass
 
 def get_status_view(user_context):
-    url = BH_URL + "/client-view/v1/status"
+    url = BH_URL + "/client-view/v2/status"
 
-    payload = { 'userId' : user_context.user_id, 'processId' :
-            user_context.process_id, 'startTime' : user_context.start_time  }
+    payload = { 'userId' : user_context.user_id,
+                'systemId' : user_context.system_id,
+                'processId' : user_context.process_id,
+                'startTime' : user_context.start_time  }
     try:
         r = requests.get(url, params=payload)
         statusViewJson = json.dumps(r.json())
