@@ -11,7 +11,7 @@
 # Author: Ryan Caloras (ryan@bashhub.com)
 # Forked from Original Author: Glyph Lefkowitz
 #
-# V0.2.0
+# V0.2.1
 #
 
 # General Usage:
@@ -54,11 +54,15 @@ __bp_trim_whitespace() {
     echo -n "$var"
 }
 
-# This function is installed as the PROMPT_COMMAND; it is invoked before each
-# interactive prompt display.  It sets a variable to indicate that the prompt
-# was just displayed, to allow the DEBUG trap to know that the next
-# command is likely interactive.
-#
+# This function is installed as part of the PROMPT_COMMAND;
+# It sets a variable to indicate that the prompt was just displayed,
+# to allow the DEBUG trap to know that the next command is likely interactive.
+__bp_interactive_mode() {
+    __bp_preexec_interactive_mode="on";
+}
+
+
+# This function is installed as part of the PROMPT_COMMAND.
 # It will invoke any functions defined in the precmd_functions array.
 __bp_precmd_invoke_cmd() {
 
@@ -75,7 +79,6 @@ __bp_precmd_invoke_cmd() {
             $precmd_function
         fi
     done
-    __bp_preexec_interactive_mode="on";
 }
 
 # Sets a return value in $?. We may want to get access to the $? variable in our
@@ -189,7 +192,7 @@ __bp_preexec_and_precmd_install() {
     fi
 
     # Finally install our traps.
-    PROMPT_COMMAND="__bp_precmd_invoke_cmd; ${existing_prompt_command}"
+    PROMPT_COMMAND="__bp_precmd_invoke_cmd; ${existing_prompt_command} __bp_interactive_mode;"
     trap '__bp_preexec_invoke_exec' DEBUG;
 
     # Add two functions to our arrays for convenience
