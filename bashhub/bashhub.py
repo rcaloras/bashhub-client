@@ -71,14 +71,25 @@ def status():
     click.echo(build_status_view(status_view))
 
 @bashhub.command()
-def update():
+@click.argument('version', type=str, default="")
+def update(version):
     """Update your bashhub installation"""
+
+    if version !=  "":
+         github = "https://github.com/rcaloras/bashhub-client/archive/{0}.tar.gz".format(version)
+         response = requests.get(github)
+         if response.status_code is not 200:
+             click.echo("Invalid version number {0}".format(version))
+             sys.exit(1)
+
     url = 'http://bashhub.com/setup'
     response = requests.get(url, stream=True)
     filename = 'update-bashhub.sh'
     with open(filename, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
-    subprocess.call("bash " + filename, shell=True)
+
+    shell_command = "bash -e {0} {1}".format(filename, version)
+    subprocess.call(shell_command, shell=True)
     os.remove(filename)
 
 @bashhub.group()
