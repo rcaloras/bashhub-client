@@ -28,6 +28,9 @@ __bh_setup_bashhub() {
 
         # Hook bashhub into preexec and precmd.
         __bh_hook_bashhub
+
+        # Install our tab completion
+        eval "$(_BASHHUB_COMPLETE=source bashhub)"
     fi
 }
 
