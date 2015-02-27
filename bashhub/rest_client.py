@@ -34,7 +34,7 @@ def search(user_id=BH_USER_ID, limit=100, path='', query='', system_id='',
         return []
 
 def save_command(command):
-    url = BH_URL + "/command"
+    url = BH_URL + "/api/v1/command"
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     try:
         r = requests.post(url, data=command.to_JSON(), headers=headers)
