@@ -202,7 +202,10 @@ setup_bashhub_files() {
 
     # Check if we already have a config. If not run setup.
     if [ -e $backup_config ]; then
-        cp $backup_config $bashhub_config
+        cp "$backup_config" "$bashhub_config"
+
+        # Make sure our config is only readable to us.
+        chmod 600 "$bashhub_config"
         rm $backup_config
     else
         # Setup our config file

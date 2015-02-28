@@ -8,6 +8,7 @@ import requests
 import getpass
 import traceback
 import uuid
+import stat
 from model import *
 from model import System
 from bashhub_globals import *
@@ -183,10 +184,13 @@ def handle_system_information(user_id):
 
 def write_config_file(user_id, system_id):
     exists = os.path.exists(BH_HOME)
+    file_path = BH_HOME + '/.config'
+    permissions = stat.S_IRUSR | stat.S_IWUSR
     if exists:
-        config_file = open(BH_HOME + '/.config', 'w')
-        config_file.write("export BH_USER_ID=\"" + user_id + "\"\n")
-        config_file.write("export BH_SYSTEM_ID=\"" + system_id + "\"\n")
+        with open(file_path, 'w') as config_file:
+          config_file.write("export BH_USER_ID=\"" + user_id + "\"\n")
+          config_file.write("export BH_SYSTEM_ID=\"" + system_id + "\"\n")
+          os.chmod(file_path, permissions)
     else:
         print "Couldn't find bashhub home directory. Sorry."
 
