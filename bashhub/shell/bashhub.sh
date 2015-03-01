@@ -30,7 +30,7 @@ __bh_setup_bashhub() {
         __bh_hook_bashhub
 
         # Install our tab completion
-        eval "$(_BASHHUB_COMPLETE=source bashhub)"
+        source $BH_DEPS_DIRECTORY/bashhub_completion_handler.sh
     fi
 }
 
