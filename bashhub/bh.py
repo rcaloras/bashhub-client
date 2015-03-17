@@ -20,8 +20,7 @@ def bh(app):
     user_id = BH_USER_ID
     query = app.params.query
     system_id = BH_SYSTEM_ID if app.params.system else None
-    path = os.getcwd if app.params.directory else None
-
+    path = os.getcwd() if app.params.directory else None
     # By default show unique on the client.
     unique = not app.params.duplicates
 
