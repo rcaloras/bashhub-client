@@ -18,16 +18,25 @@ def bh(app):
     """Parse command line arguments and call our REST API"""
     limit = app.params.number
     user_id = BH_USER_ID
-    path = os.getcwd if app.params.directory else ''
     query = app.params.query
-    system_id = BH_SYSTEM_ID if app.params.system else ''
+    system_id = BH_SYSTEM_ID if app.params.system else None
+    path = os.getcwd if app.params.directory else None
+
+    # By default show unique on the client.
+    unique = not app.params.duplicates
 
     # If we're interactive, make sure we have a query
     if app.params.interactive and query == '':
         query = raw_input("(bashhub-i-search): ")
 
     # Call our rest api to search for commands
-    commands = rest_client.search(user_id, limit, path, query, system_id)
+    commands = rest_client.search(
+      user_id = user_id,
+      limit = limit,
+      path = path,
+      query = query,
+      system_id = system_id,
+      unique = unique)
 
     if app.params.interactive:
         run_interactive(commands)
@@ -58,6 +67,9 @@ bh.add_param("-sys", "--system", help="Search for commands created on this \
 
 bh.add_param("-i", "--interactive", help="Use interactive search. Allows you \
         to select commands to run.", default= False, action='store_true')
+
+bh.add_param("-dups", "--duplicates", help="Include duplicates", \
+        default=False, action='store_true')
 
 def main():
     try:

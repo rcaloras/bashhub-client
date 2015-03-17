@@ -9,21 +9,23 @@ from model import MinCommand
 from model import StatusView
 from bashhub_globals import *
 
-def search(user_id=BH_USER_ID, limit=100, path='', query='', system_id='',
-        session_name=''):
+def search(user_id=BH_USER_ID, limit=100, path=None, query=None,
+        system_id=None, unique=False):
 
-    payload = {'userId' : user_id, 'limit' : limit }
-
+    payload = { 'userId' : user_id,
+                'limit' : limit,
+                # API Needs booleans in lower case
+                'unique' : str(unique).lower() }
     if path:
-        payload["path"] = os.getcwd()
+        payload["path"] = path
 
     if query:
         payload["query"] = query
 
     if system_id:
-        payload["systemId"] = BH_SYSTEM_ID
+        payload["systemId"] = system_id
 
-    url = BH_URL + "/command/v1/search"
+    url = BH_URL + "/api/v1/command/search"
 
     try:
         r = requests.get(url, params=payload)
