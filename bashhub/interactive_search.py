@@ -8,6 +8,7 @@ import curses
 import sys
 import random
 import time
+import locale
 
 class InteractiveSearch:
     DOWN = 1
@@ -35,6 +36,8 @@ class InteractiveSearch:
         self.markedLineNums = []
 
     def run(self):
+        # Locale set to support utf-8 characters.
+        locale.setlocale(locale.LC_ALL,"")
         return curses.wrapper(self._run)
 
     def _run(self, screen):

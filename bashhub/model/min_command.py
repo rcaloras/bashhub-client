@@ -11,6 +11,6 @@ class MinCommand(Serializable):
         self.created = created
 
     def __str__(self):
-        return self.command
+        return self.command.encode('utf8')
 
 
