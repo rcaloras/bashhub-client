@@ -8,6 +8,16 @@ import os
 from model import MinCommand
 from model import StatusView
 from bashhub_globals import *
+from version import __version__
+
+# Build our user agent string
+user_agent = 'bashhub/%s' % __version__
+
+base_headers = {
+        'User-Agent' : user_agent,
+        'X-Bashhub-version' : __version__
+}
+
 
 def search(user_id=BH_USER_ID, limit=100, path=None, query=None,
         system_id=None, unique=False):
@@ -28,7 +38,7 @@ def search(user_id=BH_USER_ID, limit=100, path=None, query=None,
     url = BH_URL + "/api/v1/command/search"
 
     try:
-        r = requests.get(url, params=payload)
+        r = requests.get(url, params=payload, headers=base_headers)
         return MinCommand.from_JSON_list(r.json())
 
     except ConnectionError as error:
@@ -37,7 +47,15 @@ def search(user_id=BH_USER_ID, limit=100, path=None, query=None,
 
 def save_command(command):
     url = BH_URL + "/api/v1/command"
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+
+    headers = {
+            'Content-type' : 'application/json',
+            'Accept': 'text/plain'
+    }
+
+    # Include our User-Agent and Version
+    headers.update(base_headers)
+
     try:
         r = requests.post(url, data=command.to_JSON(), headers=headers)
     except ConnectionError as error:
@@ -52,7 +70,7 @@ def get_status_view(user_context):
                 'processId' : user_context.process_id,
                 'startTime' : user_context.start_time  }
     try:
-        r = requests.get(url, params=payload)
+        r = requests.get(url, params=payload, headers=base_headers)
         statusViewJson = json.dumps(r.json())
         return StatusView.from_JSON(statusViewJson)
     except ConnectionError as error:
