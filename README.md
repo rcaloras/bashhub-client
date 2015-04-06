@@ -5,9 +5,9 @@ Bashhub saves every terminal command entered across all sessions and systems and
 ###Bashhub provides
 - Super powerful command search by using contextual information about how commands are executed.
   - e.g. the directory, session, system, exit status, etc.
-- Support across systems. Access your terminal history from anywhere!
 - Unlimited detailed terminal history stored in the cloud.
-- A sweet command line interface to access all of it. 
+- Support across systems. Access your terminal history from anywhere!
+- Support for Bash and Zsh with a sweet cli for everything. 
 
 ##Quick Install
 ```bash
@@ -17,7 +17,6 @@ Detailed install at https://github.com/rcaloras/bashhub-client/wiki/Install
 
 ## Usage
 https://github.com/rcaloras/bashhub-client/wiki/Usage
-
 
 ## Feature Requests, Bugs, and Issues
 Feel free to post in:
