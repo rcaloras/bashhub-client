@@ -1,6 +1,15 @@
-##Bashhub.com Client
+<img src="https://bashhub.com/assets/images/bashhub-logo.png" alt="Bashhub Logo">
+==========
+Bashhub saves every terminal command entered across all sessions and systems and provides powerful querying across all commands. 
+##Quick Install
+```bash
+curl -OL bashhub.com/setup && bash setup
+```
+Detailed install at https://github.com/rcaloras/bashhub-client/wiki/Install
 
-Read the docs at https://bashhub.com/docs
+## Usage
+https://github.com/rcaloras/bashhub-client/wiki/Usage
+
 
 ## Feature Requests, Bugs, and Issues
 Feel free to post in:
