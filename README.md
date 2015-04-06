@@ -1,6 +1,14 @@
 <img src="https://bashhub.com/assets/images/bashhub-logo.png" alt="Bashhub Logo">
 ==========
-Bashhub saves every terminal command entered across all sessions and systems and provides powerful querying across all commands. 
+Bashhub saves every terminal command entered across all sessions and systems and provides powerful querying across all commands.
+
+###Bashhub provides
+- Super powerful command search by using contextual information about how commands are executed.
+  - e.g. the directory, session, system, exit status, etc.
+- Support across systems. Access your terminal history from anywhere!
+- Unlimited detailed terminal history stored in the cloud.
+- A sweet command line interface to access all of it. 
+
 ##Quick Install
 ```bash
 curl -OL bashhub.com/setup && bash setup
