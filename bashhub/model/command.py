@@ -16,28 +16,12 @@ class Command(Serializable):
         self.exitStatus = exit_status
         self.context = context
 
-class RegisterUser(object):
+class RegisterUser(Serializable):
     def __init__(self, email, username, password, registration_code = ""):
         self.email = email
         self.username = username
         self.password = password
         self.registration_code = registration_code
-
-    def to_JSON(self):
-        return jsonpickle.encode(self)
-
-    @staticmethod
-    def from_JSON(json):
-        return jsonpickle.decode(json)
-
-class RegisterSystem(object):
-    def __init__(self, name, mac, user_id):
-        self.name = name
-        self.mac = mac.__str__()
-        self.user_id = user_id
-
-    def to_JSON(self):
-        return jsonpickle.encode(self)
 
 class UserCredentials(object):
     def __init__(self, username, password):

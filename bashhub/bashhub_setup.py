@@ -9,8 +9,10 @@ import getpass
 import traceback
 import uuid
 import stat
+import socket
+import rest_client
+from version import __version__
 from model import *
-from model import System
 from bashhub_globals import *
 import requests
 from requests import ConnectionError
@@ -49,24 +51,6 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "\
                              "(or 'y' or 'n').\n")
 
-def register_new_user(register_user):
-    url = BH_URL + "/user/register"
-    headers = {'content-type': 'application/json'}
-    try:
-        response = requests.post(url, data=register_user.to_JSON(), headers=headers)
-        response.raise_for_status()
-        return response.json()
-
-    except ConnectionError as error:
-        print "Looks like there's a connection error. Please try again later"
-    except HTTPError as error:
-        if response.status_code == 409:
-            print response.text
-        else:
-            print error
-            print "Please try again..."
-    return None
-
 def register_new_system(register_system):
     url = BH_URL + "/system/register"
     headers = {'content-type': 'application/json'}
@@ -86,69 +70,35 @@ def register_new_system(register_system):
             print "Please try again..."
     return None
 
-def check_credentials(user_credentials):
-    url = BH_URL + "/user/credentials"
-    headers = {'content-type': 'application/json'}
-    try:
-        response = requests.post(url, data=user_credentials.to_JSON(), headers=headers)
-        response.raise_for_status()
-        return response.json()
-
-    except ConnectionError as error:
-        print "Looks like there's a connection error. Please try again later"
-    except HTTPError as error:
-        if response.status_code == 409:
-            print response.text
-        elif response.status_code == 400:
-            print "Bad password. Try again."
-        else:
-            print error
-            print "Please try again..."
-    return None
-
 def get_new_user_information():
     email = raw_input("What's your email? ")
     username = raw_input("What username would you like? ")
     password = getpass.getpass("What password? ")
-    print "\nEmail: " + email + " Username: " + username
+    print("\nEmail: " + email + " Username: " + username)
     all_good = query_yes_no("Are these correct?")
-    hashed_password = hash_and_salt_password(username, password)
+
     if all_good:
-        return RegisterUser(email, username, hashed_password)
+        return RegisterUser(email, username, password)
     else:
         return get_new_user_information()
 
 def get_existing_user_information(attempts=0):
     if attempts == 4:
-        print "Too many bad attempts"
+        print("Too many bad attempts")
         return None
 
-    print "Please enter your bashhub credentials"
+    print("Please enter your bashhub credentials")
     username = raw_input("Username: ")
-    plain_text = getpass.getpass("Password: ")
-    password = hash_and_salt_password(username, plain_text)
-    credentials = UserCredentials(username, password)
+    password = getpass.getpass("Password: ")
+    user = rest_client.authenticate_user(UserCredentials(username, password))
 
-    url = BH_URL + "/user/auth"
-    headers = {'content-type': 'application/json'}
-    try:
-        response = requests.post(url, data=credentials.to_JSON(), headers=headers)
-        response.raise_for_status()
-        return response.json()
+    return user or get_existing_user_information(attempts+1)
 
-    except ConnectionError as error:
-        print "Looks like there's a connection error. Please try again later"
-    except HTTPError as error:
-        if response.status_code == 409:
-            print response.text
-            return get_existing_user_information(attempts+1)
-        elif response.status_code == 400:
-            print "Bad password. Try again."
-            return get_existing_user_information(attempts+1)
-        else:
-            print error
-            print "Please try again..."
-            return get_existing_user_information(attempts+1)
+# Update our hostname incase it changed.
+def update_system_info(system):
+    hostname = socket.gethostname()
+    patch = SystemPatch(hostname = hostname, client_version = __version__)
+    rest_client.patch_system(patch, system.id)
 
 def get_system_information(mac, user_id):
 
@@ -165,19 +115,22 @@ def get_system_information(mac, user_id):
         return None
 
 def handle_system_information(user_id):
-    mac = uuid.getnode()
-    system = get_system_information(mac, user_id)
 
-    # If this system is already registered
+    mac = uuid.getnode().__str__()
+    system = get_system_information(mac, user_id)
+   # If this system is already registered
     if system is not None:
+        update_system_info(system)
         print("Welcome back! Looks like this box is already registered as " +
                 system.name + ".")
         return system.id
     else:
-        name = raw_input("What do you want to call this system? " + \
-            "For example Work Laptop, Home, File Server, ect.: ")
+        hostname = socket.gethostname()
+        name_input = raw_input("What do you want to call this system? " + \
+                "For example Home, File Server, ect. [%s]: " % hostname)
 
-        system = RegisterSystem(name, mac, user_id)
+        name = name_input or hostname
+        system = RegisterSystem(name, mac, user_id, hostname, __version__)
         system_id = register_new_system(system)
         return  system_id
 
@@ -193,11 +146,6 @@ def write_config_file(user_id, system_id):
           os.chmod(file_path, permissions)
     else:
         print "Couldn't find bashhub home directory. Sorry."
-
-def hash_and_salt_password(username, password_plain_text):
-    salted_with_username = password_plain_text + username
-    password = hashlib.sha256(salted_with_username)
-    return password.hexdigest()
 
 def main():
     try:
@@ -217,7 +165,8 @@ def main():
         user_id = None
         if is_new_user:
             register_user = get_new_user_information()
-            user_id = register_new_user(register_user)
+            user_id = rest_client.register_user(register_user)
+
         else:
             user_id = get_existing_user_information()
 
