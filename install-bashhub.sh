@@ -207,7 +207,12 @@ setup_bashhub_files() {
 
         # Make sure our config is only readable to us.
         chmod 600 "$bashhub_config"
-        rm $backup_config
+        rm "$backup_config"
+
+        # Update our system info with bashhub.com
+        if [ -n "$BH_SYSTEM_ID" ]; then
+            ../env/bin/bashhub util update_system_info
+        fi
     else
         # Setup our config file
         ../env/bin/bashhub setup

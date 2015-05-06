@@ -95,10 +95,10 @@ def get_existing_user_information(attempts=0):
     return user or get_existing_user_information(attempts+1)
 
 # Update our hostname incase it changed.
-def update_system_info(system):
+def update_system_info(system_id):
     hostname = socket.gethostname()
     patch = SystemPatch(hostname = hostname, client_version = __version__)
-    rest_client.patch_system(patch, system.id)
+    rest_client.patch_system(patch, system_id)
 
 def get_system_information(mac, user_id):
 
@@ -120,7 +120,7 @@ def handle_system_information(user_id):
     system = get_system_information(mac, user_id)
    # If this system is already registered
     if system is not None:
-        update_system_info(system)
+        update_system_info(system.id)
         print("Welcome back! Looks like this box is already registered as " +
                 system.name + ".")
         return system.id
