@@ -4,10 +4,14 @@
 # shell functions between bash and zsh
 #
 
-export PATH=$PATH:"$HOME/.bashhub/bin"
-
 BH_INCLUDE() {
     [[ -f "$1" ]] && source "$1"
+}
+
+BH_PATH_ADD() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        PATH="${PATH:+"$PATH:"}$1"
+    fi
 }
 
 #
@@ -22,6 +26,9 @@ contains_element() {
   for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
   return 1
 }
+
+# Make sure ~/bin is on our path
+BH_PATH_ADD "$HOME/bin"
 
 # Include our user configuration
 BH_INCLUDE ~/.bashhub/.config
