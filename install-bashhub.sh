@@ -238,7 +238,7 @@ setup_bashhub_files() {
 #
 find_users_bash_file() {
 
-    bash_file_array=( ~/.profile ~/.bashrc ~/.bash_profile)
+    bash_file_array=( ~/.bash_profile ~/.bashrc ~/.profile)
 
     local largest_file_size=0
     for file in "${bash_file_array[@]}"
