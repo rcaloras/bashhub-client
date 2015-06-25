@@ -24,10 +24,12 @@ def print_version(ctx, param, value):
     click.echo('Bashhub %s' % __version__)
     ctx.exit()
 
-@click.group()
+
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+@click.group(context_settings=CONTEXT_SETTINGS)
 @click.option('-V', '--version', default=False, is_flag=True, callback=print_version,
         help='Display version', expose_value=False, is_eager=True)
-
 def bashhub():
     """Bashhub command line client"""
     pass
