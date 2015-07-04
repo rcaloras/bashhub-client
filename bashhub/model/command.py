@@ -9,7 +9,7 @@ from serializable import Serializable
 
 class Command(Serializable):
     def __init__(self, command, path, exit_status, context):
-        self.uuid = uuid.uuid1().__str__()
+        self.uuid = uuid.uuid4().__str__()
         self.command = command
         self.created = time()*1000
         self.path = path
