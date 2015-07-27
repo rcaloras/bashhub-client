@@ -219,7 +219,7 @@ setup_bashhub_files() {
     fi
 
     # Wire up our bin directory
-    mkdir p ~/bin
+    mkdir -p ~/bin
     ln -s ../env/bin/bashhub ~/bin/bashhub
     ln -s ../env/bin/bh ~/bin/bh
 
