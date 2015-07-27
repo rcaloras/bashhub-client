@@ -7,11 +7,12 @@ import requests
 from requests import ConnectionError
 import cli.app
 import os
+import io
 
 from model import MinCommand
 from bashhub_globals import *
 import rest_client
-from interactive_search import InteractiveSearch
+from i_search import InteractiveSearch
 
 @cli.app.CommandLineApp
 def bh(app):
@@ -48,9 +49,13 @@ def print_commands(commands):
 
 def run_interactive(commands):
     i_search = InteractiveSearch(commands)
-    command = i_search.run()
-    f = open(BH_HOME + '/response.bh','w+')
-    print(command, file=f)
+    i_search.run()
+    # numpy bullshit since it doesn't return anything.
+    # Consider submitting a patchset for it.
+    command = i_search.return_value
+    if command is not None:
+        f = io.open(BH_HOME + '/response.bh','w+', encoding='utf-8')
+        print(command.command, file=f)
 
 bh.add_param("-n", "--number", help="Limit the number of previous commands. \
         Default is 100.", default=100, type=int)
