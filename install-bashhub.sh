@@ -180,7 +180,7 @@ install_hooks_for_shell() {
 
 setup_bashhub_files() {
 
-    mkdir ~/.bashhub
+    mkdir -p ~/.bashhub
     cd ~/.bashhub
     download_and_install_env
 
@@ -220,8 +220,8 @@ setup_bashhub_files() {
 
     # Wire up our bin directory
     mkdir -p ~/bin
-    ln -s ../env/bin/bashhub ~/bin/bashhub
-    ln -s ../env/bin/bh ~/bin/bh
+    ln -sf ~/.bashhub/env/bin/bashhub ~/bin/bashhub
+    ln -sf ~/.bashhub/env/bin/bh ~/bin/bh
 
     # Clean up what we downloaded
     cd ~/.bashhub
