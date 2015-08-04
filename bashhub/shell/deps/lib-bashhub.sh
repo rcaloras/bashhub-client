@@ -4,11 +4,11 @@
 # shell functions between bash and zsh
 #
 
-BH_INCLUDE() {
+__bh_include() {
     [[ -f "$1" ]] && source "$1"
 }
 
-BH_PATH_ADD() {
+__bh_path_add() {
     if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
         PATH="${PATH:+"$PATH:"}$1"
     fi
@@ -27,11 +27,11 @@ contains_element() {
   return 1
 }
 
-# Make sure ~/bin is on our path
-BH_PATH_ADD "$HOME/bin"
+# Make sure our bin directory is on our path
+__bh_path_add "$HOME/.bashhub/bin"
 
 # Include our user configuration
-BH_INCLUDE ~/.bashhub/.config
+__bh_include ~/.bashhub/.config
 
 #
 # Function to be run by our preexec hook.

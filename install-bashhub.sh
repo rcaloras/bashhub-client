@@ -219,9 +219,9 @@ setup_bashhub_files() {
     fi
 
     # Wire up our bin directory
-    mkdir -p ~/bin
-    ln -sf ~/.bashhub/env/bin/bashhub ~/bin/bashhub
-    ln -sf ~/.bashhub/env/bin/bh ~/bin/bh
+    mkdir -p ~/.bashhub/bin
+    ln -sf ../env/bin/bashhub ~/.bashhub/bin/bashhub
+    ln -sf ../env/bin/bh ~/.bashhub/bin/bh
 
     # Clean up what we downloaded
     cd ~/.bashhub
