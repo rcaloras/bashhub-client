@@ -4,6 +4,7 @@ import npyscreen
 import datetime
 import curses
 import time
+import rest_client
 
 class CommandList(npyscreen.MultiLineAction):
     def __init__(self, *args, **keywords):
@@ -42,7 +43,8 @@ class CommandList(npyscreen.MultiLineAction):
             return self.command_handlers[keypress](command)
 
     def go_to_command_details(self, command):
-        self.parent.parentApp.getForm('EDITRECORDFM').value = command
+        command_details = rest_client.get_command(command.uuid)
+        self.parent.parentApp.getForm('EDITRECORDFM').value = command_details
         self.parent.parentApp.switchForm('EDITRECORDFM')
 
     def select_command(self, command):
@@ -72,8 +74,13 @@ class EditRecord(npyscreen.ActionForm):
 
     def create(self):
         self.value = None
-        self.created   = self.add(npyscreen.TitleFixedText, name = "Created At:",)
-        self.command   = self.add(npyscreen.TitleFixedText, name = "Command:",)
+        self.command = self.add(npyscreen.TitleFixedText, name = "Command:")
+        self.path = self.add(npyscreen.TitleFixedText, name = "Path:")
+        self.created = self.add(npyscreen.TitleFixedText, name = "Created At:")
+        self.exit_status = self.add(npyscreen.TitleFixedText, name = "Exit Status:")
+        self.system_name = self.add(npyscreen.TitleFixedText, name = "System Name:")
+        self.session_id = self.add(npyscreen.TitleFixedText, name = "Session Id:")
+        self.uuid = self.add(npyscreen.TitleFixedText, name = "UUID:")
 
     def exit_app(self, vl):
         self.parentApp.switchForm(None)
@@ -88,6 +95,16 @@ class EditRecord(npyscreen.ActionForm):
             date_string = datetime.datetime.fromtimestamp(record.created/1000).strftime('%Y-%m-%d %H:%M:%S')
             self.created.value = date_string
             self.command.value = record.command
+            self.path.value = record.path
+
+            # Handle old commands that don't have exit status
+            exit_status = "None" if record.exit_status is None else str(record.exit_status)
+            self.exit_status.value = exit_status
+
+            self.system_name.value = record.system_name
+            self.session_id.value = record.session_id
+            self.uuid.value = record.uuid
+
         else:
             self.command = "not found"
 
@@ -109,3 +126,4 @@ class InteractiveSearch(npyscreen.NPSAppManaged):
     def onStart(self):
         self.addForm("MAIN", CommandListDisplay)
         self.addForm("EDITRECORDFM", EditRecord)
+

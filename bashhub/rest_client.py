@@ -7,6 +7,7 @@ import os
 
 from model import MinCommand
 from model import StatusView
+from model import Command
 from bashhub_globals import *
 from version import __version__
 from requests import ConnectionError
@@ -44,6 +45,25 @@ def register_user(register_user):
             print(error)
             print("Please try again...")
     return None
+
+def get_command(uuid):
+
+    url = BH_URL + "/api/v1/command/{0}".format(uuid)
+
+    try:
+        response = requests.get(url, headers=json_headers)
+        response.raise_for_status()
+        json_command = json.dumps(response.json())
+        return Command.from_JSON(json_command)
+
+    except ConnectionError as error:
+        print("Looks like there's a connection error. Please try again later")
+    except HTTPError as error:
+            print(error)
+            print("Please try again...")
+
+    return None
+
 
 def authenticate_user(credentials):
 
@@ -125,7 +145,7 @@ def get_status_view(user_context):
                 'startTime' : user_context.start_time  }
     try:
         r = requests.get(url, params=payload, headers=base_headers)
-        statusViewJson = json.dumps(r.json())
+        status_view_json = json.dumps(r.json())
         return StatusView.from_JSON(statusViewJson)
     except Exception as error:
         print("Sorry, looks like there's a connection error: " + str(error))

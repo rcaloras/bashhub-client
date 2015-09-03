@@ -6,7 +6,7 @@ import dateutil.parser
 import sys
 import os
 
-from model import Command
+from model import CommandForm
 from model import UserContext
 import rest_client
 import bashhub_setup
@@ -56,7 +56,7 @@ def save(command, path, pid, process_start_time, exit_status):
         return
 
     context = UserContext(pid, pid_start_time, BH_USER_ID, BH_SYSTEM_ID)
-    command = Command(command, path, exit_status, context)
+    command = CommandForm(command, path, exit_status, context)
     rest_client.save_command(command)
 
 @bashhub.command()
