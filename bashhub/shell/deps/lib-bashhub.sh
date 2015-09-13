@@ -31,7 +31,8 @@ contains_element() {
 __bh_path_add "$HOME/.bashhub/bin"
 
 # Include our user configuration
-__bh_include ~/.bashhub/.config
+__bh_include "${BH_HOME_DIRECTORY:=~/.bashhub}/.config"
+
 
 #
 # Function to be run by our preexec hook.
