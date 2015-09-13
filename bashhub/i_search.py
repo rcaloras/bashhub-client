@@ -5,6 +5,7 @@ import datetime
 import curses
 import time
 import rest_client
+import curses
 
 class CommandList(npyscreen.MultiLineAction):
     def __init__(self, *args, **keywords):
@@ -24,6 +25,13 @@ class CommandList(npyscreen.MultiLineAction):
             curses.ascii.SP:  self.go_to_command_details,
             ord("i"):  self.go_to_command_details
         })
+
+        # Disable handling of ALL mouse events right now. Without this we're
+        # unable to select text when inside of interactive search. This is
+        # convenient for access to the clipboard since on bash it'll
+        # automatically execute the command. Eventually find a way to allow this.
+        # It'd be nice to allow clicking to select a line.
+        curses.mousemask(0)
 
     def exit_app(self, vl):
         self.parent.parentApp.switchForm(None)
