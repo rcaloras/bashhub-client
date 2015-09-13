@@ -8,7 +8,6 @@ from requests import ConnectionError
 import cli.app
 import os
 import io
-import traceback
 
 from model import MinCommand
 from bashhub_globals import *
@@ -81,7 +80,6 @@ def main():
         bh.run()
     except Exception as e:
         print("Oops, look like an exception occured: " + str(e))
-        print(traceback.format_exc())
         sys.exit(1)
     except KeyboardInterrupt:
         # To allow Ctrl+C (^C). Print a new line to drop the prompt.
