@@ -146,7 +146,7 @@ def get_status_view(user_context):
     try:
         r = requests.get(url, params=payload, headers=base_headers)
         status_view_json = json.dumps(r.json())
-        return StatusView.from_JSON(statusViewJson)
+        return StatusView.from_JSON(status_view_json)
     except Exception as error:
         print("Sorry, looks like there's a connection error: " + str(error))
         return None
