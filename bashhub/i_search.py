@@ -99,7 +99,7 @@ class EditRecord(npyscreen.ActionForm):
     def beforeEditing(self):
         if self.value:
             record = self.value
-            self.name = "The Record"
+            self.name = "Command Details"
             date_string = datetime.datetime.fromtimestamp(record.created/1000).strftime('%Y-%m-%d %H:%M:%S')
             self.created.value = date_string
             self.command.value = record.command
