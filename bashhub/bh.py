@@ -55,7 +55,7 @@ def run_interactive(commands):
     command = i_search.return_value
     if command is not None:
         f = io.open(BH_HOME + '/response.bh','w+', encoding='utf-8')
-        print(command.command, file=f)
+        print(unicode(command.command), file=f)
 
 bh.add_param("-n", "--number", help="Limit the number of previous commands. \
         Default is 100.", default=100, type=int)
