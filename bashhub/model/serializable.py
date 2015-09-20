@@ -37,6 +37,9 @@ class Serializable(object):
 
   @classmethod
   def from_JSON_list(cls, response):
+
+    #response = json.load(response)
+
     # Use list comprehension to map every json object
     # back to its object with from_JSON
     items = [cls.from_JSON(json.dumps(item)) for item in response]

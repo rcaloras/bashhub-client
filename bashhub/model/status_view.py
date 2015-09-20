@@ -1,4 +1,3 @@
-
 from serializable import Serializable
 
 class StatusView(Serializable):

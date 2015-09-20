@@ -55,7 +55,6 @@ def register_new_system(register_system):
     url = BH_URL + "/system/register"
     headers = {'content-type': 'application/json'}
     try:
-        print register_system.to_JSON()
         response = requests.post(url, data=register_system.to_JSON(), headers=headers)
         response.raise_for_status()
         return response.json()
@@ -166,7 +165,8 @@ def main():
         if is_new_user:
             register_user = get_new_user_information()
             user_id = rest_client.register_user(register_user)
-
+            if user_id != None:
+                print("Registered new user {0}\n".format(register_user.username))
         else:
             user_id = get_existing_user_information()
 

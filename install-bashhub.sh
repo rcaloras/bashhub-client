@@ -35,7 +35,7 @@ zshprofile=~/.zshrc
 
 # Optional parameter to specify a github branch
 # to pull from.
-github_branch=${1:-'0.0.12'}
+github_branch=${1:-'0.0.13'}
 
 install_bashhub() {
     check_dependencies
@@ -180,7 +180,7 @@ install_hooks_for_shell() {
 
 setup_bashhub_files() {
 
-    mkdir ~/.bashhub
+    mkdir -p ~/.bashhub
     cd ~/.bashhub
     download_and_install_env
 
@@ -219,10 +219,9 @@ setup_bashhub_files() {
     fi
 
     # Wire up our bin directory
-    mkdir ~/.bashhub/bin
-    ln -s ../env/bin/bashhub ~/.bashhub/bin/bashhub
-    ln -s ../env/bin/bashhub-setup ~/.bashhub/bin/bashhub-setup
-    ln -s ../env/bin/bh ~/.bashhub/bin/bh
+    mkdir -p ~/.bashhub/bin
+    ln -sf ../env/bin/bashhub ~/.bashhub/bin/bashhub
+    ln -sf ../env/bin/bh ~/.bashhub/bin/bh
 
     # Clean up what we downloaded
     cd ~/.bashhub

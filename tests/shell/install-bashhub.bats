@@ -2,7 +2,7 @@
 
 setup() {
   bashhub_install_test="true"
-  source "${BATS_TEST_DIRNAME}"/../install-bashhub.sh
+  source "${BATS_TEST_DIRNAME}"/../../install-bashhub.sh
 }
 
 @test "detect_shell_type should detect our default shell" {

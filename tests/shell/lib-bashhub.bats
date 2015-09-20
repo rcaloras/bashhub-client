@@ -1,7 +1,9 @@
 #!/usr/bin/env bats
 
 setup() {
-  source "${BATS_TEST_DIRNAME}"/../bashhub/shell/deps/lib-bashhub.sh
+  BH_HOME_DIRECTORY="$BATS_TMPDIR"
+  touch "$BATS_TMPDIR/.config"
+  source "${BATS_TEST_DIRNAME}"/../../bashhub/shell/deps/lib-bashhub.sh
 }
 
 teardown() {

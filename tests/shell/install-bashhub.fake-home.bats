@@ -3,7 +3,7 @@
 setup() {
   bashhub_install_test="true"
   setup_fake_home_dir
-  source "${BATS_TEST_DIRNAME}"/../install-bashhub.sh
+  source "${BATS_TEST_DIRNAME}"/../../install-bashhub.sh
 }
 
 setup_fake_home_dir() {

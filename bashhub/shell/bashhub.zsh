@@ -27,10 +27,14 @@ __bh_setup_bashhub() {
         # Hook bashhub into preexec and precmd.
         __bh_hook_bashhub
 
-        # Install our tab completion
+        # Install our tab completion.
         autoload compinit && compinit
         autoload bashcompinit && bashcompinit
         source $BH_DEPS_DIRECTORY/bashhub_completion_handler.sh
+
+        # Turn on Bash style comments. Otherwise zsh tries to execute #some-comment.
+        setopt interactivecomments
+
     fi
 }
 
