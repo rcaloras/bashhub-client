@@ -176,6 +176,12 @@ def main():
             sys.exit(0)
 
         system_id = handle_system_information(user_id)
+
+        if system_id == None:
+            print("Sorry looks like getting your info failed.\
+                    Exiting...")
+            sys.exit(0)
+
         write_config_file(user_id, system_id)
         sys.exit(0)
 
