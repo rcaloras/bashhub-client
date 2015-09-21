@@ -11,6 +11,8 @@ Bashhub saves every terminal command entered across all sessions and systems and
 - Support across systems. Access your terminal history from anywhere!
 - Support for Bash and Zsh with a sweet cli for everything. 
 
+![gif](http://i.imgur.com/02ABZxn.gif)
+
 ##Quick Install
 ```bash
 curl -OL https://bashhub.com/setup && bash setup
