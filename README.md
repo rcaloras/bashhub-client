@@ -30,22 +30,7 @@ It also provides a key binding of `ctrl + b` for quickly dropping into interacti
 You can search through your commands in a lot of different ways. Check `bh --help` for more specifics. By default `bh` will output the most recently used unique commands to standard out. Adding the `-i` argument to any `bh` search will make it **interactive**. There are also several arguments to pass to filter, query, and get more specific about your searches!
 
 
-##Interactive Search
-One of the most useful features is interactive search which is accessed via `bh -i` or `ctrl + b`. This is similar to reverse search i.e. `ctrl + r`. Interactive search drops you into a small menu where you can select a command to run on the command line.
-
-Enter interactive search for all the rsync commands executed in this directory
-```bash
-$ bh -i -d
-(bashhub-i-search): rsync
-```
-
-### Command Details
-From interactive search you can also access detailed information on each command by hitting `i` or `space` on any listed command.
-
-![Command Details](http://i.imgur.com/is0gNnB.png)
-
-
-##Searching Examples
+##Examples
 
 The last 100 commands you executed anywhere. (100 is default limit without `-n`)
 ```bash
@@ -89,6 +74,23 @@ Your git commands including duplicates.
 ```bash
 $ bh -dups "git"
 ```
+
+##Interactive Search
+One of the most useful features is interactive search which is accessed via `bh -i` or `ctrl + b`. This is similar to reverse search i.e. `ctrl + r`. Interactive search drops you into a small menu where you can select a command to run on the command line.
+
+Enter interactive search for all the rsync commands executed in this directory
+```bash
+$ bh -i -d
+(bashhub-i-search): rsync
+```
+
+### Command Details
+From interactive search you can also access detailed information on each command by hitting `i` or `space` on any listed command.
+
+![Command Details](http://i.imgur.com/is0gNnB.png)
+
+
+
 
 ##Ignoring Commands
 `#ignore` added to any command will omit it from being saved. Simply add it to the end of any command and it won't be recorded in Bashhub.
