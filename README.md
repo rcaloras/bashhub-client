@@ -90,6 +90,26 @@ From interactive search you can also access detailed information on each command
 ![Command Details](http://i.imgur.com/is0gNnB.png)
 
 
+##Bashhub Status
+You can get a summary of your user's stats/status by using the `status` command. 
+```bash
+bashhub status
+```
+Most of this information is also displayed on the user profile page.
+
+```bash
+=== Bashhub Status
+http://bashhub.com/u/rccola
+Total Commands: 94965
+Total Sessions: 16400
+Total Systems:  18
+===
+Session PID 15311 Started 9 days ago
+Commands In Session: 3
+Commands Today: 47
+```
+
+
 
 
 ##Ignoring Commands
