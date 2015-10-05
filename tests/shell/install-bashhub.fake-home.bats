@@ -44,3 +44,15 @@ install_bashhub() {
   [[ $status == 1 ]]
 }
 
+@test "generate .bash_profile and .bashrc and link them" {
+  rm ~/.bashrc
+  rm ~/.zshrc
+  run 'generate_bash_config_file'
+  [[ $status == 0 ]]
+  [[ -f ~/.bashrc  ]]
+  [[ -f ~/.bash_profile ]]
+  # Should source .bashrc in .bash_profile
+  in_profile=$(grep -q 'source ~/.bashrc' ~/.bash_profile; echo $?;)
+  [[ "$in_profile" == 0 ]]
+}
+

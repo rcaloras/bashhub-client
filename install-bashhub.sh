@@ -22,6 +22,12 @@ if [ -f ~/.bashhub/bashhub.zsh ]; then
 fi
 '
 
+bash_config_source='
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi
+'
+
 python_command='
 import sys
 if (2, 6, 0) < sys.version_info < (3,0):
@@ -133,12 +139,39 @@ install_hooks_for_zsh() {
 
 }
 
+
+# Create two config files .bashrc and .bash_profile since
+# OS X and Linux shells use them diffferently. Source .bashrc
+# from .bash_profile and everything should work the same now.
+generate_bash_config_file() {
+    touch ~/.bashrc
+    touch ~/.bash_profile
+    echo "$bash_config_source" >> ~/.bash_profile
+    echo "Created ~/.bash_profile and ~/.bashrc"
+}
+
+
 install_hooks_for_bash() {
     local bashprofile=$(find_users_bash_file)
 
+
+    # If we don't have a bash profile ask if we should generate one.
+    if [ -z "$bashprofile" ]; then
+        echo "Couldn't find a bash confg file."
+
+        while true; do
+            read -p "Would you like to generate one? (y/n): " yn
+            case $yn in
+                [Yy]* ) generate_bash_config_file; bashprofile="$HOME/.bashrc"; break;;
+                [Nn]* ) break;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    fi
+
     # Have to have this. Error out otherwise.
     if [ -z "$bashprofile" ]; then
-        die "No bashfile (e.g. .profile, .bashrc, etc) could be found" 1
+        die "No bashfile (e.g. .profile, .bashrc, etc) could be found." 1
     fi
 
     # Add our file to our bashprofile if it doesn't exist yet
