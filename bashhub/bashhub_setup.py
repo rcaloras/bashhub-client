@@ -158,8 +158,8 @@ def main():
          |____/ \__,_|___/_| |_|_| |_|\__,_|_.__(_)___\___/|_| |_| |_|
 
         """
-        print ascii_art
-        print "Welcome to bashhub setup!"
+        print(ascii_art)
+        print("Welcome to bashhub setup!")
         is_new_user = query_yes_no("Are you a new user?")
         user_id = None
         if is_new_user:
@@ -167,12 +167,18 @@ def main():
             user_id = rest_client.register_user(register_user)
             if user_id != None:
                 print("Registered new user {0}\n".format(register_user.username))
+            else:
+                print("Sorry, registering a new user failed.")
         else:
             user_id = get_existing_user_information()
+            if user_id == None:
+                print("\nSorry looks like logging in failed.")
+                print("If you forgot your password please reset it. "
+                      "https://bashhub.com/password-reset")
 
         if user_id == None:
-            print "Sorry looks like getting your info failed.\
-                    Exiting..."
+            print("You can rerun setup using 'bashhub setup' in a new "
+                  "terminal window.\n")
             sys.exit(0)
 
         system_id = handle_system_information(user_id)

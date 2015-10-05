@@ -259,7 +259,12 @@ setup_bashhub_files() {
     cd ~/.bashhub
     rm client.tar.gz
     rm -r bashhub-client*
-    echo "Should be good to go! Please close and restart your terminal session."
+
+    if [ -f ~/.bashhub/.config ]; then
+        echo "Should be good to go! Please close and restart your terminal session."
+    else
+        echo "Please run 'bashhub setup' after restarting your terminal session."
+    fi
 }
 
 #
