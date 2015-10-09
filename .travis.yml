@@ -18,8 +18,8 @@ install: "pip install ."
 
 # command to run tests
 script: 
-  - py.test
   - bats tests/shell
+  - py.test
 
 notifications:
   email:
