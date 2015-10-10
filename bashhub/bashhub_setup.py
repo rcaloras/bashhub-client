@@ -17,7 +17,6 @@ from bashhub_globals import *
 import requests
 from requests import ConnectionError
 from requests import HTTPError
-import hashlib
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
