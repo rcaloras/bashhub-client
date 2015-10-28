@@ -53,11 +53,10 @@ get_and_check_python_version() {
     # Only supporting 2.6 - 2.7 right now. Eventually bump this to include 3.
     python_version_array=( "python" "python2" "python26" "python2.6" "python27" "python2.7")
 
-    for python_version in "${python_version_array[@]}"
-    do
-        if [[ $(which "$python_version") ]]; then
+    for python_version in "${python_version_array[@]}"; do
+        if [[ -e $(which "$python_version") ]]; then
             if "$python_version" -c "$python_command"; then
-                echo $python_version
+                echo "$python_version"
                 return 0
             fi
         fi
@@ -70,13 +69,12 @@ download_and_install_env() {
     # Select current version of virtualenv:
     VERSION=1.9.1
     # Name your first "bootstrap" environment:
-    INITIAL_ENV=env
+    INITIAL_ENV="env"
     # Options for your first environment:
-    ENV_OPTS='--no-site-packages --distribute'
+    ENV_OPTS="--distribute"
 
     # Only supporting python 2.6 - 2.7 right now.
     python_command=$(get_and_check_python_version)
-
     if [[ -z "$python_command" ]]; then
         die "\n Sorry you need to have python 2.7 installed. Please install it and rerun this script." 1
     fi
@@ -86,11 +84,12 @@ download_and_install_env() {
     URL_BASE=http://pypi.python.org/packages/source/v/virtualenv
 
     # --- Real work starts here ---
-    echo $URL_BASE/virtualenv-$VERSION.tar.gz
     curl -OL  $URL_BASE/virtualenv-$VERSION.tar.gz
     tar xzf virtualenv-$VERSION.tar.gz
+
     # Create the first "bootstrap" environment.
-    $PYTHON virtualenv-$VERSION/virtualenv.py $ENV_OPTS $INITIAL_ENV
+    $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" "$INITIAL_ENV"
+
     # Don't need this anymore.
     rm -rf virtualenv-$VERSION
     # Install the environment.
@@ -185,9 +184,9 @@ install_hooks_for_bash() {
 }
 
 detect_shell_type() {
-    if [ -n "$($SHELL -c 'echo $ZSH_VERSION')" ]; then
+    if [ -n "$ZSH_VERSION" ]; then
         echo 'zsh'
-    elif [ -n "$($SHELL -c 'echo $BASH_VERSION')" ]; then
+    elif [ -n "$BASH_VERSION" ]; then
         echo 'bash'
     else
         :

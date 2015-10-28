@@ -6,25 +6,25 @@ setup() {
 }
 
 @test "detect_shell_type should detect our default shell" {
-  SHELL=$(which bash)
+  BASH_VERSION=1
   run 'detect_shell_type'
   [[ $status == 0 ]]
   [[ "$output" == "bash" ]]
 
-  # Check to detect zsh
-  SHELL=$(which zsh)
+  ZSH_VERSION=1
+  # Check to detect zs
   run 'detect_shell_type'
   [[ $status == 0 ]]
   [[ "$output" == "zsh" ]]
 }
 
 @test "check_dependencies should fail if we don't have our dependencies" {
-  unset SHELL
+  unset BASH_VERSION
   run 'check_dependencies'
   [[ $status == 1 ]]
   [[ "$output" == *"Bashhub only supports"* ]]
 
-  SHELL=$(which bash)
+  BASH_VERSION=1
   run 'check_dependencies'
   [[ $status == 0 ]]
 }
@@ -37,7 +37,9 @@ setup() {
 
 @test "get_and_check_python_version should find python26" {
   # Mock up some fake responses here.
-  which() { echo "some-path"; }
+  path=$(which python)
+
+  which() { echo $path; }
   python() { return 1; }
   python2() { return 1; }
   python26() { return 0; }
