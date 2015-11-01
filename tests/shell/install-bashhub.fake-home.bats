@@ -23,7 +23,7 @@ install_bashhub() {
 }
 
 @test "install_hooks_for_shell should install for bash" {
-  SHELL=$(which bash)
+  BASH_VERSION=1
   run 'install_hooks_for_shell'
   [[ $status == 0 ]]
   in_profile=$(grep -q 'bashhub.sh' ~/.bashrc; echo $?;)
@@ -31,7 +31,7 @@ install_bashhub() {
 }
 
 @test "install_hooks_for_shell should install for zsh" {
-  SHELL=$(which zsh)
+  ZSH_VERSION=1
   run 'install_hooks_for_shell'
   [[ $status == 0 ]]
   in_profile=$(grep -q 'bashhub.zsh' ~/.zshrc; echo $?;)
@@ -39,7 +39,7 @@ install_bashhub() {
 }
 
 @test "install_hooks_for_shell should fail for unsupported" {
-  unset SHELL
+  unset BASH_VERSION
   run 'install_hooks_for_shell'
   [[ $status == 1 ]]
 }
