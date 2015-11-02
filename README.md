@@ -17,6 +17,11 @@ Bashhub saves every terminal command entered across all sessions and systems and
 ```bash
 curl -OL https://bashhub.com/setup && bash setup
 ```
+For Zsh
+```zsh
+curl -OL https://bashhub.com/setup && zsh setup
+```
+
 Detailed install at https://github.com/rcaloras/bashhub-client/wiki/Install
 
 #Usage
