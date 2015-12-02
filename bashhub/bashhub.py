@@ -10,12 +10,14 @@ from model import CommandForm
 from model import UserContext
 import rest_client
 import bashhub_setup
-from bashhub_globals import *
+import bashhub_globals
+from bashhub_globals import BH_USER_ID, BH_SYSTEM_ID, BH_FILTER
 from version import __version__
 import shutil
 import requests
 import subprocess
 import shell_utils
+import re
 from view.status import *
 
 def print_version(ctx, param, value):
@@ -47,12 +49,16 @@ def version():
 @click.argument('exit_status', type=int)
 def save(command, path, pid, process_start_time, exit_status):
     """Save a command to bashhub.com"""
-
     pid_start_time = unix_time_to_epoc_millis(process_start_time)
     command = command.strip()
 
-    # Check if we should ignore this commannd or not.
+    # Check if we should ignore this command.
     if "#ignore" in command:
+        return
+
+    # Check if we should filter this command.
+    bh_filter = bashhub_globals.BH_FILTER
+    if bh_filter and re.findall(bh_filter, command):
         return
 
     context = UserContext(pid, pid_start_time, BH_USER_ID, BH_SYSTEM_ID)
@@ -78,6 +84,36 @@ def status():
 def help(ctx):
     """Show this message and exit"""
     click.echo(ctx.parent.get_help())
+
+
+
+# Dynamic help text containing the BH_FILTER variable.
+filtered_text = "BH_FILTER={0}".format(BH_FILTER) if BH_FILTER else "BH_FILTER \
+is unset."
+filter_help_text = """Check if a command is filtered from bashhub. Filtering
+is configured via a regex exported as BH_FILTER.
+\n
+{0}""".format(filtered_text)
+
+@bashhub.command(help=filter_help_text)
+@click.argument('command', type=str)
+@click.option('-r', '--regex', default=BH_FILTER, help='Regex to filter against')
+def filter(command, regex):
+
+    # Check if the regex we receive is valid
+    if not is_valid_regex(regex):
+        click.secho("Regex {0} is invalid".format(regex), fg='red')
+        return
+
+    v = re.findall(regex, command)
+    click.echo(filtered_text)
+    if v and regex:
+        matched = [str(s) for s in set(v)]
+        output = click.style("{0} \nIs Filtered. Matched ".format(command),
+                fg='yellow') + click.style(str(matched), fg='red')
+        click.echo(output)
+    else:
+        click.echo("{0} \nIs Unfiltered".format(command))
 
 @bashhub.command()
 @click.argument('version', type=str, default="")
@@ -134,4 +170,3 @@ def main():
         click.echo("Oops, look like an exception occured: " + str(e))
         sys.exit(1)
 
-main()
