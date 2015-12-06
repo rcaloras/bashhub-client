@@ -101,7 +101,7 @@ is configured via a regex exported as BH_FILTER.
 def filter(command, regex):
 
     # Check if the regex we receive is valid
-    if not is_valid_regex(regex):
+    if not bashhub_globals.is_valid_regex(regex):
         click.secho("Regex {0} is invalid".format(regex), fg='red')
         return
 
@@ -167,6 +167,6 @@ def main():
         bashhub()
     except Exception as e:
         formatted = traceback.format_exc(e)
-        click.echo("Oops, look like an exception occured: " + str(e))
+        click.echo("Oops, looks like an exception occured: " + str(e))
         sys.exit(1)
 
