@@ -11,7 +11,7 @@
 # Author: Ryan Caloras (ryan@bashhub.com)
 # Forked from Original Author: Glyph Lefkowitz
 #
-# V0.2.2
+# V0.2.3
 #
 
 # General Usage:
@@ -85,10 +85,11 @@ __bp_precmd_invoke_cmd() {
 
     # For every function defined in our function array. Invoke it.
     local precmd_function
-    for precmd_function in ${precmd_functions[@]}; do
+    for precmd_function in "${precmd_functions[@]}"; do
 
         # Only execute this function if it actually exists.
-        if [[ -n $(type -t $precmd_function) ]]; then
+        # Test existence of functions with: declare -[Ff]
+        if type -t "$precmd_function" 1>/dev/null; then
             __bp_set_ret_value $ret_value
             $precmd_function
         fi
@@ -160,7 +161,8 @@ __bp_preexec_invoke_exec() {
         return
     fi
 
-    local this_command="$(HISTTIMEFORMAT= history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//g")";
+    local this_command
+    this_command=$(HISTTIMEFORMAT= history 1 | { read -r _ this_command; echo "$this_command"; })
 
     # Sanity check to make sure we have something to invoke our function with.
     if [[ -z "$this_command" ]]; then
@@ -176,7 +178,8 @@ __bp_preexec_invoke_exec() {
     for preexec_function in "${preexec_functions[@]}"; do
 
         # Only execute each function if it actually exists.
-        if [[ -n $(type -t $preexec_function) ]]; then
+        # Test existence of function with: declare -[fF]
+        if type -t "$preexec_function" 1>/dev/null; then
             $preexec_function "$this_command"
         fi
     done
@@ -203,7 +206,9 @@ __bp_preexec_and_precmd_install() {
     local existing_prompt_command
 
     if [[ -n "$PROMPT_COMMAND" ]]; then
-        existing_prompt_command=$(echo "$PROMPT_COMMAND" | sed '/; *$/!s/$/;/')
+        existing_prompt_command=${PROMPT_COMMAND%${PROMPT_COMMAND##*[![:space:]]}}
+        existing_prompt_command=${existing_prompt_command%;}
+        existing_prompt_command=${existing_prompt_command/%/;}
     else
         existing_prompt_command=""
     fi
