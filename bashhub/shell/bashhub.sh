@@ -23,14 +23,14 @@ __bh_setup_bashhub() {
        [[ -f $BH_DEPS_DIRECTORY/bash-preexec.sh ]]; then
 
         # Pull in our libs
-        source $BH_DEPS_DIRECTORY/lib-bashhub.sh
-        source $BH_DEPS_DIRECTORY/bash-preexec.sh
+        source "$BH_DEPS_DIRECTORY/lib-bashhub.sh"
+        source "$BH_DEPS_DIRECTORY/bash-preexec.sh"
 
         # Hook bashhub into preexec and precmd.
         __bh_hook_bashhub
 
         # Install our tab completion
-        source $BH_DEPS_DIRECTORY/bashhub_completion_handler.sh
+        source "$BH_DEPS_DIRECTORY/bashhub_completion_handler.sh"
     fi
 }
 
@@ -52,8 +52,8 @@ __bh_hook_bashhub() {
 
 __bh_bash_precmd() {
     if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
-        local command=$(head -n 1 $BH_HOME_DIRECTORY/response.bh)
-        rm $BH_HOME_DIRECTORY/response.bh
+        local command=$(head -n 1 "$BH_HOME_DIRECTORY/response.bh")
+        rm "$BH_HOME_DIRECTORY/response.bh"
         history -s "$command"
         echo "$command"
         eval "$command"
