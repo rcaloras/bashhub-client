@@ -40,11 +40,11 @@ __bh_hook_bashhub() {
     bind '"\C-b":"\C-u\C-kbh -i\n"'
 
     # Hook into preexec and precmd functions
-    if ! contains_element __bh_preexec $preexec_functions; then
+    if ! contains_element __bh_preexec "${preexec_functions[@]}"; then
         preexec_functions+=(__bh_preexec)
     fi
 
-    if ! contains_element __bh_precmd $precmd_functions; then
+    if ! contains_element __bh_precmd "${preexec_functions[@]}"; then
         precmd_functions+=(__bh_precmd)
         precmd_functions+=(__bh_bash_precmd)
     fi
