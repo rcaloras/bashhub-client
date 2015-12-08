@@ -113,9 +113,23 @@ Session PID 15311 Started 9 days ago
 Commands In Session: 3
 Commands Today: 47
 ```
+##Filtering Commands
+You can filter commands from being recorded to Bashhub via a regex set to the environment variable `BH_FILTER`. These commands will be ignored and omittted from Bashhub.
+```bash
+# Filter out any commands for postgres or ssh
+export BH_FILTER="(psql|ssh)"
+ssh rcaloras@some-ip-address # will not be saved
+```
 
-
-
+You can check the conifiguration of this command via the `bashhub filter` subcommand. 
+```bash
+# Check if a command is filtered by my regex
+export BH_FILTER="(-p)"
+bashhub filter "mysql -u root -p plain-text-password"
+BH_FILTER=(-p)
+mysql -u root -p plain-text-password 
+Is Filtered. Matched ['-p']
+```
 
 ##Ignoring Commands
 `#ignore` added to any command will omit it from being saved. Simply add it to the end of any command and it won't be recorded in Bashhub.
