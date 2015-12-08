@@ -121,7 +121,7 @@ export BH_FILTER="(psql|ssh)"
 ssh rcaloras@some-ip-address # will not be saved
 ```
 
-You can check the conifiguration of this command via the `bashhub filter` subcommand. 
+You can check the configuration of this command via the `bashhub filter` subcommand. 
 ```bash
 # Check if a command is filtered by my regex
 export BH_FILTER="(-p)"
