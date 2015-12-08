@@ -11,7 +11,7 @@
 # Author: Ryan Caloras (ryan@bashhub.com)
 # Forked from Original Author: Glyph Lefkowitz
 #
-# V0.2.1
+# V0.2.3
 #
 
 # General Usage:
@@ -39,6 +39,20 @@ if [[ "$__bp_imported" == "defined" ]]; then
     return 0
 fi
 __bp_imported="defined"
+
+
+# Remove ignorespace and or replace ignoreboth from HISTCONTROL
+# so we can accurately invoke preexec with a command from our
+# history even if it starts with a space.
+__bp_adjust_histcontrol() {
+    local histcontrol
+    histcontrol="${HISTCONTROL//ignorespace}"
+    # Replace ignoreboth with ignoredups
+    if [[ "$histcontrol" == *"ignoreboth"* ]]; then
+        histcontrol="ignoredups:${histcontrol//ignoreboth}"
+    fi;
+    export HISTCONTROL="$histcontrol"
+}
 
 # This variable describes whether we are currently in "interactive mode";
 # i.e. whether this shell has just executed a prompt and is waiting for user
@@ -71,10 +85,11 @@ __bp_precmd_invoke_cmd() {
 
     # For every function defined in our function array. Invoke it.
     local precmd_function
-    for precmd_function in ${precmd_functions[@]}; do
+    for precmd_function in "${precmd_functions[@]}"; do
 
         # Only execute this function if it actually exists.
-        if [[ -n $(type -t $precmd_function) ]]; then
+        # Test existence of functions with: declare -[Ff]
+        if type -t "$precmd_function" 1>/dev/null; then
             __bp_set_ret_value $ret_value
             $precmd_function
         fi
@@ -96,7 +111,7 @@ __bp_in_prompt_command() {
     local trimmed_arg
     trimmed_arg=$(__bp_trim_whitespace "$1")
 
-    local prompt_command_function
+    local command
     for command in "${prompt_command_array[@]}"; do
         local trimmed_command
         trimmed_command=$(__bp_trim_whitespace "$command")
@@ -146,10 +161,11 @@ __bp_preexec_invoke_exec() {
         return
     fi
 
-    local this_command="$(history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//g")";
+    local this_command
+    this_command=$(HISTTIMEFORMAT= history 1 | { read -r _ this_command; echo "$this_command"; })
 
     # Sanity check to make sure we have something to invoke our function with.
-    if [ -z "$this_command" ]; then
+    if [[ -z "$this_command" ]]; then
         return
     fi
 
@@ -162,7 +178,8 @@ __bp_preexec_invoke_exec() {
     for preexec_function in "${preexec_functions[@]}"; do
 
         # Only execute each function if it actually exists.
-        if [[ -n $(type -t $preexec_function) ]]; then
+        # Test existence of function with: declare -[fF]
+        if type -t "$preexec_function" 1>/dev/null; then
             $preexec_function "$this_command"
         fi
     done
@@ -172,7 +189,7 @@ __bp_preexec_invoke_exec() {
 __bp_preexec_and_precmd_install() {
 
     # Make sure this is bash that's running this and return otherwise.
-    if [ -z "$BASH_VERSION" ]; then
+    if [[ -z "$BASH_VERSION" ]]; then
         return 1;
     fi
 
@@ -181,12 +198,17 @@ __bp_preexec_and_precmd_install() {
         return 1;
     fi
 
+    # Adjust our HISTCONTROL Variable if needed.
+    __bp_adjust_histcontrol
+
     # Take our existing prompt command and append a semicolon to it
     # if it doesn't already have one.
     local existing_prompt_command
 
-    if [ -n "$PROMPT_COMMAND" ]; then
-        existing_prompt_command=$(echo "$PROMPT_COMMAND" | sed '/; *$/!s/$/;/')
+    if [[ -n "$PROMPT_COMMAND" ]]; then
+        existing_prompt_command=${PROMPT_COMMAND%${PROMPT_COMMAND##*[![:space:]]}}
+        existing_prompt_command=${existing_prompt_command%;}
+        existing_prompt_command=${existing_prompt_command/%/;}
     else
         existing_prompt_command=""
     fi
