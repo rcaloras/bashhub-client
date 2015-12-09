@@ -12,6 +12,21 @@ teardown() {
   fi
 }
 
+@test "contains_element should check if an element exists in an array" {
+
+  array=("one" "two" "three")
+
+  # Should find an element
+  run contains_element "one" "${array[@]}"
+  [[ $status == 0 ]]
+
+  # Should not find an element
+  run contains_element "four" "${array[@]}"
+  [[ $status == 1 ]]
+
+}
+
+
 @test "__bh_precmd should check if our home directory exists" {
   BH_HOME_DIRECTORY="$non-existent"
   __BH_SAVE_COMMAND="something to save"
