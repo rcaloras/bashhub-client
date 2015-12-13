@@ -2,7 +2,6 @@
 
 import npyscreen
 import datetime
-import curses
 import time
 import rest_client
 import curses
@@ -20,10 +19,14 @@ class CommandList(npyscreen.MultiLineAction):
 
         # All handlers for when a command is highlighted
         self.add_command_handlers({
+            ord("i"):  self.go_to_command_details,
+            curses.ascii.SP:  self.go_to_command_details,
             curses.ascii.NL:  self.select_command,
             curses.ascii.CR:  self.select_command,
-            curses.ascii.SP:  self.go_to_command_details,
-            ord("i"):  self.go_to_command_details
+            curses.ascii.BS: self.delete_command,
+            curses.ascii.DEL: self.delete_command,
+            curses.KEY_BACKSPACE: self.delete_command,
+            curses.KEY_DC: self.delete_command
         })
 
         # Disable handling of ALL mouse events right now. Without this we're
@@ -32,6 +35,15 @@ class CommandList(npyscreen.MultiLineAction):
         # automatically execute the command. Eventually find a way to allow this.
         # It'd be nice to allow clicking to select a line.
         curses.mousemask(0)
+
+
+    def delete_command(self, command):
+       confirmed = npyscreen.notify_ok_cancel(command.command, "Delete Command")
+       if confirmed:
+           result = rest_client.delete_command(command.uuid)
+           if result:
+               self.parent.parentApp.commands.remove(command)
+               self.parent.update_list()
 
     def exit_app(self, vl):
         self.parent.parentApp.switchForm(None)

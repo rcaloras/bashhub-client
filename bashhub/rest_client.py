@@ -64,6 +64,21 @@ def get_command(uuid):
 
     return None
 
+def delete_command(uuid):
+
+    url = BH_URL + "/api/v1/command/{0}".format(uuid)
+
+    try:
+        response = requests.delete(url, headers=base_headers)
+        response.raise_for_status()
+        return uuid
+
+    except ConnectionError as error:
+        pass
+    except HTTPError as error:
+            print(error)
+
+    return None
 
 def authenticate_user(credentials):
 
