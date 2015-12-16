@@ -38,7 +38,7 @@ class CommandList(npyscreen.MultiLineAction):
 
 
     def delete_command(self, command):
-       confirmed = npyscreen.notify_ok_cancel(command.command, "Delete Command")
+       confirmed = npyscreen.notify_ok_cancel(command.command.encode('utf8'), "Delete Command")
        if confirmed:
            result = rest_client.delete_command(command.uuid)
            if result:
