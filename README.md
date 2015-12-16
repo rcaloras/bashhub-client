@@ -139,7 +139,7 @@ $ echo "this command won't be saved" #ignore
 ```
 
 ##Deleting Commands
-You can delete commands from Bashhub through interactive search by pressing `Delete` or `Backspace` while a command is highlited. A small dialog box will open to confirm the commands deletion. If a command is deleted it is permanently removed from Bashhub.
+You can delete commands from Bashhub through interactive search by pressing `Delete` or `Backspace` while a command is highlighted. A small dialog box will open to confirm the commands deletion. If a command is deleted, it is permanently removed from Bashhub.
 
 ![gif](http://i.imgur.com/sHzvEJx.gif)
 
