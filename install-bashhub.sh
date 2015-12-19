@@ -51,7 +51,8 @@ install_bashhub() {
 
 get_and_check_python_version() {
     # Only supporting 2.6 - 2.7 right now. Eventually bump this to include 3.
-    python_version_array=( "python" "python2" "python26" "python2.6" "python27" "python2.7")
+    # Preface explict versions first to avoid global updates to 3.
+    python_version_array=( "python2.7" "python27" "python2.6" "python26" "python2" "python")
 
     for python_version in "${python_version_array[@]}"; do
         if [[ -e $(which "$python_version") ]]; then
