@@ -8,6 +8,7 @@ Bashhub saves every terminal command entered across all sessions and systems and
 - Super command search by using context about how commands are executed. 
   - e.g. the directory, session, system, exit status, etc.
 - Unlimited detailed terminal history stored in the cloud.
+  - Stored privately and encrypted at rest.
 - Support across systems. Access your terminal history from anywhere!
 - Support for Bash and Zsh with a sweet cli for everything. 
 
