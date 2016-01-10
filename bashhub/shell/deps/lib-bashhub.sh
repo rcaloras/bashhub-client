@@ -112,7 +112,7 @@ __bh_process_command() {
     # both convert to epoch differently. Using python for cross system
     # compatibility.
     local process_start_stamp
-    process_start_stamp=$(ps -p $$ -o lstart=)
+    process_start_stamp=$(LC_ALL=C ps -p $$ -o lstart=)
 
     local process_start=$($BH_EXEC_DIRECTORY/bashhub util parsedate "$process_start_stamp")
     local working_directory="$__BH_PWD"
