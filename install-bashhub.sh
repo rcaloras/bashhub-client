@@ -82,7 +82,7 @@ download_and_install_env() {
 
     # Set to whatever python interpreter you want for your first environment
     PYTHON=$(which $python_command)
-    URL_BASE=http://pypi.python.org/packages/source/v/virtualenv
+    URL_BASE=https://pypi.python.org/packages/source/v/virtualenv
 
     # --- Real work starts here ---
     curl -OL  $URL_BASE/virtualenv-$VERSION.tar.gz
