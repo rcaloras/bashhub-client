@@ -127,7 +127,7 @@ def update(version):
              click.echo("Invalid version number {0}".format(version))
              sys.exit(1)
 
-    url = 'http://bashhub.com/setup'
+    url = 'https://bashhub.com/setup'
     response = requests.get(url, stream=True)
     filename = 'update-bashhub.sh'
     with open(filename, 'wb') as out_file:

@@ -33,7 +33,7 @@ exec(open('bashhub/version.py').read())
 setup(name='bashhub',
         version='__version__',
         description='Bashhub.com python client',
-        url='http://github.com/rcaloras',
+        url='https://github.com/rcaloras',
         author='Ryan Caloras',
         author_email='ryan@bashhub.com',
         license='MIT',
