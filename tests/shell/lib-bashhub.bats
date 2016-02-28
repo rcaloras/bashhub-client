@@ -2,7 +2,7 @@
 
 setup() {
   BH_HOME_DIRECTORY="$BATS_TMPDIR"
-  touch "$BATS_TMPDIR/.config"
+  touch "$BATS_TMPDIR/config"
   source "${BATS_TEST_DIRNAME}"/../../bashhub/shell/deps/lib-bashhub.sh
 }
 

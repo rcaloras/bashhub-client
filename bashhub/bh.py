@@ -18,10 +18,10 @@ from i_search import InteractiveSearch
 def bh(app):
     """Parse command line arguments and call our REST API"""
     limit = app.params.number
-    user_id = BH_USER_ID
     query = app.params.query
-    system_id = BH_SYSTEM_ID if app.params.system else None
+    system_name = BH_SYSTEM_NAME if app.params.system else None
     path = os.getcwd() if app.params.directory else None
+
     # By default show unique on the client.
     unique = not app.params.duplicates
 
@@ -31,11 +31,10 @@ def bh(app):
 
     # Call our rest api to search for commands
     commands = rest_client.search(
-      user_id = user_id,
       limit = limit,
       path = path,
       query = query,
-      system_id = system_id,
+      system_name = system_name,
       unique = unique)
 
     if app.params.interactive:
@@ -58,7 +57,7 @@ def run_interactive(commands):
         print(unicode(command.command), file=f)
 
 bh.add_param("-n", "--number", help="Limit the number of previous commands. \
-        Default is 100.", default=100, type=int)
+        Default is 100.", default=None, type=int)
 
 bh.add_param("query", nargs='?', help="Like string to search for", \
         default="", type=str)

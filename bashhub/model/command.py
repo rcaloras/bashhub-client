@@ -30,10 +30,12 @@ class RegisterUser(Serializable):
         self.password = password
         self.registration_code = registration_code
 
-class UserCredentials(object):
-    def __init__(self, username, password):
+class LoginForm(Serializable):
+    def __init__(self, username, password, mac = None):
         self.username = username
         self.password = password
+        self.mac = mac
 
-    def to_JSON(self):
-        return jsonpickle.encode(self)
+class LoginResponse(Serializable):
+    def __init__(self, acces_token):
+        self.access_token = access_token

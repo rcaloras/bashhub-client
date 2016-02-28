@@ -13,5 +13,3 @@ class StatusView(Serializable):
         self.session_name = session_name
         self.session_start_time = session_start_time
         self.session_total_commands = session_total_commands
-
-

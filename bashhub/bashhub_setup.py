@@ -17,6 +17,9 @@ from bashhub_globals import *
 import requests
 from requests import ConnectionError
 from requests import HTTPError
+import ConfigParser
+import collections
+
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
@@ -28,8 +31,7 @@ def query_yes_no(question, default="yes"):
 
     The "answer" return value is one of "yes" or "no".
     """
-    valid = {"yes":True,   "y":True,  "ye":True,
-             "no":False,     "n":False}
+    valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
     if default == None:
         prompt = " [y/n] "
     elif default == "yes":
@@ -47,26 +49,9 @@ def query_yes_no(question, default="yes"):
         elif choice in valid:
             return valid[choice]
         else:
-            sys.stdout.write("Please respond with 'yes' or 'no' "\
+            sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
-def register_new_system(register_system):
-    url = BH_URL + "/system/register"
-    headers = {'content-type': 'application/json'}
-    try:
-        response = requests.post(url, data=register_system.to_JSON(), headers=headers)
-        response.raise_for_status()
-        return response.json()
-
-    except ConnectionError as error:
-        print "Looks like there's a connection error. Please try again later"
-    except HTTPError as error:
-        if response.status_code == 409:
-            print response.text
-        else:
-            print error
-            print "Please try again..."
-    return None
 
 def get_new_user_information():
     email = raw_input("What's your email? ")
@@ -80,70 +65,95 @@ def get_new_user_information():
     else:
         return get_new_user_information()
 
-def get_existing_user_information(attempts=0):
+
+def get_user_information_and_login(username=None, password=None, attempts=0):
     if attempts == 4:
-        print("Too many bad attempts")
+        print("Too many bad attempts.")
         return None
 
-    print("Please enter your bashhub credentials")
-    username = raw_input("Username: ")
-    password = getpass.getpass("Password: ")
-    user = rest_client.authenticate_user(UserCredentials(username, password))
+    # Only collect user information if we don't already have it
+    # i.e. if we didn't just register a new user.
+    if username == None and password == None:
+        print("Please enter your bashhub credentials")
+        username = raw_input("Username: ")
+        password = getpass.getpass("Password: ")
 
-    return user or get_existing_user_information(attempts+1)
+    # login once we have all of our information
+    access_token = rest_client.login_user(LoginForm(username, password))
+
+    # Package our result to include our credentials to later login our system.
+    if access_token:
+        result = (username, password, access_token)
+    else:
+        result = get_user_information_and_login(attempts=attempts + 1) or (
+            None, None, None)
+
+    return result
+
 
 # Update our hostname incase it changed.
-def update_system_info(system_id):
+def update_system_info():
+    mac = uuid.getnode().__str__()
     hostname = socket.gethostname()
-    patch = SystemPatch(hostname = hostname, client_version = __version__)
-    rest_client.patch_system(patch, system_id)
+    patch = SystemPatch(hostname=hostname, client_version=__version__)
+    rest_client.patch_system(patch, mac)
 
-def get_system_information(mac, user_id):
 
-    url = BH_URL + '/system'
-    payload = {'userId' : user_id, 'mac' : mac}
-    try:
-        response = requests.get(url, params=payload)
-        response.raise_for_status()
-        system_json = json.dumps(response.json())
-        return System.from_JSON(system_json)
-    except ConnectionError as error:
-        print "Looks like there's a connection error. Please try again later"
-    except HTTPError as error:
-        return None
-
-def handle_system_information(user_id):
+def handle_system_information(username, password):
 
     mac = uuid.getnode().__str__()
-    system = get_system_information(mac, user_id)
-   # If this system is already registered
-    if system is not None:
-        update_system_info(system.id)
-        print("Welcome back! Looks like this box is already registered as " +
-                system.name + ".")
-        return system.id
-    else:
+    system = rest_client.get_system_information(mac)
+    system_name = None
+    # Register a new System if this one isn't recognized
+    if system is None:
         hostname = socket.gethostname()
-        name_input = raw_input("What do you want to call this system? " + \
-                "For example Home, File Server, ect. [%s]: " % hostname)
+        name_input = raw_input("What do you want to call this system? " +
+                               "For example Home, File Server, ect. [%s]: " % hostname)
 
         name = name_input or hostname
-        system = RegisterSystem(name, mac, user_id, hostname, __version__)
-        system_id = register_new_system(system)
-        return  system_id
+        system_name = rest_client.register_system(RegisterSystem(
+            name, mac, hostname, __version__))
+        if system_name:
+            print("Registered a new system " + name)
+        else:
+            return (None, None)
+
+    # Login with this new system
+    access_token = rest_client.login_user(LoginForm(username, password, mac))
+
+    if access_token is None:
+        print("Failed to login with system.")
+        return (None, None)
+
+    # If this system is already registered
+    if system is not None:
+        system_name = system.name
+        print("Welcome back! Looks like this box is already registered as " +
+              system.name + ".")
+
+    return (access_token, system_name)
 
 
-def write_config_file(user_id, system_id):
+def write_to_config_file(section, value):
     exists = os.path.exists(BH_HOME)
-    file_path = BH_HOME + '/.config'
+    file_path = BH_HOME + '/config'
     permissions = stat.S_IRUSR | stat.S_IWUSR
     if exists:
+        config = ConfigParser.ConfigParser()
+        config.read(BH_HOME + '/config')
+        # Add our section if it doesn't exist
+        if not config.has_section("bashhub"):
+            config.add_section("bashhub")
+
+        config.set("bashhub", section, value)
         with open(file_path, 'w') as config_file:
-          config_file.write("export BH_USER_ID=\"" + user_id + "\"\n")
-          config_file.write("export BH_SYSTEM_ID=\"" + system_id + "\"\n")
-          os.chmod(file_path, permissions)
+            config.write(config_file)
+            os.chmod(file_path, permissions)
+        return True
     else:
-        print "Couldn't find bashhub home directory. Sorry."
+        print("Couldn't find bashhub home directory. Sorry.")
+        return False
+
 
 def main():
     try:
@@ -157,37 +167,60 @@ def main():
          |____/ \__,_|___/_| |_|_| |_|\__,_|_.__(_)___\___/|_| |_| |_|
 
         """
+
         print(ascii_art)
         print("Welcome to bashhub setup!")
         is_new_user = query_yes_no("Are you a new user?")
-        user_id = None
+
+        # Initialize variaous Credentials for logging in.
+        username = None
+        password = None
+        access_token = None
+
+        # If this is a new user walk them through the registration flow
         if is_new_user:
             register_user = get_new_user_information()
-            user_id = rest_client.register_user(register_user)
-            if user_id != None:
-                print("Registered new user {0}\n".format(register_user.username))
+            register_result = rest_client.register_user(register_user)
+            if register_result:
+                print("Registered new user {0}\n".format(
+                    register_user.username))
+                # Set our credentials to login later
+                username = register_user.username
+                password = register_user.password
             else:
                 print("Sorry, registering a new user failed.")
-        else:
-            user_id = get_existing_user_information()
-            if user_id == None:
-                print("\nSorry looks like logging in failed.")
-                print("If you forgot your password please reset it. "
-                      "https://bashhub.com/password-reset")
+                print("You can rerun setup using 'bashhub setup' in a new "
+                  "terminal window.\n")
+                sys.exit(0)
 
-        if user_id == None:
+        (username, password, access_token) = get_user_information_and_login(
+            username, password)
+        if access_token == None:
+            print("\nSorry looks like logging in failed.")
+            print("If you forgot your password please reset it. "
+                  "https://bashhub.com/password-reset")
             print("You can rerun setup using 'bashhub setup' in a new "
                   "terminal window.\n")
             sys.exit(0)
 
-        system_id = handle_system_information(user_id)
+        # write out our user scoped access token
+        config_write_result = write_to_config_file("access_token", access_token)
+        if not config_write_result:
+            print("Writing your config file failed.")
+            sys.exit(1)
 
-        if system_id == None:
+        (access_token, system_name) = handle_system_information(username, password)
+
+        if access_token == None:
             print("Sorry looks like getting your info failed.\
                     Exiting...")
             sys.exit(0)
 
-        write_config_file(user_id, system_id)
+        # write out our system scoped token and the system name
+        write_to_config_file("access_token", access_token)
+        write_to_config_file("system_name", system_name)
+        update_system_info()
+
         sys.exit(0)
 
     except Exception, err:
@@ -199,5 +232,6 @@ def main():
         print
         sys.exit()
 
-if __name__== "__main__":
+
+if __name__ == "__main__":
     main()

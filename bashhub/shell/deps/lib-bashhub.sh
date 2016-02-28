@@ -4,10 +4,6 @@
 # shell functions between bash and zsh
 #
 
-__bh_include() {
-    [[ -f "$1" ]] && source "$1"
-}
-
 __bh_path_add() {
     if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
         PATH="${PATH:+"$PATH:"}$1"
@@ -29,10 +25,6 @@ contains_element() {
 
 # Make sure our bin directory is on our path
 __bh_path_add "$HOME/.bashhub/bin"
-
-# Include our user configuration
-__bh_include "${BH_HOME_DIRECTORY:=~/.bashhub}/.config"
-
 
 #
 # Function to be run by our preexec hook.
@@ -88,21 +80,13 @@ __bh_process_command() {
     bh_command=$(BH_TRIM_WHITESPACE "$1")
 
     # Sanity empty check
-    if [[ -z "$bh_command" ]];
-    then
-        exit 0;
-    fi;
-
-    # Check to make sure we have valid tokens
-    if [[ -z "$BH_USER_ID" ]] || [[ -z "$BH_SYSTEM_ID" ]];
-    then
+    if [[ -z "$bh_command" ]]; then
         exit 0;
     fi;
 
     # Check to make sure bashhub is still installed. Otherwise, this will
     # simply fail and spam the user that files dont exist.
-    if [[ ! -f $BH_EXEC_DIRECTORY/bashhub ]];
-    then
+    if ! type "bashhub" &> /dev/null; then
         exit 0;
     fi;
 
@@ -114,11 +98,11 @@ __bh_process_command() {
     local process_start_stamp
     process_start_stamp=$(LC_ALL=C ps -p $$ -o lstart=)
 
-    local process_start=$($BH_EXEC_DIRECTORY/bashhub util parsedate "$process_start_stamp")
+    local process_start=$(bashhub util parsedate "$process_start_stamp")
     local working_directory="$__BH_PWD"
     local exit_status="$__BH_EXIT_STATUS"
 
-    ($BH_EXEC_DIRECTORY/bashhub save "$bh_command" "$working_directory" \
+    (bashhub save "$bh_command" "$working_directory" \
     "$process_id" "$process_start" "$exit_status"&)
 }
 

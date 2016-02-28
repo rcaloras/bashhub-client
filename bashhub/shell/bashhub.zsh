@@ -9,9 +9,7 @@ if [[ "$__bh_imported" == "defined" ]]; then
 fi
 __bh_imported="defined"
 
-
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
-export BH_EXEC_DIRECTORY="$HOME/.bashhub/env/bin"
 
 BH_DEPS_DIRECTORY=${BH_DEPS_DIRECTORY:=$BH_HOME_DIRECTORY/deps}
 

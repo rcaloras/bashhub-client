@@ -36,7 +36,6 @@ def test_bashhub_save():
     assert '' == result.output
 
     # Should omit saving a command if BH_FILTER regex is set
-    #bashhub_globals = Temp()
     bashhub_globals.BH_FILTER = 'echo'
     result = runner.invoke(bashhub, args)
     assert '' == result.output

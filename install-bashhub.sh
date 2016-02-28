@@ -35,7 +35,7 @@ if (2, 6, 0) < sys.version_info < (3,0):
 else:
   sys.exit(-1)'
 
-bashhub_config=~/.bashhub/.config
+bashhub_config=~/.bashhub/config
 backup_config=~/.bashhub.config.backup
 zshprofile=~/.zshrc
 
@@ -242,8 +242,8 @@ setup_bashhub_files() {
         chmod 600 "$bashhub_config"
         rm "$backup_config"
 
-        # Update our system info with bashhub.com
-        if [ -n "$BH_SYSTEM_ID" ]; then
+        # Update our system info if we've got an access token
+        if grep -Fq "access_token" "$bashhub_config"; then
             ../env/bin/bashhub util update_system_info
         fi
     else
@@ -261,7 +261,7 @@ setup_bashhub_files() {
     rm client.tar.gz
     rm -r bashhub-client*
 
-    if [ -f ~/.bashhub/.config ]; then
+    if [ -e "$bashhub_config" ]; then
         echo "Should be good to go! Please close and restart your terminal session."
     else
         echo "Please run 'bashhub setup' after restarting your terminal session."

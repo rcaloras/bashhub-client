@@ -22,10 +22,9 @@ class System(Serializable):
 
 class RegisterSystem(Serializable):
 
-    def __init__(self, name, mac, user_id, hostname, client_version):
+    def __init__(self, name, mac, hostname, client_version):
         self.name = name
         self.mac = mac
-        self.user_id = user_id
         self.hostname = hostname
         self.client_version = client_version
 

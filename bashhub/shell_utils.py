@@ -1,10 +1,9 @@
 import os
 from bashhub_globals import *
-from model import UserContext
 import dateutil.parser
 from time import *
 
-def build_user_context():
+def get_session_information():
     ppid = os.getppid()
 
     # Non standard across systems GNU Date and BSD Date
@@ -14,4 +13,4 @@ def build_user_context():
     date_string = os.popen(start_time_command).read().strip()
     date = dateutil.parser.parse(date_string)
     start_time = int(mktime(date.timetuple()))*1000
-    return UserContext(ppid, start_time, BH_USER_ID, BH_SYSTEM_ID)
+    return (ppid, start_time)

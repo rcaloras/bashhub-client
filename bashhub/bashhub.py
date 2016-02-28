@@ -7,11 +7,10 @@ import sys
 import os
 
 from model import CommandForm
-from model import UserContext
 import rest_client
 import bashhub_setup
 import bashhub_globals
-from bashhub_globals import BH_USER_ID, BH_SYSTEM_ID, BH_FILTER
+from bashhub_globals import BH_FILTER
 from version import __version__
 import shutil
 import requests
@@ -61,8 +60,7 @@ def save(command, path, pid, process_start_time, exit_status):
     if bh_filter and re.findall(bh_filter, command):
         return
 
-    context = UserContext(pid, pid_start_time, BH_USER_ID, BH_SYSTEM_ID)
-    command = CommandForm(command, path, exit_status, context)
+    command = CommandForm(command, path, exit_status, pid, pid_start_time)
     rest_client.save_command(command)
 
 @bashhub.command()
@@ -74,9 +72,10 @@ def setup():
 def status():
     """Stats for this session and user"""
     # Get our user and session information from our context
-    user_context = shell_utils.build_user_context()
-    status_view = rest_client.get_status_view(user_context)
-    click.echo(build_status_view(status_view))
+    (ppid, start_time) = shell_utils.get_session_information()
+    status_view = rest_client.get_status_view(ppid, start_time)
+    if status_view:
+      click.echo(build_status_view(status_view))
 
 
 @bashhub.command()
@@ -145,7 +144,7 @@ def util():
 @util.command()
 def update_system_info():
     """Updates system info for bashhub.com"""
-    bashhub_setup.update_system_info(BH_SYSTEM_ID)
+    bashhub_setup.update_system_info()
 
 @util.command()
 @click.argument('date_string', type=str)
@@ -167,6 +166,7 @@ def main():
         bashhub()
     except Exception as e:
         formatted = traceback.format_exc(e)
+        print(formatted)
         click.echo("Oops, looks like an exception occured: " + str(e))
         sys.exit(1)
 
