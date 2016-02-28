@@ -1,1 +1,1 @@
-__version__ =   '0.0.16-dev+jwt'
+__version__ =   '1.0.0-dev'
