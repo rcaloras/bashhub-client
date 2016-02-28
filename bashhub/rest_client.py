@@ -26,10 +26,10 @@ json_headers = dict(
 
 
 def json_auth_headers():
-    return dict({'Authorization': 'Bearer {}'.format(BH_AUTH())}, **
+    return dict({'Authorization': 'Bearer {0}'.format(BH_AUTH())}, **
                 json_headers)
 def base_auth_headers():
-  return dict({'Authorization': 'Bearer {}'.format(BH_AUTH())}, **
+  return dict({'Authorization': 'Bearer {0}'.format(BH_AUTH())}, **
                 base_headers)
 
 
