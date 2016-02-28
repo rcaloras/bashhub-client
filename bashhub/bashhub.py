@@ -115,18 +115,19 @@ def filter(command, regex):
         click.echo("{0} \nIs Unfiltered".format(command))
 
 @bashhub.command()
-@click.argument('version', type=str, default="")
+@click.argument('version', type=str, default='')
 def update(version):
     """Update your bashhub installation"""
 
-    if version !=  "":
+    if version != '':
          github = "https://github.com/rcaloras/bashhub-client/archive/{0}.tar.gz".format(version)
          response = requests.get(github)
          if response.status_code is not 200:
              click.echo("Invalid version number {0}".format(version))
              sys.exit(1)
 
-    url = 'https://bashhub.com/setup'
+    query_param = '?version={0}'.format(version) if version else ''
+    url = 'https://bashhub.com/setup' + query_param
     response = requests.get(url, stream=True)
     filename = 'update-bashhub.sh'
     with open(filename, 'wb') as out_file:
