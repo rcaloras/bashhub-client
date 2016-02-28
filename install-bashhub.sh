@@ -55,7 +55,7 @@ get_and_check_python_version() {
     python_version_array=( "python2.7" "python27" "python2.6" "python26" "python2" "python")
 
     for python_version in "${python_version_array[@]}"; do
-        if [[ -e $(which "$python_version") ]]; then
+        if type "$python_version" &> /dev/null; then
             if "$python_version" -c "$python_command"; then
                 echo "$python_version"
                 return 0

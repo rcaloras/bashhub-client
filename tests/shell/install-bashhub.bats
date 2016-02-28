@@ -31,8 +31,6 @@ setup() {
 
 @test "get_and_check_python_version should find python2.7 first" {
    # Mock up some fake responses here.
-  path=$(which python)
-  which() { echo $path; }
   python2.7() { return 0; }
 
   run 'get_and_check_python_version'
@@ -67,7 +65,7 @@ setup() {
 
 @test "get_and_check_python_version should fail if there's no valid python versions" {
   # Mock up which to not work for anything.
-  which() { return 1; }
+  type() { return 1; }
 
   run 'get_and_check_python_version'
   [[ $status == 1 ]]
