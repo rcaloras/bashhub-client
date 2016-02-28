@@ -166,7 +166,6 @@ def main():
         bashhub()
     except Exception as e:
         formatted = traceback.format_exc(e)
-        print(formatted)
         click.echo("Oops, looks like an exception occured: " + str(e))
         sys.exit(1)
 
