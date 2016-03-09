@@ -156,10 +156,11 @@ def patch_system(system_patch, mac):
                            data=system_patch.to_JSON(),
                            headers=json_auth_headers())
         r.raise_for_status()
-        r.status_code
+        return r.status_code
     except Exception as error:
-        print("Sorry, looks likes an error occured " + str(error))
-        None
+        if r.status_code == 403 or 401:
+            print("Permissons Issue. Run bashhub setup to re-login.")
+        return None
 
 
 def search(limit=None, path=None, query=None, system_name=None, unique=None):

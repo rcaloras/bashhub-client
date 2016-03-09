@@ -96,7 +96,7 @@ def update_system_info():
     mac = uuid.getnode().__str__()
     hostname = socket.gethostname()
     patch = SystemPatch(hostname=hostname, client_version=__version__)
-    rest_client.patch_system(patch, mac)
+    return rest_client.patch_system(patch, mac)
 
 
 def handle_system_information(username, password):

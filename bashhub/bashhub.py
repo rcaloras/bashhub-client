@@ -145,7 +145,9 @@ def util():
 @util.command()
 def update_system_info():
     """Updates system info for bashhub.com"""
-    bashhub_setup.update_system_info()
+    result = bashhub_setup.update_system_info()
+    # Exit code based on if our update call was successful
+    sys.exit(0) if result != None else sys.exit(1)
 
 @util.command()
 @click.argument('date_string', type=str)
