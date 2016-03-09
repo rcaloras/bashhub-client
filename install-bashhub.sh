@@ -245,6 +245,12 @@ setup_bashhub_files() {
         # Update our system info if we've got an access token
         if grep -Fq "access_token" "$bashhub_config"; then
             ../env/bin/bashhub util update_system_info
+
+            # Possibly an issue with our access token
+            # Lets rerun setup just to be safe.
+            if [[ "$?" != 0 ]]; then
+                ../env/bin/bashhub setup
+            fi
         fi
     else
         # Setup our config file
