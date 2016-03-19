@@ -237,9 +237,6 @@ setup_bashhub_files() {
     # Check if we already have a config. If not run setup.
     if [ -e $backup_config ]; then
         cp "$backup_config" "$bashhub_config"
-
-        # Make sure our config is only readable to us.
-        chmod 600 "$bashhub_config"
         rm "$backup_config"
 
         # Update our system info if we've got an access token
@@ -266,6 +263,10 @@ setup_bashhub_files() {
     cd ~/.bashhub
     rm client.tar.gz
     rm -r bashhub-client*
+
+    # Make sure our config is only readable to us.
+    chmod 600 "$bashhub_config"
+    chmod 700 ~/.bashhub
 
     if [ -e "$bashhub_config" ]; then
         echo "Should be good to go! Please close and restart your terminal session."
