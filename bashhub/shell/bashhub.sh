@@ -5,8 +5,10 @@
 
 # Avoid duplicate inclusion
 if [[ "$__bh_imported" == "defined" ]]; then
+    __bh_path_add "$HOME/.bashhub/bin"
     return 0
 fi
+
 __bh_imported="defined"
 
 export BH_HOME_DIRECTORY="$HOME/.bashhub/"
