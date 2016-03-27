@@ -40,6 +40,15 @@ def test_bashhub_save():
     result = runner.invoke(bashhub, args)
     assert '' == result.output
 
+    def no_auth_token():
+        return ''
+
+   # Should not try to save a command if we don't have an auth token
+    bashhub_globals.BH_AUTH = no_auth_token
+    result = runner.invoke(bashhub, ['save', 'date', '/tmp', '1', '1000','1'])
+    error_message = "No auth token found. Run 'bashhub setup' to login.\n"
+    assert error_message == result.output
+
 def test_bashhub_version():
     runner = CliRunner()
     result = runner.invoke(bashhub, ['version'])

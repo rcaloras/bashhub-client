@@ -60,6 +60,11 @@ def save(command, path, pid, process_start_time, exit_status):
     if bh_filter and re.findall(bh_filter, command):
         return
 
+    # Check that we have an auth token.
+    if bashhub_globals.BH_AUTH() == "":
+        print("No auth token found. Run 'bashhub setup' to login.")
+        return
+
     command = CommandForm(command, path, exit_status, pid, pid_start_time)
     rest_client.save_command(command)
 
