@@ -70,7 +70,7 @@ def login_user(login_form):
         print("Looks like there's a connection error. Please try again later")
         return None
     except HTTPError as error:
-        if response.status_code == 409 or 401:
+        if response.status_code in (409, 401):
             print(response.text)
         else:
             print(error)
@@ -158,10 +158,9 @@ def patch_system(system_patch, mac):
         r.raise_for_status()
         return r.status_code
     except Exception as error:
-        if r.status_code == 403 or 401:
+        if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
         return None
-
 
 def search(limit=None, path=None, query=None, system_name=None, unique=None):
 
@@ -190,11 +189,10 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None):
     except ConnectionError as error:
         print "Sorry, looks like there's a connection error. Please try again later"
     except Exception as error:
-        if r.status_code == 403 or 401:
+        if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
+        print("Sorry, an error occurred communicating with Bashhub. Response Code: " + str(r.status_code))
     return []
-
-
 
 def save_command(command):
     url = BH_URL + "/api/v1/command"
@@ -205,7 +203,7 @@ def save_command(command):
         print "Sorry, looks like there's a connection error"
         pass
     except Exception as error:
-        if r.status_code == 403 or 401:
+        if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
 
 
@@ -219,7 +217,7 @@ def get_status_view(process_id, start_time):
         status_view_json = json.dumps(r.json())
         return StatusView.from_JSON(status_view_json)
     except Exception as error:
-      if r.status_code == 403 or 401:
+      if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
       else:
         print("Sorry, looks like there's a connection error: " + str(error))
