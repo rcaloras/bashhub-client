@@ -149,5 +149,4 @@ You can delete commands from Bashhub through interactive search by pressing `Del
 Feel free to post in:
 https://github.com/rcaloras/bashhub-client/issues
 
-You can also check out and add to our Trello board:
-https://trello.com/b/m6VZdrnQ/bashhub
+You can also get support and follow updates [@Bashhub](https://twitter.com/bashhub) on Twitter.
