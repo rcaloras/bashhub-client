@@ -17,7 +17,7 @@ from i_search import InteractiveSearch
 
 @cli.app.CommandLineApp
 def bh(app):
-    """Parse command line arguments and call our REST API"""
+    """Bashhub Search"""
     limit = app.params.number
     query = app.params.query
     system_name = BH_SYSTEM_NAME if app.params.system else None
