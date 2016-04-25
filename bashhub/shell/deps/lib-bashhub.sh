@@ -77,7 +77,7 @@ __bh_precmd() {
 __bh_process_command() {
 
     local bh_command
-    bh_command=$(BH_TRIM_WHITESPACE "$1")
+    bh_command=$(__bh_trim_whitespace "$1")
 
     # Sanity empty check
     if [[ -z "$bh_command" ]]; then
@@ -106,7 +106,7 @@ __bh_process_command() {
     "$process_id" "$process_start" "$exit_status"&)
 }
 
-BH_TRIM_WHITESPACE() {
+__bh_trim_whitespace() {
     local var=$@
     var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
     var="${var%"${var##*[![:space:]]}"}"   # remove trailing whitespace characters
