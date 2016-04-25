@@ -27,6 +27,42 @@ teardown() {
 }
 
 
+@test "__bh_check_bashhub_installation should find issues and run only once." {
+
+  # Bash but no trap.
+  run '__bh_check_bashhub_installation'
+  [[ $status == 1 ]]
+
+  # To skip trap check
+  unset BASH_VERSION
+  run '__bh_check_bashhub_installation'
+  [[ $status == 3 ]]
+
+
+  # Check that we succeed on the check and remove from precmd_functions
+  # That way it only runs exactly once.
+  echo "access_token=12345" >> "$BATS_TMPDIR/config"
+  precmd_functions+=(__bh_check_bashhub_installation __bh_something_else)
+  __bh_check_bashhub_installation
+  [[ $? == 0 ]]
+  run contains_element "__bh_check_bashhub_installation" "${precmd_functions[@]}"
+  [[ $status == 1 ]]
+  run contains_element "__bh_something_else" "${precmd_functions[@]}"
+  [[ $status == 0 ]]
+
+}
+
+@test "__bh_check_bashhub_installation should find we're missing a config" {
+
+  # Bash and trap.
+  trap() { echo "__bp_preexec_invoke_exec"; }
+
+  # No config file
+  rm "$BATS_TMPDIR/config"
+  run '__bh_check_bashhub_installation'
+  [[ $status == 2 ]]
+}
+
 @test "__bh_precmd should check if our home directory exists" {
   BH_HOME_DIRECTORY="$non-existent"
   __BH_SAVE_COMMAND="something to save"

@@ -106,6 +106,35 @@ __bh_process_command() {
     "$process_id" "$process_start" "$exit_status"&)
 }
 
+# Small function to check our Bashhub installation.
+# It's added to our precmd functions. On its initial run
+# it removes itself from the precmd function array.
+# This means it runs exactly once.
+__bh_check_bashhub_installation() {
+    local ret
+    ret=0
+    if [[ -n "$BASH_VERSION" && "$(trap)" != *"__bp_preexec_invoke_exec"* ]]; then
+        echo "Bashhub's preexec hook is being overriden and is not saving commands. Please resolve what may be holding the DEBUG trap."
+        ret=1
+    elif [[ ! -f "$BH_HOME_DIRECTORY/config" ]]; then
+        echo "Missing Bashhub config file. Please run 'bashhub setup' to generate one."
+        ret=2
+    elif ! grep -Fq "access_token" "$BH_HOME_DIRECTORY/config"; then
+        echo "Missing Bashhub access token. Please run 'bashhub setup' to re-login."
+        ret=3
+    fi
+
+    # Remove from precmd_functions so it only runs once when the session starts.
+    local delete
+    delete=(__bh_check_bashhub_installation)
+    precmd_functions=( "${precmd_functions[@]/$delete}" )
+
+    return $ret
+}
+
+# Check our bashhub installation when the session starts.
+precmd_functions+=(__bh_check_bashhub_installation)
+
 __bh_trim_whitespace() {
     local var=$@
     var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
