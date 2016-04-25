@@ -1,16 +1,20 @@
 #!/usr/bin/python
+from __future__ import print_function
 from time import *
 import click
 import traceback
 import dateutil.parser
 import sys
 import os
+import io
+
 
 from model import CommandForm
 import rest_client
 import bashhub_setup
 import bashhub_globals
-from bashhub_globals import BH_FILTER
+from bashhub_globals import BH_FILTER, BH_HOME, BH_SAVE_COMMANDS
+from bashhub_globals import write_to_config_file
 from version import __version__
 import shutil
 import requests
@@ -41,15 +45,43 @@ def version():
     click.echo('Bashhub %s' % __version__)
 
 @bashhub.command()
+@click.option("-g", "--global", "is_global", default=False, help="Turn off saving commands for all sessions.", is_flag=True)
+def off(is_global):
+    """Turn off saving commands to Bashhub. Applies for this current session."""
+    if is_global:
+        write_to_config_file('save_commands', 'False')
+    else:
+        f = io.open(BH_HOME + '/script.bh','w+', encoding='utf-8')
+        print(unicode("export BH_SAVE_COMMANDS='False'"), file=f)
+
+
+
+@bashhub.command()
+@click.option('-l', "--local", help="Turn on saving commands for only this session.", is_flag=True)
+def on(local):
+    """Turn on saving commands to Bashhub. Applies globally."""
+    f = io.open(BH_HOME + '/script.bh','w+', encoding='utf-8')
+
+    if local:
+        print(unicode("export BH_SAVE_COMMANDS='True'"), file=f)
+    else:
+        print(unicode("unset BH_SAVE_COMMANDS"), file=f)
+        write_to_config_file('save_commands', 'True')
+
+@bashhub.command()
 @click.argument('command', type=str)
 @click.argument('path', type=click.Path(exists=True))
 @click.argument('pid', type=long)
 @click.argument('process_start_time', type=long)
 @click.argument('exit_status', type=int)
 def save(command, path, pid, process_start_time, exit_status):
-    """Save a command to bashhub.com"""
+    """Save a command to Bashhub"""
     pid_start_time = unix_time_to_epoc_millis(process_start_time)
     command = command.strip()
+
+    # Check if we have commands saving turned on
+    if not bashhub_globals.BH_SAVE_COMMANDS:
+        return
 
     # Check if we should ignore this command.
     if "#ignore" in command:
@@ -70,7 +102,7 @@ def save(command, path, pid, process_start_time, exit_status):
 
 @bashhub.command()
 def setup():
-    """Run bashhub user and system setup"""
+    """Run Bashhub user and system setup"""
     bashhub_setup.main()
 
 @bashhub.command()
@@ -122,7 +154,7 @@ def filter(command, regex):
 @bashhub.command()
 @click.argument('version', type=str, default='')
 def update(version):
-    """Update your bashhub installation"""
+    """Update your Bashhub installation"""
 
     if version != '':
          github = "https://github.com/rcaloras/bashhub-client/archive/{0}.tar.gz".format(version)
@@ -144,12 +176,12 @@ def update(version):
 
 @bashhub.group()
 def util():
-    """Misc utils used by bashhub"""
+    """Misc utils used by Bashhub"""
     pass
 
 @util.command()
 def update_system_info():
-    """Updates system info for bashhub.com"""
+    """Updates system info for Bashhub"""
     result = bashhub_setup.update_system_info()
     # Exit code based on if our update call was successful
     sys.exit(0) if result != None else sys.exit(1)

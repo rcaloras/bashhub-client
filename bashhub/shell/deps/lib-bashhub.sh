@@ -125,7 +125,10 @@ __bh_check_bashhub_installation() {
     elif ! grep -Fq "system_name" "$BH_HOME_DIRECTORY/config"; then
         echo "Missing system name. Please run 'bashhub setup' to re-login."
         ret=4
-    fi
+    elif grep -Fq "save_commands = False" "$BH_HOME_DIRECTORY/config"; then
+        echo "Bashhub is currently disabled. Run 'bashhub on' to re-enable."
+        ret=5
+    fi;
 
     # Remove from precmd_functions so it only runs once when the session starts.
     local delete
@@ -135,8 +138,19 @@ __bh_check_bashhub_installation() {
     return $ret
 }
 
+# Allows bashhub to manipulate session state by
+# manipulating variables when invoked by precmd.
+__bh_precmd_run_script() {
+    if [[ -e $BH_HOME_DIRECTORY/script.bh ]]; then
+        local command=$(head -n 1 "$BH_HOME_DIRECTORY/script.bh")
+        rm "$BH_HOME_DIRECTORY/script.bh"
+        eval "$command"
+     fi;
+}
+
 # Check our bashhub installation when the session starts.
 precmd_functions+=(__bh_check_bashhub_installation)
+precmd_functions+=(__bh_precmd_run_script)
 
 __bh_trim_whitespace() {
     local var=$@

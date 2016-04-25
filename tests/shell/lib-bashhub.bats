@@ -56,6 +56,19 @@ teardown() {
 
 }
 
+@test "__bh_check_bashhub_installation should notify if bashhub is disabled." {
+
+  # To skip trap check
+  unset BASH_VERSION
+
+  # Check that we succeed on the check and remove from precmd_functions
+  # That way it only runs exactly once.
+  echo "access_token=12345" >> "$BATS_TMPDIR/config"
+  echo "save_commands = False" >> "$BATS_TMPDIR/config"
+  run __bh_check_bashhub_installation
+  [[ $status == 5 ]]
+}
+
 @test "__bh_check_bashhub_installation should find we're missing a config" {
 
   # Bash and trap.

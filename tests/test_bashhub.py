@@ -31,6 +31,13 @@ def test_bashhub_save():
             '100000',
             '1']
 
+    # Should omit saving if save_commands is set
+    bashhub_globals.BH_SAVE_COMMANDS = False
+    result = runner.invoke(bashhub, args)
+    assert '' == result.output
+
+    bashhub_globals.BH_SAVE_COMMANDS = True
+
     # Should omit saving if #ignore is set
     result = runner.invoke(bashhub, ignored_command)
     assert '' == result.output
