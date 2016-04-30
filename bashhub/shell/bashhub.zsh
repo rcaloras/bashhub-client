@@ -55,7 +55,7 @@ __bh_hook_bashhub() {
     fi
 }
 
-function __bh_zsh_precmd() {
+__bh_zsh_precmd() {
     if [[ -e $BH_HOME_DIRECTORY/response.bh ]]; then
         local COMMAND="`head -n 1 $BH_HOME_DIRECTORY/response.bh`"
         rm $BH_HOME_DIRECTORY/response.bh

@@ -45,7 +45,7 @@ __bh_hook_bashhub() {
         preexec_functions+=(__bh_preexec)
     fi
 
-    if ! contains_element __bh_precmd "${preexec_functions[@]}"; then
+    if ! contains_element __bh_precmd "${precmd_functions[@]}"; then
         precmd_functions+=(__bh_precmd)
         precmd_functions+=(__bh_bash_precmd)
     fi

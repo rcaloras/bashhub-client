@@ -8,6 +8,7 @@ from requests import ConnectionError
 import cli.app
 import os
 import io
+import traceback
 
 from model import MinCommand
 from bashhub_globals import *
@@ -16,7 +17,7 @@ from i_search import InteractiveSearch
 
 @cli.app.CommandLineApp
 def bh(app):
-    """Parse command line arguments and call our REST API"""
+    """Bashhub Search"""
     limit = app.params.number
     query = app.params.query
     system_name = BH_SYSTEM_NAME if app.params.system else None
@@ -78,6 +79,7 @@ def main():
     try:
         bh.run()
     except Exception as e:
+        formatted = traceback.format_exc(e)
         print("Oops, look like an exception occured: " + str(e))
         sys.exit(1)
     except KeyboardInterrupt:
