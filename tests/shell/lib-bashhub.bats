@@ -38,10 +38,14 @@ teardown() {
   run '__bh_check_bashhub_installation'
   [[ $status == 3 ]]
 
+  # Check that we have a system name
+  echo "access_token=12345" >> "$BATS_TMPDIR/config"
+  run '__bh_check_bashhub_installation'
+  [[ $status == 4 ]]
 
   # Check that we succeed on the check and remove from precmd_functions
   # That way it only runs exactly once.
-  echo "access_token=12345" >> "$BATS_TMPDIR/config"
+  echo "system_name=test-system" >> "$BATS_TMPDIR/config"
   precmd_functions+=(__bh_check_bashhub_installation __bh_something_else)
   __bh_check_bashhub_installation
   [[ $? == 0 ]]

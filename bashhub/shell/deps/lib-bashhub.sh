@@ -122,6 +122,9 @@ __bh_check_bashhub_installation() {
     elif ! grep -Fq "access_token" "$BH_HOME_DIRECTORY/config"; then
         echo "Missing Bashhub access token. Please run 'bashhub setup' to re-login."
         ret=3
+    elif ! grep -Fq "system_name" "$BH_HOME_DIRECTORY/config"; then
+        echo "Missing system name. Please run 'bashhub setup' to re-login."
+        ret=4
     fi
 
     # Remove from precmd_functions so it only runs once when the session starts.
