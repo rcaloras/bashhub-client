@@ -56,8 +56,12 @@ __bh_bash_precmd() {
         local command=$(head -n 1 "$BH_HOME_DIRECTORY/response.bh")
         rm "$BH_HOME_DIRECTORY/response.bh"
         history -s "$command"
+        # Save that we're executing this command again by calling bashhub's
+        # preexec and precmd functions
+        __bh_preexec "$command"
         echo "$command"
         eval "$command"
+        __bh_precmd
      fi;
 }
 
