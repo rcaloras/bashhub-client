@@ -81,13 +81,13 @@ __bh_process_command() {
 
     # Sanity empty check
     if [[ -z "$bh_command" ]]; then
-        exit 0;
+        return 0;
     fi;
 
     # Check to make sure bashhub is still installed. Otherwise, this will
     # simply fail and spam the user that files dont exist.
     if ! type "bashhub" &> /dev/null; then
-        exit 0;
+        return 0;
     fi;
 
     local process_id=$$
