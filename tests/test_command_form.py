@@ -4,11 +4,14 @@ command_form_string = '{"command":"vim bashhub/model/min_command.py","path":"/ho
 
 command_form = CommandForm.from_JSON(command_form_string)
 
+
 def setup():
     command_form = CommandForm.from_JSON(command_form_string)
 
+
 def test_from_json():
     assert command_form.path == '/home/elementz/git/bashhub-client'
+
 
 def test_to_json():
     command_form.process_id = 200

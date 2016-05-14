@@ -15,6 +15,7 @@ from bashhub_globals import *
 import rest_client
 from i_search import InteractiveSearch
 
+
 @cli.app.CommandLineApp
 def bh(app):
     """Bashhub Search"""
@@ -31,21 +32,22 @@ def bh(app):
         query = raw_input("(bashhub-i-search): ")
 
     # Call our rest api to search for commands
-    commands = rest_client.search(
-      limit = limit,
-      path = path,
-      query = query,
-      system_name = system_name,
-      unique = unique)
+    commands = rest_client.search(limit=limit,
+                                  path=path,
+                                  query=query,
+                                  system_name=system_name,
+                                  unique=unique)
 
     if app.params.interactive:
         run_interactive(commands)
     else:
         print_commands(commands)
 
+
 def print_commands(commands):
     for command in reversed(commands):
         print(command.command)
+
 
 def run_interactive(commands):
     i_search = InteractiveSearch(commands, rest_client)
@@ -54,26 +56,47 @@ def run_interactive(commands):
     # Consider submitting a patchset for it.
     command = i_search.return_value
     if command is not None:
-        f = io.open(BH_HOME + '/response.bh','w+', encoding='utf-8')
+        f = io.open(BH_HOME + '/response.bh', 'w+', encoding='utf-8')
         print(unicode(command.command), file=f)
 
-bh.add_param("-n", "--number", help="Limit the number of previous commands. \
-        Default is 100.", default=None, type=int)
 
-bh.add_param("query", nargs='?', help="Like string to search for", \
-        default="", type=str)
+bh.add_param("-n",
+             "--number",
+             help="Limit the number of previous commands. Default is 100.",
+             default=None,
+             type=int)
 
-bh.add_param("-d", "--directory", help="Search for commands within this \
-        directory.", default=False, action='store_true')
+bh.add_param("query",
+             nargs='?',
+             help="Like string to search for",
+             default="",
+             type=str)
 
-bh.add_param("-sys", "--system", help="Search for commands created on this \
-        system.", default= False, action='store_true')
+bh.add_param("-d",
+             "--directory",
+             help="Search for commands within this directory.",
+             default=False,
+             action='store_true')
 
-bh.add_param("-i", "--interactive", help="Use interactive search. Allows you \
-        to select commands to run.", default= False, action='store_true')
+bh.add_param("-sys",
+             "--system",
+             help="Search for commands created on this system.",
+             default=False,
+             action='store_true')
 
-bh.add_param("-dups", "--duplicates", help="Include duplicates", \
-        default=False, action='store_true')
+bh.add_param(
+    "-i",
+    "--interactive",
+    help="Use interactive search. Allows you to select commands to run.",
+    default=False,
+    action='store_true')
+
+bh.add_param("-dups",
+             "--duplicates",
+             help="Include duplicates",
+             default=False,
+             action='store_true')
+
 
 def main():
     try:
@@ -86,5 +109,6 @@ def main():
         # To allow Ctrl+C (^C). Print a new line to drop the prompt.
         print()
         sys.exit()
+
 
 main()

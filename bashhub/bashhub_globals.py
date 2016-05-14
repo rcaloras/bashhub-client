@@ -45,20 +45,21 @@ def write_to_config_file(section, value):
 
 
 def get_from_config(key):
-  try:
-    config = ConfigParser.ConfigParser()
-    config.read(BH_HOME + '/config')
-    return config.get('bashhub', key)
-  except NoSectionError as error:
-    return ""
-  except NoOptionError as error:
-    return ""
+    try:
+        config = ConfigParser.ConfigParser()
+        config.read(BH_HOME + '/config')
+        return config.get('bashhub', key)
+    except NoSectionError as error:
+        return ""
+    except NoOptionError as error:
+        return ""
+
 
 def get_access_token():
-  access_token = get_from_config("access_token")
-  if not access_token:
-    print("Missing access token from Bashhub Config")
-  return ""
+    access_token = get_from_config("access_token")
+    if not access_token:
+        print("Missing access token from Bashhub Config")
+    return ""
 
 BH_SAVE_COMMANDS = os.getenv('BH_SAVE_COMMANDS', \
     get_from_config('save_commands')).lower() in ('true', 'yes', 't', 'on', '')
@@ -70,7 +71,8 @@ BH_SYSTEM_NAME = get_from_config("system_name")
 # otherwise retrieve it from our config. Needs to
 # be a function since we may change our token during setup
 def BH_AUTH():
-  return os.getenv('BH_ACCESS_TOKEN', get_from_config("access_token"))
+    return os.getenv('BH_ACCESS_TOKEN', get_from_config("access_token"))
+
 
 def is_valid_regex(regex):
     try:

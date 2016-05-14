@@ -26,11 +26,13 @@ json_headers = dict(
 
 
 def json_auth_headers():
-    return dict({'Authorization': 'Bearer {0}'.format(BH_AUTH())}, **
-                json_headers)
+    return dict({'Authorization': 'Bearer {0}'.format(BH_AUTH())},
+                **json_headers)
+
+
 def base_auth_headers():
-  return dict({'Authorization': 'Bearer {0}'.format(BH_AUTH())}, **
-                base_headers)
+    return dict({'Authorization': 'Bearer {0}'.format(BH_AUTH())},
+                **base_headers)
 
 
 def register_user(register_user):
@@ -162,6 +164,7 @@ def patch_system(system_patch, mac):
             print("Permissons Issue. Run bashhub setup to re-login.")
         return None
 
+
 def search(limit=None, path=None, query=None, system_name=None, unique=None):
 
     payload = dict()
@@ -178,7 +181,6 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None):
     if system_name:
         payload["systemName"] = system_name
 
-
     payload["unique"] = str(unique).lower()
     url = BH_URL + "/api/v1/command/search"
 
@@ -191,14 +193,19 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None):
     except Exception as error:
         if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
-        print("Sorry, an error occurred communicating with Bashhub. Response Code: " + str(r.status_code))
+        print(
+            "Sorry, an error occurred communicating with Bashhub. Response Code: "
+            + str(r.status_code))
     return []
+
 
 def save_command(command):
     url = BH_URL + "/api/v1/command"
 
     try:
-        r = requests.post(url, data=command.to_JSON(), headers=json_auth_headers())
+        r = requests.post(url,
+                          data=command.to_JSON(),
+                          headers=json_auth_headers())
     except ConnectionError as error:
         print "Sorry, looks like there's a connection error"
         pass
@@ -210,16 +217,16 @@ def save_command(command):
 def get_status_view(process_id, start_time):
     url = BH_URL + "/api/v1/client-view/status"
 
-    payload = {'processId': process_id,
-               'startTime': start_time}
+    payload = {'processId': process_id, 'startTime': start_time}
     try:
         r = requests.get(url, params=payload, headers=json_auth_headers())
         status_view_json = json.dumps(r.json())
         return StatusView.from_JSON(status_view_json)
     except Exception as error:
-      if r.status_code in (403, 401):
+        if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
-      else:
-        print("Sorry, looks like there's a connection error: " + str(error))
+        else:
+            print(
+                "Sorry, looks like there's a connection error: " + str(error))
 
-      return None
+        return None

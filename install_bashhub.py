@@ -9,7 +9,6 @@ import shutil
 from pkg_resources import resource_exists, resource_filename
 
 
-
 def check_already_installed(home_dir):
     installed = os.path.isdir(home_dir + "/.bashhub")
     if installed:
@@ -36,6 +35,7 @@ def setup_bashhub_files(home_dir):
     else:
         raise RuntimeError("Couldn't install bashhub files in " + bashhub_dir)
 
+
 def find_users_bash_config(home_dir):
     bash_files = ["/.bashrc", "/.bash_profile", "/.profile"]
     for file in bash_files:
@@ -58,6 +58,6 @@ def main():
         sys.stderr.write('Setup Error:\n%s\n' % str(err))
         sys.exit(1)
 
+
 if __name__ == "__main__":
     main()
-

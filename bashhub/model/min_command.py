@@ -4,8 +4,8 @@ import json
 import requests
 from serializable import Serializable
 
-class MinCommand(Serializable):
 
+class MinCommand(Serializable):
     def __init__(self, command, created, uuid):
         self.command = command
         self.created = created
@@ -13,5 +13,3 @@ class MinCommand(Serializable):
 
     def __str__(self):
         return self.command.encode('utf8')
-
-

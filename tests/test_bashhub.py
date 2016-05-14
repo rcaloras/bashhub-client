@@ -8,8 +8,8 @@ from bashhub.version import __version__
 from bashhub.bashhub import rest_client
 from bashhub.bashhub import bashhub_globals
 
-def test_bashhub_save():
 
+def test_bashhub_save():
     def print_failed(command):
         print("Failed")
         pass
@@ -17,19 +17,10 @@ def test_bashhub_save():
     rest_client.save_command = print_failed
 
     runner = CliRunner()
-    args = ['save',
-            'echo "Running bashhub tests"',
-            '/tmp',
-            '1',
-            '100000',
-            '1']
+    args = ['save', 'echo "Running bashhub tests"', '/tmp', '1', '100000', '1']
 
-    ignored_command = ['save',
-            'echo "Running bashhub tests" #ignore',
-            '/tmp',
-            '1',
-            '100000',
-            '1']
+    ignored_command = ['save', 'echo "Running bashhub tests" #ignore', '/tmp',
+                       '1', '100000', '1']
 
     # Should omit saving if save_commands is set
     bashhub_globals.BH_SAVE_COMMANDS = False
@@ -50,11 +41,13 @@ def test_bashhub_save():
     def no_auth_token():
         return ''
 
-   # Should not try to save a command if we don't have an auth token
+# Should not try to save a command if we don't have an auth token
+
     bashhub_globals.BH_AUTH = no_auth_token
-    result = runner.invoke(bashhub, ['save', 'date', '/tmp', '1', '1000','1'])
+    result = runner.invoke(bashhub, ['save', 'date', '/tmp', '1', '1000', '1'])
     error_message = "No auth token found. Run 'bashhub setup' to login.\n"
     assert error_message == result.output
+
 
 def test_bashhub_version():
     runner = CliRunner()

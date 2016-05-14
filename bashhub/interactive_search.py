@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 """
 Sampled from Lyle Scott scrolling curses
 """
@@ -9,6 +8,7 @@ import sys
 import random
 import time
 import locale
+
 
 class InteractiveSearch:
     DOWN = 1
@@ -37,7 +37,7 @@ class InteractiveSearch:
 
     def run(self):
         # Locale set to support utf-8 characters.
-        locale.setlocale(locale.LC_ALL,"")
+        locale.setlocale(locale.LC_ALL, "")
         return curses.wrapper(self._run)
 
     def _run(self, screen):
@@ -59,7 +59,6 @@ class InteractiveSearch:
             elif c == self.ESC_KEY or c == ord('q'):
                 sys.exit()
 
-
     def markLine(self):
         linenum = self.topLineNum + self.highlightLineNum
         if linenum in self.markedLineNums:
@@ -79,9 +78,9 @@ class InteractiveSearch:
 
         # now paint the rows
         top = self.topLineNum
-        bottom = self.topLineNum+curses.LINES
-        for (index,line,) in enumerate(self.outputLines[top:bottom]):
-            line = '%s' % (line,)
+        bottom = self.topLineNum + curses.LINES
+        for (index, line, ) in enumerate(self.outputLines[top:bottom]):
+            line = '%s' % (line, )
 
             # highlight current line
             if index != self.highlightLineNum:
@@ -98,14 +97,18 @@ class InteractiveSearch:
         if increment == self.UP and self.highlightLineNum == 0 and self.topLineNum != 0:
             self.topLineNum += self.UP
             return
-        elif increment == self.DOWN and nextLineNum == curses.LINES and (self.topLineNum+curses.LINES) != self.nOutputLines:
+        elif increment == self.DOWN and nextLineNum == curses.LINES and (
+                self.topLineNum + curses.LINES) != self.nOutputLines:
             self.topLineNum += self.DOWN
             return
 
         # scroll highlight line
-        if increment == self.UP and (self.topLineNum != 0 or self.highlightLineNum != 0):
+        if increment == self.UP and (self.topLineNum != 0 or
+                                     self.highlightLineNum != 0):
             self.highlightLineNum = nextLineNum
-        elif increment == self.DOWN and (self.topLineNum+self.highlightLineNum+1) != self.nOutputLines and self.highlightLineNum != curses.LINES:
+        elif increment == self.DOWN and (
+                self.topLineNum + self.highlightLineNum + 1
+        ) != self.nOutputLines and self.highlightLineNum != curses.LINES:
             self.highlightLineNum = nextLineNum
 
     def restoreScreen(self):

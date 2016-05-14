@@ -108,7 +108,8 @@ def handle_system_information(username, password):
     if system is None:
         hostname = socket.gethostname()
         name_input = raw_input("What do you want to call this system? " +
-                               "For example Home, File Server, ect. [%s]: " % hostname)
+                               "For example Home, File Server, ect. [%s]: " %
+                               hostname)
 
         name = name_input or hostname
         system_name = rest_client.register_system(RegisterSystem(
@@ -132,6 +133,7 @@ def handle_system_information(username, password):
               system.name + ".")
 
     return (access_token, system_name)
+
 
 def main():
     try:
@@ -168,7 +170,7 @@ def main():
             else:
                 print("Sorry, registering a new user failed.")
                 print("You can rerun setup using 'bashhub setup' in a new "
-                  "terminal window.\n")
+                      "terminal window.\n")
                 sys.exit(0)
 
         (username, password, access_token) = get_user_information_and_login(
@@ -182,12 +184,14 @@ def main():
             sys.exit(0)
 
         # write out our user scoped access token
-        config_write_result = write_to_config_file("access_token", access_token)
+        config_write_result = write_to_config_file("access_token",
+                                                   access_token)
         if not config_write_result:
             print("Writing your config file failed.")
             sys.exit(1)
 
-        (access_token, system_name) = handle_system_information(username, password)
+        (access_token, system_name) = handle_system_information(username,
+                                                                password)
 
         if access_token == None:
             print("Sorry looks like getting your info failed.\
