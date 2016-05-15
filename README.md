@@ -133,8 +133,17 @@ mysql -u root -p plain-text-password
 Is Filtered. Matched ['-p']
 ```
 
-##Disabling and Enabling recording Commands
-You can easily turn on/off recording to Bashhub via `bashhub on` and `bashhub off`. By default this only affects the current bash session. You can disable for all sessions by setting `bashhub off --global` this sets `save_commands = False` in your bashhub config.
+##Disabling recording commands
+You can turn on/off recording to Bashhub via `bashhub on` and `bashhub off`. By default this only affects the current bash session.
+
+```bash
+$ bashhub off
+$ echo "Recording is now disabled for this session. This command won't be saved."
+....
+$ bashhub on
+$ echo "Recording commands is now re-enabled"
+```
+You can disable for all sessions by setting `bashhub off --global` this sets `save_commands = False` in your bashhub config.
 
 ##Ignoring Commands
 `#ignore` added to any command will omit it from being saved. Simply add it to the end of any command and it won't be recorded in Bashhub.
