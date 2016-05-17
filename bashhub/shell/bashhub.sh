@@ -46,8 +46,9 @@ __bh_hook_bashhub() {
     fi
 
     if ! contains_element __bh_precmd "${precmd_functions[@]}"; then
-        precmd_functions+=(__bh_precmd)
+        # Order seems to matter here due to the fork at the end of __bh_precmd
         precmd_functions+=(__bh_bash_precmd)
+        precmd_functions+=(__bh_precmd)
     fi
 }
 

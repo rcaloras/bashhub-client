@@ -50,8 +50,8 @@ __bh_hook_bashhub() {
     fi
 
     if ! contains_element __bh_precmd  $precmd_functions; then
-        precmd_functions+=(__bh_precmd)
         precmd_functions+=(__bh_zsh_precmd)
+        precmd_functions+=(__bh_precmd)
     fi
 }
 
