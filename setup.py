@@ -1,35 +1,6 @@
 from setuptools import setup, find_packages
 import install_bashhub
 import sys
-from setuptools.command.install import install
-from setuptools.command.develop import develop
-
-
-def postinstall(command_subclass):
-    """A decorator for classes subclassing one of the setuptools commands.
-
-    It modifies the run() method so that it runs our post install setup.
-    """
-    orig_run = command_subclass.run
-
-    def modified_run(self):
-        # Need to run bashhub-setup here
-        #
-        orig_run(self)
-
-    command_subclass.run = modified_run
-    return command_subclass
-
-
-@postinstall
-class BashhubInstall(install):
-    pass
-
-
-@postinstall
-class BashhubDevelop(develop):
-    pass
-
 
 exec (open('bashhub/version.py').read())
 
@@ -50,9 +21,5 @@ setup(name='bashhub',
       entry_points={
           'console_scripts': ['bh=bashhub.bh:main',
                               'bashhub=bashhub.bashhub:main']
-      },
-      cmdclass={
-          'install': BashhubInstall,
-          'develop': BashhubDevelop
       },
       zip_safe=False)
