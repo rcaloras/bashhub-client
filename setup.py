@@ -36,10 +36,10 @@ exec (open('bashhub/version.py').read())
 setup(name='bashhub',
       version='__version__',
       description='Bashhub.com python client',
-      url='https://github.com/rcaloras',
+      url='https://github.com/rcaloras/bashhub-client',
       author='Ryan Caloras',
       author_email='ryan@bashhub.com',
-      license='MIT',
+      license='Apache',
       packages=find_packages(),
       include_package_data=True,
       install_requires=[
