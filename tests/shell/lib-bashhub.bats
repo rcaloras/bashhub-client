@@ -29,6 +29,9 @@ teardown() {
 
 @test "__bh_check_bashhub_installation should find issues and run only once." {
 
+  # Enable subshells for these checks to work
+  export __bp_enable_subshells="true"
+
   # Bash but no trap.
   run '__bh_check_bashhub_installation'
   [[ $status == 1 ]]

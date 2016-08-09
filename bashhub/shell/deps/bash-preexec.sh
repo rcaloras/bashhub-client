@@ -238,8 +238,8 @@ __bp_install() {
     # Issue #25. Setting debug trap for subshells causes sessions to exit for
     # backgrounded subshell commands (e.g. (pwd)& ). Believe this is a bug in Bash.
     #
-    # This option allows you to disable subshells.
-    if [[ -z "$__bp_disable_subshells" ]]; then
+    # Disabling this by default. It can be enabled by setting this variable.
+    if [[ -n "$__bp_enable_subshells" ]]; then
 
         # Set so debug trap will work be invoked in subshells.
         set -o functrace > /dev/null 2>&1

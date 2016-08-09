@@ -25,9 +25,6 @@ __bh_setup_bashhub() {
 
         # Pull in our libs
         source "$BH_DEPS_DIRECTORY/lib-bashhub.sh"
-
-        # Disable subshells in bash-preexec
-        export __bp_disable_subshells="true"
         source "$BH_DEPS_DIRECTORY/bash-preexec.sh"
 
         # Hook bashhub into preexec and precmd.
