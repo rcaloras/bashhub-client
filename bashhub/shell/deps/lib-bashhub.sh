@@ -113,7 +113,7 @@ __bh_process_command() {
 __bh_check_bashhub_installation() {
     local ret
     ret=0
-    if [[ -n "$BASH_VERSION" && "$(trap)" != *"__bp_preexec_invoke_exec"* ]]; then
+    if [[ -n "$BASH_VERSION" && -n "$__bp_enable_subshells" && "$(trap)" != *"__bp_preexec_invoke_exec"* ]]; then
         echo "Bashhub's preexec hook is being overriden and is not saving commands. Please resolve what may be holding the DEBUG trap."
         ret=1
     elif [[ ! -f "$BH_HOME_DIRECTORY/config" ]]; then

@@ -193,9 +193,10 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None):
     except Exception as error:
         if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
-        print(
-            "Sorry, an error occurred communicating with Bashhub. Response Code: "
-            + str(r.status_code))
+        else:
+            print(
+                "Sorry, an error occurred communicating with Bashhub. Response Code: "
+                + str(r.status_code))
     return []
 
 
@@ -222,11 +223,14 @@ def get_status_view(process_id, start_time):
         r = requests.get(url, params=payload, headers=json_auth_headers())
         status_view_json = json.dumps(r.json())
         return StatusView.from_JSON(status_view_json)
+    except ConnectionError as error:
+        print "Sorry, looks like there's a connection error"
+        return None
     except Exception as error:
         if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
         else:
             print(
-                "Sorry, looks like there's a connection error: " + str(error))
-
+                "Sorry, an error occurred communicating with Bashhub. Response Code: "
+                + str(r.status_code))
         return None
