@@ -49,7 +49,7 @@ def register_user(register_user):
     except ConnectionError as error:
         print("Looks like there's a connection error. Please try again later")
     except HTTPError as error:
-        if response.status_code == 409:
+        if response.status_code in (409, 422):
             print(response.text)
         else:
             print(error)
