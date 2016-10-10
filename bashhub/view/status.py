@@ -4,7 +4,7 @@ import humanize
 
 status_view = """\
 === Bashhub Status
-https://bashhub.com/u/{0}
+https://bashhub.com/{0}
 Total Commands: {1}
 Total Sessions: {2}
 Total Systems:  {3}

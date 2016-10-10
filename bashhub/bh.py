@@ -46,7 +46,7 @@ def bh(app):
 
 def print_commands(commands):
     for command in reversed(commands):
-        print(command.command)
+        print((command.command).encode('utf-8'))
 
 
 def run_interactive(commands):
