@@ -15,6 +15,8 @@ class CommandList(npyscreen.MultiLineAction):
         # Any non highlited command handlers
         self.add_handlers({
             "q": self.exit_app,
+            ord("n"): self.h_cursor_line_down,
+            ord("p"): self.h_cursor_line_up,
             curses.ascii.ESC: self.exit_app
         })
 
