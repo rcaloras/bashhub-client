@@ -1,6 +1,8 @@
 <img src="https://bashhub.com/assets/images/bashhub-logo.png" alt="Bashhub Logo">
-==========
+
 Bashhub saves every terminal command entered across all sessions and systems and provides powerful querying across all commands.
+
+
 
 [![Build Status](https://api.travis-ci.org/rcaloras/bashhub-client.svg?branch=master)](https://travis-ci.org/rcaloras/bashhub-client)
 [![GitHub version](https://badge.fury.io/gh/rcaloras%2Fbashhub-client.svg)](https://badge.fury.io/gh/rcaloras%2Fbashhub-client)
@@ -37,7 +39,7 @@ It also provides a key binding of `ctrl + b` for quickly dropping into interacti
 You can search through your commands in a lot of different ways. Check `bh --help` for more specifics. By default `bh` will output the most recently used unique commands to standard out. Adding the `-i` argument to any `bh` search will make it **interactive**. There are also several arguments to pass to filter, query, and get more specific about your searches!
 
 
-##Examples
+## Examples
 
 The last 100 commands you executed anywhere. (100 is default limit without `-n`)
 ```bash
@@ -52,7 +54,7 @@ Find that wget command with interactive search to execute it again :P
 ```bash
 $ bh -i "wget github"
 ```
-###Directory based searching
+### Directory based searching
 
 The last commands you executed in this directory.
 ```bash
@@ -63,7 +65,7 @@ The last 10 things you vim'd in this directory
 $ bh -d -n 10 "vim"
 ```
 
-###System based searching
+### System based searching
 
 The last 10 curl commands you produced on this system
 
