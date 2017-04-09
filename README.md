@@ -5,7 +5,7 @@ Bashhub saves every terminal command entered across all sessions and systems and
 [![Build Status](https://api.travis-ci.org/rcaloras/bashhub-client.svg?branch=master)](https://travis-ci.org/rcaloras/bashhub-client)
 [![GitHub version](https://badge.fury.io/gh/rcaloras%2Fbashhub-client.svg)](https://badge.fury.io/gh/rcaloras%2Fbashhub-client)
 
-###Bashhub provides
+### Bashhub provides
 - Super command search by using context about how commands are executed. 
   - e.g. the directory, session, system, exit status, etc.
 - Unlimited detailed terminal history stored in the cloud.
@@ -15,7 +15,7 @@ Bashhub saves every terminal command entered across all sessions and systems and
 
 ![gif](http://i.imgur.com/02ABZxn.gif)
 
-##Quick Install
+## Quick Install
 ```bash
 curl -OL https://bashhub.com/setup && bash setup
 ```
@@ -26,7 +26,7 @@ curl -OL https://bashhub.com/setup && zsh setup
 
 Detailed install at https://github.com/rcaloras/bashhub-client/wiki/Install
 
-#Usage
+# Usage
 Bashhub can be accessed from the command line in a couple ways:
 
 - `bh` for searching
@@ -71,7 +71,7 @@ The last 10 curl commands you produced on this system
 $ bh -sys -n 10 "curl"
 ```
 
-###How search results are ordered
+### How search results are ordered
 By default results are sorted by **most recently** used, and are **unique**. This means frequent commands like `git status` or `ls` will only appear once in the position they were most recently invoked.
 
 This can be altered by using the `-dups` command to include duplicates
@@ -82,7 +82,7 @@ Your git commands including duplicates.
 $ bh -dups "git"
 ```
 
-##Interactive Search
+## Interactive Search
 One of the most useful features is interactive search which is accessed via `bh -i` or `ctrl + b`. This is similar to reverse search i.e. `ctrl + r`. Interactive search drops you into a small menu where you can select a command to run on the command line.
 
 Enter interactive search for all the rsync commands executed in this directory
@@ -97,7 +97,7 @@ From interactive search you can also access detailed information on each command
 ![Command Details](http://i.imgur.com/is0gNnB.png)
 
 
-##Bashhub Status
+## Bashhub Status
 You can get a summary of your user's stats/status by using the `status` command. 
 ```bash
 bashhub status
@@ -115,7 +115,7 @@ Session PID 15311 Started 9 days ago
 Commands In Session: 3
 Commands Today: 47
 ```
-##Filtering Commands
+## Filtering Commands
 You can filter commands from being recorded to Bashhub via a regex set to the environment variable `BH_FILTER`. These commands will be ignored and omittted from Bashhub.
 ```bash
 # Filter out any commands for postgres or ssh
@@ -133,7 +133,7 @@ mysql -u root -p plain-text-password
 Is Filtered. Matched ['-p']
 ```
 
-##Disabling recording commands
+## Disabling recording commands
 You can turn on/off recording to Bashhub via `bashhub on` and `bashhub off`. By default this only affects the current bash session.
 
 ```bash
@@ -145,14 +145,14 @@ $ echo "Recording commands is now re-enabled"
 ```
 You can disable for all sessions by setting `bashhub off --global` this sets `save_commands = False` in your bashhub config.
 
-##Ignoring Commands
+## Ignoring Commands
 `#ignore` added to any command will omit it from being saved. Simply add it to the end of any command and it won't be recorded in Bashhub.
 
 ```bash
 $ echo "this command won't be saved" #ignore
 ```
 
-##Deleting Commands
+## Deleting Commands
 You can delete commands from Bashhub through interactive search by pressing `Delete` or `Backspace` while a command is highlighted. A small dialog box will open to confirm the commands deletion. If a command is deleted, it is permanently removed from Bashhub.
 
 ![gif](http://i.imgur.com/sHzvEJx.gif)
