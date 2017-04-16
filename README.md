@@ -35,7 +35,7 @@ Bashhub can be accessed from the command line in a couple ways:
 - `bashhub` for everything else
 
 It also provides a key binding of `ctrl + b` for quickly dropping into interactive search.
-##Search
+## Search
 You can search through your commands in a lot of different ways. Check `bh --help` for more specifics. By default `bh` will output the most recently used unique commands to standard out. Adding the `-i` argument to any `bh` search will make it **interactive**. There are also several arguments to pass to filter, query, and get more specific about your searches!
 
 
