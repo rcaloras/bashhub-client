@@ -2,22 +2,20 @@
 
 Bashhub saves every terminal command entered across all sessions and systems and provides powerful querying across all commands.
 
-
-
 [![Build Status](https://api.travis-ci.org/rcaloras/bashhub-client.svg?branch=master)](https://travis-ci.org/rcaloras/bashhub-client)
 [![GitHub version](https://badge.fury.io/gh/rcaloras%2Fbashhub-client.svg)](https://badge.fury.io/gh/rcaloras%2Fbashhub-client)
 
-### Bashhub provides
+### Features
 - Super command search by using context about how commands are executed. 
   - e.g. the directory, session, system, exit status, etc.
 - Unlimited detailed terminal history stored in the cloud.
-  - Stored privately and encrypted at rest.
+  - [Stored privately and encrypted at rest](https://github.com/rcaloras/bashhub-client/wiki/Security-and-Privacy).
 - Support across systems. Access your terminal history from anywhere!
 - Support for Bash and Zsh with a sweet cli for everything. 
 
 ![gif](http://i.imgur.com/02ABZxn.gif)
 
-## Quick Install
+## Quick install
 ```bash
 curl -OL https://bashhub.com/setup && bash setup
 ```
@@ -26,7 +24,8 @@ For Zsh
 curl -OL https://bashhub.com/setup && zsh setup
 ```
 
-Detailed install at https://github.com/rcaloras/bashhub-client/wiki/Install
+Detailed installation instructions can be found at
+https://github.com/rcaloras/bashhub-client/wiki/Install
 
 # Usage
 Bashhub can be accessed from the command line in a couple ways:
@@ -37,7 +36,6 @@ Bashhub can be accessed from the command line in a couple ways:
 It also provides a key binding of `ctrl + b` for quickly dropping into interactive search.
 ## Search
 You can search through your commands in a lot of different ways. Check `bh --help` for more specifics. By default `bh` will output the most recently used unique commands to standard out. Adding the `-i` argument to any `bh` search will make it **interactive**. There are also several arguments to pass to filter, query, and get more specific about your searches!
-
 
 ## Examples
 
@@ -54,7 +52,8 @@ Find that wget command with interactive search to execute it again :P
 ```bash
 $ bh -i "wget github"
 ```
-### Directory based searching
+
+### Directory-specific Searching
 
 The last commands you executed in this directory.
 ```bash
@@ -65,7 +64,7 @@ The last 10 things you vim'd in this directory
 $ bh -d -n 10 "vim"
 ```
 
-### System based searching
+### System-specific Searching
 
 The last 10 curl commands you produced on this system
 
@@ -73,7 +72,7 @@ The last 10 curl commands you produced on this system
 $ bh -sys -n 10 "curl"
 ```
 
-### How search results are ordered
+### How Search Results are Ordered
 By default results are sorted by **most recently** used, and are **unique**. This means frequent commands like `git status` or `ls` will only appear once in the position they were most recently invoked.
 
 This can be altered by using the `-dups` command to include duplicates
@@ -117,6 +116,7 @@ Session PID 15311 Started 9 days ago
 Commands In Session: 3
 Commands Today: 47
 ```
+
 ## Filtering Commands
 You can filter commands from being recorded to Bashhub via a regex set to the environment variable `BH_FILTER`. These commands will be ignored and omittted from Bashhub.
 ```bash
@@ -135,7 +135,7 @@ mysql -u root -p plain-text-password
 Is Filtered. Matched ['-p']
 ```
 
-## Disabling recording commands
+## Disabling Recording Commands
 You can turn on/off recording to Bashhub via `bashhub on` and `bashhub off`. By default this only affects the current bash session.
 
 ```bash
