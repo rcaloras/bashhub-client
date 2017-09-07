@@ -15,7 +15,7 @@ Bashhub saves every terminal command entered across all sessions and systems and
 
 ![gif](http://i.imgur.com/02ABZxn.gif)
 
-## Quick install
+## Quick Install
 ```bash
 curl -OL https://bashhub.com/setup && bash setup
 ```
