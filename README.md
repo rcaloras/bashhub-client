@@ -6,12 +6,12 @@ Bashhub saves every terminal command entered across all sessions and systems and
 [![GitHub version](https://badge.fury.io/gh/rcaloras%2Fbashhub-client.svg)](https://badge.fury.io/gh/rcaloras%2Fbashhub-client)
 
 ### Features
-- Super command search by using context about how commands are executed. 
+- Super command search by using context about how commands are executed.
   - e.g. the directory, session, system, exit status, etc.
 - Unlimited detailed terminal history stored in the cloud.
   - [Stored privately and encrypted at rest](https://github.com/rcaloras/bashhub-client/wiki/Security-and-Privacy).
 - Support across systems. Access your terminal history from anywhere!
-- Support for Bash and Zsh with a sweet cli for everything. 
+- Support for Bash and Zsh with a sweet cli for everything.
 
 ![gif](http://i.imgur.com/02ABZxn.gif)
 
@@ -34,6 +34,7 @@ Bashhub can be accessed from the command line in a couple ways:
 - `bashhub` for everything else
 
 It also provides a key binding of `ctrl + b` for quickly dropping into interactive search.
+
 ## Search
 You can search through your commands in a lot of different ways. Check `bh --help` for more specifics. By default `bh` will output the most recently used unique commands to standard out. Adding the `-i` argument to any `bh` search will make it **interactive**. There are also several arguments to pass to filter, query, and get more specific about your searches!
 
@@ -48,7 +49,7 @@ The last 20 files I've grep'd.
 ```bash
 $ bh -n 20 "grep"
 ```
-Find that wget command with interactive search to execute it again :P 
+Find that wget command with interactive search to execute it again :P
 ```bash
 $ bh -i "wget github"
 ```
@@ -99,7 +100,7 @@ From interactive search you can also access detailed information on each command
 
 
 ## Bashhub Status
-You can get a summary of your user's stats/status by using the `status` command. 
+You can get a summary of your user's stats/status by using the `status` command.
 ```bash
 bashhub status
 ```
@@ -117,6 +118,17 @@ Commands In Session: 3
 Commands Today: 47
 ```
 
+### Search with Fuzzy Finder
+An efficient way of searching is using `bashhub` in combination with [`fzf`](https://github.com/junegunn/fzf). Put this in your `.bashrc`.
+
+```bash
+function my_alias {
+  eval $(bh | fzf)
+}
+```
+
+This will make the function available globally in your terminal.
+
 ## Filtering Commands
 You can filter commands from being recorded to Bashhub via a regex set to the environment variable `BH_FILTER`. These commands will be ignored and omittted from Bashhub.
 ```bash
@@ -125,13 +137,13 @@ export BH_FILTER="(psql|ssh)"
 ssh rcaloras@some-ip-address # will not be saved
 ```
 
-You can check the configuration of this command via the `bashhub filter` subcommand. 
+You can check the configuration of this command via the `bashhub filter` subcommand.
 ```bash
 # Check if a command is filtered by my regex
 export BH_FILTER="(-p)"
 bashhub filter "mysql -u root -p plain-text-password"
 BH_FILTER=(-p)
-mysql -u root -p plain-text-password 
+mysql -u root -p plain-text-password
 Is Filtered. Matched ['-p']
 ```
 
