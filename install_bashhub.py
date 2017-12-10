@@ -48,13 +48,13 @@ def find_users_bash_config(home_dir):
 
 def main():
     try:
-        print "Installing needed scripts"
+        print("Installing needed scripts")
         # Get our home directory from
         home = os.environ["HOME"] + '/'
         find_users_bash_config(home)
         check_already_installed(home)
         setup_bashhub_files(home)
-    except Exception, err:
+    except Exception as err:
         sys.stderr.write('Setup Error:\n%s\n' % str(err))
         sys.exit(1)
 

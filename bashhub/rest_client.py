@@ -97,7 +97,7 @@ def register_system(register_system):
             print response.text
         else:
             print error
-            print "Please try again..."
+            print("Please try again...")
     return None
 
 
@@ -189,7 +189,7 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None):
         return MinCommand.from_JSON_list(r.json())
 
     except ConnectionError as error:
-        print "Sorry, looks like there's a connection error. Please try again later"
+        print("Sorry, looks like there's a connection error. Please try again later")
     except Exception as error:
         if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
@@ -208,7 +208,7 @@ def save_command(command):
                           data=command.to_JSON(),
                           headers=json_auth_headers())
     except ConnectionError as error:
-        print "Sorry, looks like there's a connection error"
+        print("Sorry, looks like there's a connection error")
         pass
     except Exception as error:
         if r.status_code in (403, 401):
@@ -224,7 +224,7 @@ def get_status_view(process_id, start_time):
         status_view_json = json.dumps(r.json())
         return StatusView.from_JSON(status_view_json)
     except ConnectionError as error:
-        print "Sorry, looks like there's a connection error"
+        print("Sorry, looks like there's a connection error")
         return None
     except Exception as error:
         if r.status_code in (403, 401):
