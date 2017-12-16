@@ -9,6 +9,7 @@ import cli.app
 import os
 import io
 import traceback
+import datetime
 
 from model import MinCommand
 from bashhub_globals import *
@@ -27,6 +28,8 @@ def bh(app):
     # By default show unique on the client.
     unique = not app.params.duplicates
 
+    use_timestamps = app.params.timestamps
+
     # If we're interactive, make sure we have a query
     if app.params.interactive and query == '':
         query = raw_input("(bashhub-i-search): ")
@@ -41,12 +44,16 @@ def bh(app):
     if app.params.interactive:
         run_interactive(commands)
     else:
-        print_commands(commands)
+        print_commands(commands, use_timestamps)
 
 
-def print_commands(commands):
+def print_commands(commands, use_timestamps):
     for command in reversed(commands):
-        print((command.command).encode('utf-8'))
+        if use_timestamps:
+            timestamp = unix_milliseconds_timestamp_to_datetime(command.created)
+            print('%s\t%s' % (timestamp, (command.command).encode('utf-8')))
+        else:
+            print((command.command).encode('utf-8'))
 
 
 def run_interactive(commands):
@@ -58,6 +65,11 @@ def run_interactive(commands):
     if command is not None:
         f = io.open(BH_HOME + '/response.bh', 'w+', encoding='utf-8')
         print(unicode(command.command), file=f)
+
+
+def unix_milliseconds_timestamp_to_datetime(timestamp):
+    return datetime.datetime.fromtimestamp(int(timestamp) / 1000) \
+        .strftime('%Y-%m-%d %H:%M:%S')
 
 
 bh.add_param("-n",
@@ -94,6 +106,12 @@ bh.add_param(
 bh.add_param("-dups",
              "--duplicates",
              help="Include duplicates",
+             default=False,
+             action='store_true')
+
+bh.add_param("-t",
+             "--timestamps",
+             help="Include timestamps",
              default=False,
              action='store_true')
 
