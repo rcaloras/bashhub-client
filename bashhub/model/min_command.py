@@ -9,7 +9,7 @@ class MinCommand(Serializable):
     def __init__(self, command, created, uuid):
         self.command = command
         self.created = created
-        self.created = uuid
+        self.uuid = uuid
 
     def __str__(self):
         return self.command.encode('utf8')
