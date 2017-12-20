@@ -111,7 +111,7 @@ check_dependencies() {
 
 check_already_installed() {
     if [ -e ~/.bashhub ]; then
-        echo -e "\nLooks like the bashhub client is already installed.
+        echo -e "\nLooks like Bashhub is already installed.
         \nLets go ahead and update it.\n"
 
         # Copy our user credentials so we don't have to ask you for them again.
