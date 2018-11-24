@@ -14,6 +14,11 @@ from bashhub_globals import BH_URL, BH_AUTH
 from version import __version__
 from requests import ConnectionError
 from requests import HTTPError
+import requests.packages.urllib3
+
+# Disable warnings caused by old Python versions 2.7.6 >=
+# Remove once we've successfully migrated to Python 3
+requests.packages.urllib3.disable_warnings()
 
 # Build our user agent string
 user_agent = 'bashhub/%s' % __version__
