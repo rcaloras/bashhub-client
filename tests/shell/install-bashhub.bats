@@ -29,33 +29,31 @@ setup() {
   [[ $status == 0 ]]
 }
 
-@test "get_and_check_python_version should find python2.7 first" {
-   # Mock up some fake responses here.
-  python2.7() { return 0; }
+@test "get_and_check_python_version should find python27 first" {
+  # Mock up some fake responses here.
+  python2.7() { return 1; }
+  python27() { return 0; }
+  python() { return 0; }
 
   run 'get_and_check_python_version'
   [[ $status == 0 ]]
-  [[ "$output" == "python2.7" ]]
+  [[ "$output" == "python27" ]]
 }
 
 @test "get_and_check_python_version should find different python versions" {
   # Mock up some fake responses here.
-  path=$(which python)
 
-  which() { echo $path; }
   python27() { return 1; }
   python2.7() { return 1; }
-  python2.6() { return 0; }
-  python26() { return 0; }
+  python2() { return 0; }
 
   run 'get_and_check_python_version'
   [[ $status == 0 ]]
-  [[ "$output" == "python2.6" ]]
+  [[ "$output" == "python2" ]]
 
   # Should find the default installation if no others.
-  python2.6() { return 1; }
-  python26() { return 1; }
   python2() { return 1; }
+  python() { return 0; }
 
   run 'get_and_check_python_version'
   [[ $status == 0 ]]
@@ -81,6 +79,3 @@ setup() {
   [[ $status == 0 ]]
   [[ -e env ]]
 }
-
-
-
