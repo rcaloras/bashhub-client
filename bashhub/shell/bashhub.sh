@@ -37,8 +37,10 @@ __bh_setup_bashhub() {
 
 __bh_hook_bashhub() {
 
-    # Alias to bind Ctrl + B
-    bind '"\C-b":"\C-u\C-kbh -i\n"'
+    if [ -t 1 ]; then
+        # Alias to bind Ctrl + B
+        bind '"\C-b":"\C-u\C-kbh -i\n"'
+    fi
 
     # Hook into preexec and precmd functions
     if ! contains_element __bh_preexec "${preexec_functions[@]}"; then

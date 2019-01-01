@@ -30,7 +30,7 @@ fi
 
 python_command='
 import sys
-if (2, 6, 0) < sys.version_info < (3,0):
+if (2, 7, 0) < sys.version_info < (3,0):
   sys.exit(0)
 else:
   sys.exit(-1)'
@@ -41,7 +41,7 @@ zshprofile=~/.zshrc
 
 # Optional parameter to specify a github branch
 # to pull from.
-github_branch=${1:-'1.1.5'}
+github_branch=${1:-'1.20.0'}
 
 install_bashhub() {
     check_dependencies
@@ -50,9 +50,9 @@ install_bashhub() {
 }
 
 get_and_check_python_version() {
-    # Only supporting 2.6 - 2.7 right now. Eventually bump this to include 3.
+    # Only supporting 2.7 right now. Eventually bump this to include 3.
     # Preface explict versions first to avoid global updates to 3.
-    python_version_array=( "python2.7" "python27" "python2.6" "python26" "python2" "python")
+    python_version_array=( "python2.7" "python27" "python2" "python")
 
     for python_version in "${python_version_array[@]}"; do
         if type "$python_version" &> /dev/null; then
@@ -74,7 +74,7 @@ download_and_install_env() {
     # Options for your first environment:
     ENV_OPTS="--distribute"
 
-    # Only supporting python 2.6 - 2.7 right now.
+    # Only supporting 2.7 right now.
     python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
         die "\n Sorry you need to have python 2.7 installed. Please install it and rerun this script." 1

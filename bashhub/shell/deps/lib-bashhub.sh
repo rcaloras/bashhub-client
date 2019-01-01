@@ -142,7 +142,8 @@ __bh_check_bashhub_installation() {
 # manipulating variables when invoked by precmd.
 __bh_precmd_run_script() {
     if [[ -e $BH_HOME_DIRECTORY/script.bh ]]; then
-        local command=$(head -n 1 "$BH_HOME_DIRECTORY/script.bh")
+        local command
+        command=$(head -n 1 "$BH_HOME_DIRECTORY/script.bh")
         rm "$BH_HOME_DIRECTORY/script.bh"
         eval "$command"
      fi;
