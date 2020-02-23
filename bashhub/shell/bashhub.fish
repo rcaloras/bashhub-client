@@ -92,7 +92,7 @@ function __bh_process_command --argument-names cmd dir pid
 
     # This is non-standard across systems. As GNU and BSD Date convert epochs
     # differently, use python for cross-system compatibility.
-    set -l process_start_stamp (LC_ALL=C ps -p $fish_pid -o lstart=)
+    set -l process_start_stamp (env LC_ALL=C ps -p $fish_pid -o lstart=)
 
     set -x process_start (bashhub util parsedate "$process_start_stamp")
     set -x exit_status "$__BH_EXIT_STATUS"
