@@ -83,7 +83,7 @@ function __bh_process_command --argument-names cmd dir pid
     end
 
     # ensure that bashhub is installed
-    if not type "bashhub" &> /dev/null
+    if not type "bashhub" > /dev/null 2>&1
         return 0
     end
 
