@@ -99,35 +99,3 @@ function __bh_process_command --argument-names cmd dir pid
 
     fish -c 'bashhub save "$bh_command" "$working_directory" "$process_id" "$process_start" "$exit_status" &'
 end
-
-# Small function to check our Bashhub installation.
-# It's added to our precmd functions. On its initial run
-# it removes itself from the precmd function array.
-# This means it runs exactly once.
-function __bh_check_bashhub_installation
-    set -l ret 0
-    set -l config_path "$BH_HOME_DIRECTORY/config"
-    if [ -n "$FISH_VERSION" && -n "$__bh_enable_subshells" && "(trap)" -ne *"__bh_preexec_invoke_exec"* ]
-        echo "Bashhub's preexec hook is being overriden and is not saving commands. Please resolve what may be holding the DEBUG trap."
-        set ret 1
-    else if [ -f "$config_path" ]
-        echo "Missing Bashhub config file. Please run 'bashhub setup' to generate one."
-        set ret 2
-    else if not grep -Fq "access_token" "$config_path"
-        echo "Missing Bashhub access token. Please run 'bashhub setup' to re-login."
-        set ret 3
-    else if not grep -Fq "system_name" "$config_path"
-        echo "Missing system name. Please run 'bashhub setup' to re-login."
-        set ret 4
-    else if grep -Fq "save_commands = False" "$config_path"
-        echo "Bashhub is currently disabled. Run 'bashhub on' to re-enable."
-        set ret 5
-    end
-
-    # TODO: remove self from preexec once the session starts
-    set -l delete (__bh_check_bashhub_installation)
-
-    return $ret
-end
-
-set -x BH_HOME_DIRECTORY "$HOME/.bashhub/"
