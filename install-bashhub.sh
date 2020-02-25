@@ -23,6 +23,12 @@ if [ -f ~/.bashhub/bashhub.zsh ]; then
     source ~/.bashhub/bashhub.zsh
 fi
 '
+fish_config_hook='
+### Bashhub.com Installation
+if [ -f "$HOME/.bashhub/bashhub.fish" ]
+    source "$HOME/.bashhub/bashhub.fish"
+end
+'
 
 bash_config_source='
 if [ -f ~/.bashrc ]; then
@@ -42,6 +48,7 @@ else:
 bashhub_config=~/.bashhub/config
 backup_config=~/.bashhub.config.backup
 zshprofile=~/.zshrc
+fish_config="${XDG_CONFIG_HOME:-~/.config}/fish/config.fish"
 
 # Optional parameter to specify a github branch
 # to pull from.
@@ -139,6 +146,19 @@ install_hooks_for_zsh() {
 
 }
 
+install_hooks_for_fish() {
+    if [ ! -e $fish_config ]; then
+        die "No fish config cound be found" 1
+    fi
+
+    if grep -q "source ~/.bashhub/bashhub.fish" "$fish_config"
+    then
+        :
+    else
+        echo "$fish_config_hook" >> "$fish_config"
+    fi
+}
+
 
 # Create two config files .bashrc and .bash_profile since
 # OS X and Linux shells use them diffferently. Source .bashrc
@@ -187,6 +207,8 @@ install_hooks_for_bash() {
 detect_shell_type() {
     if [ -n "$ZSH_VERSION" ]; then
         echo 'zsh'
+    elif [ -n "$FISH_VERSION" ]; then
+        echo 'fish'
     elif [ -n "$BASH_VERSION" ]; then
         echo 'bash'
     else
@@ -202,11 +224,14 @@ install_hooks_for_shell() {
         "zsh")
             install_hooks_for_zsh
             ;;
+        "fish")
+            install_hooks_for_fish
+            ;;
         "bash")
             install_hooks_for_bash
             ;;
         *)
-        die "\n Bashhub only supports bash or zsh. Your defualt shell is $SHELL." 1
+        die "\n Bashhub only supports bash, fish, or zsh. Your defualt shell is $SHELL." 1
     esac
 }
 
