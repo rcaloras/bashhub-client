@@ -3,20 +3,6 @@
 # Main file that is sourced onto our path for fish.
 #
 
-# Avoid duplicate inclusion
-# if [ "$__bh_imported" = "defined" ]
-#     __bh_path_add "$HOME/.bashhub/bin"
-#     return 0
-# else
-#     set -x __bh_imported "defined"
-# end
-
-function __bh_path_add --argument-names item
-    if [ -d "$item" ] && not contains_element "$item" "$PATH"
-        set -x PATH "$item" "$PATH"
-    end
-end
-
 #
 # Checks if an element is present in an array.
 #
@@ -32,8 +18,21 @@ function contains_element --argument-names element array
     return 1
 end
 
-# Make sure our bin directory is on our path
-__bh_path_add "$HOME/.bashhub/bin"
+function __bh_path_add --argument-names item
+    if [ -d "$item" ] && not contains_element "$item" "$PATH"
+        set -x PATH "$item" "$PATH"
+    end
+end
+
+# Avoid duplicate inclusion
+if [ "$__bh_imported" = "defined" ]
+    __bh_path_add "$HOME/.bashhub/bin"
+else
+    set -Ux __bh_imported "defined"
+    set -Ux BH_HOME_DIRECTORY "$HOME/.bashhub/"
+
+    source "../deps/fish/functions/__bh_check_bashhub_installation.fish"
+end
 
 function __bh_preexec --on-event fish_preexec
     set -g __BH_PWD "$PWD"
