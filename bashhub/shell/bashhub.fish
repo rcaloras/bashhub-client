@@ -31,7 +31,7 @@ else
     set -Ux __bh_imported "defined"
     set -Ux BH_HOME_DIRECTORY "$HOME/.bashhub/"
 
-    source "../deps/fish/functions/__bh_check_bashhub_installation.fish"
+    source "$BH_HOME_DIRECTORY/deps/fish/functions/__bh_check_bashhub_installation.fish"
 end
 
 function __bh_preexec --on-event fish_preexec
