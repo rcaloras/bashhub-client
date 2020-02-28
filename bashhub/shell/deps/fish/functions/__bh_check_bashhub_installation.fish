@@ -4,7 +4,7 @@
 #
 
 # Small function to check our Bashhub installation.
-function __bh_check_bashhub_installation --on-event fish_preexec
+function __bh_check_bashhub_installation
     set -l ret 0
     set -l config_path "$BH_HOME_DIRECTORY/config"
     if [ -n "$FISH_VERSION" && -n "$__bh_enable_subshells" && "(trap)" -ne *"__bh_preexec_invoke_exec"* ]
@@ -26,3 +26,5 @@ function __bh_check_bashhub_installation --on-event fish_preexec
 
     return $ret
 end
+
+__bh_check_bashhub_installation
