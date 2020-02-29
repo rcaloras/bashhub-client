@@ -24,6 +24,10 @@ function __bh_path_add --argument-names item
     end
 end
 
+function __bh_interactive
+  fish -c "bh -i"
+end
+
 # Avoid duplicate inclusion
 if [ "$__bh_imported" = "defined" ]
     __bh_path_add "$HOME/.bashhub/bin"
@@ -32,6 +36,7 @@ else
     set -Ux BH_HOME_DIRECTORY "$HOME/.bashhub/"
 
     source "$BH_HOME_DIRECTORY/deps/fish/functions/__bh_check_bashhub_installation.fish"
+    bind \cb __bh_interactive
 end
 
 function __bh_preexec --on-event fish_preexec
