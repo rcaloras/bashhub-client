@@ -48,7 +48,7 @@ function __bh_precmd --on-event fish_prompt
     set -x __BH_EXIT_STATUS $status
 
     if [ -e "$BH_HOME_DIRECTORY/response.bh" ]
-        set -l cmd "`head -n 1 $BH_HOME_DIRECTORY/response.bh`"
+        set -l cmd (head -n 1 "$BH_HOME_DIRECTORY/response.bh")
         rm "$BH_HOME_DIRECTORY/response.bh"
         echo $cmd
     end
