@@ -205,13 +205,13 @@ def main():
 
         sys.exit(0)
 
-    except Exception, err:
+    except Exception as err:
         sys.stderr.write('Setup Error:\n%s\n' % str(err))
         traceback.print_exc()
         sys.exit(1)
     except KeyboardInterrupt:
         # To allow Ctrl+C (^C). Print a new line to drop the prompt.
-        print
+        print("")
         sys.exit()
 
 
