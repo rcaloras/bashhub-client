@@ -15,6 +15,7 @@ from model import MinCommand
 from bashhub_globals import *
 import rest_client
 from i_search import InteractiveSearch
+from version import __version__
 
 
 @cli.app.CommandLineApp
@@ -33,6 +34,10 @@ def bh(app):
     # If we're interactive, make sure we have a query
     if app.params.interactive and query == '':
         query = raw_input("(bashhub-i-search): ")
+
+    if app.params.version and query == '':
+        print('Bashhub %s' % __version__)
+        sys.exit()
 
     # Call our rest api to search for commands
     commands = rest_client.search(limit=limit,
@@ -115,6 +120,11 @@ bh.add_param("-t",
              default=False,
              action='store_true')
 
+bh.add_param("-V",
+             "--version",
+             help="Print version information",
+             default=False,
+             action='store_true')
 
 def main():
     try:
