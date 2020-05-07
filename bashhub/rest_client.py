@@ -5,13 +5,14 @@ import requests
 from requests import ConnectionError
 import os
 
-from model import MinCommand
-from model import StatusView
-from model import Command
-from model import LoginResponse
-from model import System
-from bashhub_globals import BH_URL, BH_AUTH
-from version import __version__
+from .model import MinCommand
+from .model import MinCommand
+from .model import StatusView
+from .model import Command
+from .model import LoginResponse
+from .model import System
+from .bashhub_globals import BH_URL, BH_AUTH
+from .version import __version__
 from requests import ConnectionError
 from requests import HTTPError
 import requests.packages.urllib3
@@ -99,9 +100,9 @@ def register_system(register_system):
         print("Looks like there's a connection error. Please try again later")
     except HTTPError as error:
         if response.status_code == 409:
-            print response.text
+            print(response.text)
         else:
-            print error
+            print(error)
             print("Please try again...")
     return None
 
@@ -202,6 +203,7 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None):
             print(
                 "Sorry, an error occurred communicating with Bashhub. Response Code: "
                 + str(r.status_code))
+            print(error)
     return []
 
 

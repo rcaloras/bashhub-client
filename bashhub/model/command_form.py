@@ -1,6 +1,6 @@
 from time import *
 import uuid
-from serializable import Serializable
+from .serializable import Serializable
 
 
 class CommandForm(Serializable):

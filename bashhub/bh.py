@@ -5,17 +5,19 @@ import json
 import sys
 import requests
 from requests import ConnectionError
+from builtins import input
 import cli.app
 import os
 import io
 import traceback
 import datetime
 
-from model import MinCommand
-from bashhub_globals import *
-import rest_client
-from i_search import InteractiveSearch
-from version import __version__
+from .model import MinCommand
+from .bashhub_globals import *
+from . import rest_client
+from .i_search import InteractiveSearch
+from .version import __version__
+
 
 
 @cli.app.CommandLineApp
@@ -33,7 +35,7 @@ def bh(app):
 
     # If we're interactive, make sure we have a query
     if app.params.interactive and query == '':
-        query = raw_input("(bashhub-i-search): ")
+        query = input("(bashhub-i-search): ")
 
     if app.params.version and query == '':
         print('Bashhub %s' % __version__)
@@ -58,7 +60,7 @@ def print_commands(commands, use_timestamps):
             timestamp = unix_milliseconds_timestamp_to_datetime(command.created)
             print('%s\t%s' % (timestamp, (command.command).encode('utf-8')))
         else:
-            print((command.command).encode('utf-8'))
+            print(command.command)
 
 
 def run_interactive(commands):
@@ -130,7 +132,7 @@ def main():
     try:
         bh.run()
     except Exception as e:
-        formatted = traceback.format_exc(e)
+        # formatted = traceback.print_stack()
         print("Oops, look like an exception occured: " + str(e))
         sys.exit(1)
     except KeyboardInterrupt:

@@ -7,8 +7,14 @@ import os
 import re
 import time
 import stat
-import ConfigParser
-from ConfigParser import NoSectionError, NoOptionError
+
+# Support for Python 2 and 3
+try:
+    import configparser
+    from configparser import NoSectionError, NoOptionError
+except ImportError:
+    import ConfigParser as configparser
+    from ConfigParser import NoSectionError, NoOptionError
 
 # Current time in milleseconds to use across app.
 current_milli_time = lambda: int(round(time.time() * 1000))
@@ -46,7 +52,7 @@ def write_to_config_file(section, value):
 
 def get_from_config(key):
     try:
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(BH_HOME + '/config')
         return config.get('bashhub', key)
     except NoSectionError as error:
