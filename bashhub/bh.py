@@ -58,7 +58,7 @@ def print_commands(commands, use_timestamps):
     for command in reversed(commands):
         if use_timestamps:
             timestamp = unix_milliseconds_timestamp_to_datetime(command.created)
-            print('%s\t%s' % (timestamp, (command.command).encode('utf-8')))
+            print('%s\t%s' % (timestamp, command.command))
         else:
             print(command.command)
 

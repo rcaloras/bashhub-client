@@ -10,15 +10,21 @@ import traceback
 import uuid
 import stat
 import socket
-import rest_client
-from version import __version__
-from model import *
-from bashhub_globals import *
+from . import rest_client
+from .version import __version__
+from .model import *
+from .bashhub_globals import *
 import requests
 from requests import ConnectionError
 from requests import HTTPError
-import ConfigParser
 import collections
+
+# Support for Python 2 and 3
+try:
+    import configparser
+    from configparser import NoSectionError, NoOptionError
+except ImportError:
+    import ConfigParser as configparser
 
 
 def query_yes_no(question, default="yes"):

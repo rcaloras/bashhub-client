@@ -147,7 +147,6 @@ class EditRecord(npyscreen.ActionForm):
 
 class InteractiveSearch(npyscreen.NPSAppManaged):
     def __init__(self, commands, rest_client=None):
-        print("about to super")
         super(InteractiveSearch, self).__init__()
         self.commands = commands
         self.rest_client = rest_client
@@ -155,6 +154,5 @@ class InteractiveSearch(npyscreen.NPSAppManaged):
         print("Done initialize")
 
     def onStart(self):
-        print("In onStart")
         self.addForm("MAIN", CommandListDisplay)
         self.addForm("EDITRECORDFM", EditRecord)

@@ -1,7 +1,7 @@
 import os
-from bashhub_globals import *
 import dateutil.parser
 from time import *
+from .bashhub_globals import *
 
 
 def get_session_information():

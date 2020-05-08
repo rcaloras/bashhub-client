@@ -34,7 +34,7 @@ def write_to_config_file(section, value):
     file_path = BH_HOME + '/config'
     permissions = stat.S_IRUSR | stat.S_IWUSR
     if exists:
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(BH_HOME + '/config')
         # Add our section if it doesn't exist
         if not config.has_section("bashhub"):
