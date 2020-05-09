@@ -17,6 +17,7 @@ from .bashhub_globals import *
 from . import rest_client
 from .i_search import InteractiveSearch
 from .version import __version__
+from builtins import str as text
 
 
 
@@ -71,7 +72,7 @@ def run_interactive(commands):
     command = i_search.return_value
     if command is not None:
         f = io.open(BH_HOME + '/response.bh', 'w+', encoding='utf-8')
-        print(unicode(command.command), file=f)
+        print(text(command.command), file=f)
 
 
 def unix_milliseconds_timestamp_to_datetime(timestamp):

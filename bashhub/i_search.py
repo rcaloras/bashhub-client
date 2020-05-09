@@ -41,7 +41,7 @@ class CommandList(npyscreen.MultiLineAction):
 
     def delete_command(self, command):
         confirmed = npyscreen.notify_ok_cancel(
-            command.command.encode('utf8'), "Delete Command")
+            str(command), "Delete Command")
         if confirmed:
             result = rest_client.delete_command(command.uuid)
             if result:
@@ -151,7 +151,6 @@ class InteractiveSearch(npyscreen.NPSAppManaged):
         self.commands = commands
         self.rest_client = rest_client
         self.return_value = None
-        print("Done initialize")
 
     def onStart(self):
         self.addForm("MAIN", CommandListDisplay)
