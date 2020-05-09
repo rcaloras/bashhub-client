@@ -17,7 +17,7 @@ setup(name='bashhub',
       include_package_data=True,
       install_requires=[
           'requests==2.23.0', 'jsonpickle==0.7.0', 'click==3.3',
-          'npyscreen==4.10.5', 'python-dateutil==2.4', 'pyCLI==2.0.3',
+          'npyscreen==4.10.5', 'python-dateutil==2.8.1', 'pyCLI==2.0.3',
           'pymongo==2.9', 'inflection==0.3.1', 'humanize==0.5.1',
           'future==0.16.0'
       ],
