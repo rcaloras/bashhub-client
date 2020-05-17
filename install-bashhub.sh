@@ -30,7 +30,9 @@ fi
 
 python_command='
 import sys
-if (2, 7, 0) < sys.version_info < (3,0):
+if (3, 4, 0) < sys.version_info < (4,0):
+  sys.exit(0)
+elif (2, 7, 0) < sys.version_info < (3,0):
   sys.exit(0)
 else:
   sys.exit(-1)'
@@ -50,9 +52,8 @@ install_bashhub() {
 }
 
 get_and_check_python_version() {
-    # Only supporting 2.7 right now. Eventually bump this to include 3.
-    # Preface explict versions first to avoid global updates to 3.
-    python_version_array=( "python2.7" "python27" "python2" "python")
+    # Prefer Python 3 versions over python 2
+    python_version_array=( "python3" "python3.8" "python" "python2.7" "python27" "python2")
 
     for python_version in "${python_version_array[@]}"; do
         if type "$python_version" &> /dev/null; then
@@ -68,7 +69,7 @@ get_and_check_python_version() {
 
 download_and_install_env() {
     # Select current version of virtualenv:
-    VERSION=1.9.1
+    VERSION=16.7.10
     # Name your first "bootstrap" environment:
     INITIAL_ENV="env"
     # Options for your first environment:
@@ -77,7 +78,7 @@ download_and_install_env() {
     # Only supporting 2.7 right now.
     python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
-        die "\n Sorry you need to have python 2.7 installed. Please install it and rerun this script." 1
+        die "\n Sorry you need to have python 3.4+ or 2.7 installed. Please install it and rerun this script." 1
     fi
 
     # Set to whatever python interpreter you want for your first environment
