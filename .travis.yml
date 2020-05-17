@@ -1,5 +1,6 @@
 language: python
 python:
+  - "3.8"
   - "2.7"
 before_install:
   # To install bats and test our shell/bash functions
