@@ -24,7 +24,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 BH_URL = os.getenv('BH_URL', 'https://bashhub.com')
 
 
-BH_HOME = '~/.bashhub' if 'HOME' not in os.environ.keys() \
+BH_HOME = '~/.bashhub' if 'HOME' not in list(os.environ.keys()) \
         else os.environ['HOME'] + '/.bashhub'
 
 
