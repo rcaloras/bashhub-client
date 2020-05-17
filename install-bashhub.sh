@@ -8,6 +8,8 @@
 #
 # The only shell it won't ever work on is cmd.exe.
 
+set -e
+
 bash_profile_hook='
 ### Bashhub.com Installation.
 ### This Should be at the EOF. https://bashhub.com/docs
