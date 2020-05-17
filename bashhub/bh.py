@@ -19,11 +19,22 @@ from .i_search import InteractiveSearch
 from .version import __version__
 from builtins import str as text
 
+from future.utils import raise_with_traceback
 
+def post_run_exception_handling(returned):
+    # Override PyCLI post_run method to support Python 3 and 2
+    if isinstance(returned, Exception):
+        if (sys.version_info > (3, 0)):
+            raise returned
+        else:
+            raise_with_traceback(returned)
+    else:
+        sys.exit(0)
 
 @cli.app.CommandLineApp
 def bh(app):
     """Bashhub Search"""
+    app.post_run = post_run_exception_handling
     limit = app.params.number
     query = app.params.query
     system_name = BH_SYSTEM_NAME if app.params.system else None
@@ -133,7 +144,8 @@ def main():
     try:
         bh.run()
     except Exception as e:
-        # formatted = traceback.print_stack()
+        if BH_DEBUG:
+            traceback.print_exc()
         print("Oops, look like an exception occured: " + str(e))
         sys.exit(1)
     except KeyboardInterrupt:

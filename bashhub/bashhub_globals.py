@@ -24,7 +24,6 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 BH_URL = os.getenv('BH_URL', 'https://bashhub.com')
 
 
-
 BH_HOME = '~/.bashhub' if 'HOME' not in os.environ.keys() \
         else os.environ['HOME'] + '/.bashhub'
 
@@ -71,6 +70,9 @@ BH_SAVE_COMMANDS = os.getenv('BH_SAVE_COMMANDS', \
     get_from_config('save_commands')).lower() in ('true', 'yes', 't', 'on', '')
 
 BH_SYSTEM_NAME = get_from_config("system_name")
+
+# Check if debug mode is enabled
+BH_DEBUG = os.getenv('BH_DEBUG', get_from_config("debug"))
 
 
 # Get our token from the environment if one is present
