@@ -94,11 +94,8 @@ download_and_install_env() {
     # Create the first "bootstrap" environment.
     $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" "$INITIAL_ENV"
 
-    # Don't need this anymore.
+    # Remove our virtual env setup files we don't need anymore
     rm -rf virtualenv-$VERSION
-    # Install the environment.
-    $INITIAL_ENV/bin/pip -q install virtualenv-$VERSION.tar.gz
-    # Don't need this anymore either.
     rm virtualenv-$VERSION.tar.gz
 }
 
@@ -221,8 +218,9 @@ setup_bashhub_files() {
     download_and_install_env
 
     # Grab the code from master off github.
+    echo "Pulling down bashhub-client from ${github_branch} branch"
     curl -sL https://github.com/rcaloras/bashhub-client/archive/${github_branch}.tar.gz -o client.tar.gz
-    tar -xvf client.tar.gz
+    tar -xf client.tar.gz
     cd bashhub-client*
 
     # Copy over our dependencies.
@@ -235,7 +233,7 @@ setup_bashhub_files() {
 
     # install our packages. bashhub and dependencies.
     echo "Pulling down a few dependencies...(this may take a moment)"
-    ../env/bin/pip -q install .
+    ../env/bin/pip -qq install .
 
     # Check if we already have a config. If not run setup.
     if [ -e $backup_config ]; then
