@@ -14,7 +14,7 @@ from . import bashhub_setup
 from . import bashhub_globals
 from .bashhub_globals import BH_FILTER, BH_HOME, BH_SAVE_COMMANDS
 from .bashhub_globals import write_to_config_file
-from .version import __version__
+from .version import version_str
 import shutil
 import requests
 import subprocess
@@ -28,7 +28,7 @@ from builtins import str as text
 def print_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    click.echo('Bashhub %s' % __version__)
+    click.echo(version_str)
     ctx.exit()
 
 
@@ -52,7 +52,7 @@ def bashhub():
 @bashhub.command()
 def version():
     """Display version"""
-    click.echo('Bashhub %s' % __version__)
+    click.echo(version_str)
 
 
 @bashhub.command()

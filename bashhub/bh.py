@@ -16,7 +16,7 @@ from .model import MinCommand
 from .bashhub_globals import *
 from . import rest_client
 from .i_search import InteractiveSearch
-from .version import __version__
+from .version import version_str
 from builtins import str as text
 
 from future.utils import raise_with_traceback
@@ -50,7 +50,7 @@ def bh(app):
         query = input("(bashhub-i-search): ")
 
     if app.params.version and query == '':
-        print('Bashhub %s' % __version__)
+        print(version_str)
         sys.exit()
 
     # Call our rest api to search for commands
