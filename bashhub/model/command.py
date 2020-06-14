@@ -4,7 +4,7 @@ from time import *
 import jsonpickle
 import sys
 import uuid
-from serializable import Serializable
+from .serializable import Serializable
 
 
 class Command(Serializable):

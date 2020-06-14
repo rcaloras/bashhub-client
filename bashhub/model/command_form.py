@@ -1,6 +1,6 @@
 from time import *
 import uuid
-from serializable import Serializable
+from .serializable import Serializable
 
 
 class CommandForm(Serializable):
@@ -10,6 +10,6 @@ class CommandForm(Serializable):
         self.command = command
         self.path = path
         self.exit_status = exit_status
-        self.process_id = long(process_id)
+        self.process_id = int(process_id)
         self.process_start_time = process_start_time
         self.created = int(round(time() * 1000))

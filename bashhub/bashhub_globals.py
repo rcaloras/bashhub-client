@@ -7,8 +7,14 @@ import os
 import re
 import time
 import stat
-import ConfigParser
-from ConfigParser import NoSectionError, NoOptionError
+
+# Support for Python 2 and 3
+try:
+    import configparser
+    from configparser import NoSectionError, NoOptionError
+except ImportError:
+    import ConfigParser as configparser
+    from ConfigParser import NoSectionError, NoOptionError
 
 # Current time in milleseconds to use across app.
 current_milli_time = lambda: int(round(time.time() * 1000))
@@ -18,8 +24,7 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 BH_URL = os.getenv('BH_URL', 'https://bashhub.com')
 
 
-
-BH_HOME = '~/.bashhub' if 'HOME' not in os.environ.keys() \
+BH_HOME = '~/.bashhub' if 'HOME' not in list(os.environ.keys()) \
         else os.environ['HOME'] + '/.bashhub'
 
 
@@ -28,7 +33,7 @@ def write_to_config_file(section, value):
     file_path = BH_HOME + '/config'
     permissions = stat.S_IRUSR | stat.S_IWUSR
     if exists:
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(BH_HOME + '/config')
         # Add our section if it doesn't exist
         if not config.has_section("bashhub"):
@@ -46,7 +51,7 @@ def write_to_config_file(section, value):
 
 def get_from_config(key):
     try:
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(BH_HOME + '/config')
         return config.get('bashhub', key)
     except NoSectionError as error:
@@ -65,6 +70,9 @@ BH_SAVE_COMMANDS = os.getenv('BH_SAVE_COMMANDS', \
     get_from_config('save_commands')).lower() in ('true', 'yes', 't', 'on', '')
 
 BH_SYSTEM_NAME = get_from_config("system_name")
+
+# Check if debug mode is enabled
+BH_DEBUG = os.getenv('BH_DEBUG', get_from_config("debug"))
 
 
 # Get our token from the environment if one is present

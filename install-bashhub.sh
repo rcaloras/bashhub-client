@@ -8,6 +8,8 @@
 #
 # The only shell it won't ever work on is cmd.exe.
 
+set -e
+
 bash_profile_hook='
 ### Bashhub.com Installation.
 ### This Should be at the EOF. https://bashhub.com/docs
@@ -30,7 +32,9 @@ fi
 
 python_command='
 import sys
-if (2, 7, 0) < sys.version_info < (3,0):
+if (3, 5, 0) < sys.version_info < (3,8):
+  sys.exit(0)
+elif (2, 7, 0) < sys.version_info < (3,0):
   sys.exit(0)
 else:
   sys.exit(-1)'
@@ -41,7 +45,7 @@ zshprofile=~/.zshrc
 
 # Optional parameter to specify a github branch
 # to pull from.
-github_branch=${1:-'1.2.0'}
+github_branch=${1:-'2.0.0'}
 
 install_bashhub() {
     check_dependencies
@@ -50,9 +54,8 @@ install_bashhub() {
 }
 
 get_and_check_python_version() {
-    # Only supporting 2.7 right now. Eventually bump this to include 3.
-    # Preface explict versions first to avoid global updates to 3.
-    python_version_array=( "python2.7" "python27" "python2" "python")
+    # Prefer Python 3 versions over python 2
+    python_version_array=( "python3.7" "python3.6" "python3.5" "python3" "python" "python2.7" "python27" "python2")
 
     for python_version in "${python_version_array[@]}"; do
         if type "$python_version" &> /dev/null; then
@@ -68,7 +71,7 @@ get_and_check_python_version() {
 
 download_and_install_env() {
     # Select current version of virtualenv:
-    VERSION=1.9.1
+    VERSION=16.7.10
     # Name your first "bootstrap" environment:
     INITIAL_ENV="env"
     # Options for your first environment:
@@ -77,7 +80,7 @@ download_and_install_env() {
     # Only supporting 2.7 right now.
     python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
-        die "\n Sorry you need to have python 2.7 installed. Please install it and rerun this script." 1
+        die "\n Sorry you need to have python 3.5-3.7 or 2.7 installed. Please install it and rerun this script." 1
     fi
 
     # Set to whatever python interpreter you want for your first environment
@@ -91,17 +94,14 @@ download_and_install_env() {
     # Create the first "bootstrap" environment.
     $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" "$INITIAL_ENV"
 
-    # Don't need this anymore.
+    # Remove our virtual env setup files we don't need anymore
     rm -rf virtualenv-$VERSION
-    # Install the environment.
-    $INITIAL_ENV/bin/pip -q install virtualenv-$VERSION.tar.gz
-    # Don't need this anymore either.
     rm virtualenv-$VERSION.tar.gz
 }
 
 check_dependencies() {
     if [ -z "$(get_and_check_python_version)" ]; then
-        die "\n Sorry can't seem to find a version of python 2.7 installed" 1
+        die "\n Sorry can't seem to find a version of python 3.5-3.7 or 2.7 installed" 1
     fi
 
     if [ -z "$(detect_shell_type)" ]; then
@@ -218,8 +218,9 @@ setup_bashhub_files() {
     download_and_install_env
 
     # Grab the code from master off github.
+    echo "Pulling down bashhub-client from ${github_branch} branch"
     curl -sL https://github.com/rcaloras/bashhub-client/archive/${github_branch}.tar.gz -o client.tar.gz
-    tar -xvf client.tar.gz
+    tar -xf client.tar.gz
     cd bashhub-client*
 
     # Copy over our dependencies.
@@ -232,7 +233,7 @@ setup_bashhub_files() {
 
     # install our packages. bashhub and dependencies.
     echo "Pulling down a few dependencies...(this may take a moment)"
-    ../env/bin/pip -q install .
+    ../env/bin/pip -qq install .
 
     # Check if we already have a config. If not run setup.
     if [ -e $backup_config ]; then

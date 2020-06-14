@@ -1,7 +1,7 @@
 import jsonpickle
 import json
 import requests
-from serializable import Serializable
+from .serializable import Serializable
 
 
 class System(Serializable):

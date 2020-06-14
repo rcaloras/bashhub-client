@@ -5,21 +5,36 @@ import json
 import sys
 import requests
 from requests import ConnectionError
+from builtins import input
 import cli.app
 import os
 import io
 import traceback
 import datetime
 
-from model import MinCommand
-from bashhub_globals import *
-import rest_client
-from i_search import InteractiveSearch
+from .model import MinCommand
+from .bashhub_globals import *
+from . import rest_client
+from .i_search import InteractiveSearch
+from .version import version_str
+from builtins import str as text
 
+from future.utils import raise_with_traceback
+
+def post_run_exception_handling(returned):
+    # Override PyCLI post_run method to support Python 3 and 2
+    if isinstance(returned, Exception):
+        if (sys.version_info > (3, 0)):
+            raise returned
+        else:
+            raise_with_traceback(returned)
+    else:
+        sys.exit(0)
 
 @cli.app.CommandLineApp
 def bh(app):
     """Bashhub Search"""
+    app.post_run = post_run_exception_handling
     limit = app.params.number
     query = app.params.query
     system_name = BH_SYSTEM_NAME if app.params.system else None
@@ -32,7 +47,11 @@ def bh(app):
 
     # If we're interactive, make sure we have a query
     if app.params.interactive and query == '':
-        query = raw_input("(bashhub-i-search): ")
+        query = input("(bashhub-i-search): ")
+
+    if app.params.version and query == '':
+        print(version_str)
+        sys.exit()
 
     # Call our rest api to search for commands
     commands = rest_client.search(limit=limit,
@@ -51,9 +70,9 @@ def print_commands(commands, use_timestamps):
     for command in reversed(commands):
         if use_timestamps:
             timestamp = unix_milliseconds_timestamp_to_datetime(command.created)
-            print('%s\t%s' % (timestamp, (command.command).encode('utf-8')))
+            print('%s\t%s' % (timestamp, command.command))
         else:
-            print((command.command).encode('utf-8'))
+            print(command.command)
 
 
 def run_interactive(commands):
@@ -64,7 +83,7 @@ def run_interactive(commands):
     command = i_search.return_value
     if command is not None:
         f = io.open(BH_HOME + '/response.bh', 'w+', encoding='utf-8')
-        print(unicode(command.command), file=f)
+        print(text(command.command), file=f)
 
 
 def unix_milliseconds_timestamp_to_datetime(timestamp):
@@ -115,12 +134,18 @@ bh.add_param("-t",
              default=False,
              action='store_true')
 
+bh.add_param("-V",
+             "--version",
+             help="Print version information",
+             default=False,
+             action='store_true')
 
 def main():
     try:
         bh.run()
     except Exception as e:
-        formatted = traceback.format_exc(e)
+        if BH_DEBUG:
+            traceback.print_exc()
         print("Oops, look like an exception occured: " + str(e))
         sys.exit(1)
     except KeyboardInterrupt:

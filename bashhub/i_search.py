@@ -3,7 +3,7 @@
 import npyscreen
 import datetime
 import time
-import rest_client
+from . import rest_client
 import curses
 
 
@@ -41,7 +41,7 @@ class CommandList(npyscreen.MultiLineAction):
 
     def delete_command(self, command):
         confirmed = npyscreen.notify_ok_cancel(
-            command.command.encode('utf8'), "Delete Command")
+            str(command), "Delete Command")
         if confirmed:
             result = rest_client.delete_command(command.uuid)
             if result:

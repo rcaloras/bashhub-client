@@ -39,7 +39,7 @@ __bh_hook_bashhub() {
 
     if [ -t 1 ]; then
         # Alias to bind Ctrl + B
-        bind '"\C-b":"\C-u\C-kbh -i\n"'
+        bind '"\C-b":"\C-ubh -i\n"'
     fi
 
     # Hook into preexec and precmd functions

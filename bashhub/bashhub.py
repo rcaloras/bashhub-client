@@ -8,25 +8,27 @@ import sys
 import os
 import io
 
-from model import CommandForm
-import rest_client
-import bashhub_setup
-import bashhub_globals
-from bashhub_globals import BH_FILTER, BH_HOME, BH_SAVE_COMMANDS
-from bashhub_globals import write_to_config_file
-from version import __version__
+from .model import CommandForm
+from . import rest_client
+from . import bashhub_setup
+from . import bashhub_globals
+from .bashhub_globals import BH_FILTER, BH_HOME, BH_SAVE_COMMANDS
+from .bashhub_globals import write_to_config_file
+from .version import version_str
 import shutil
 import requests
 import subprocess
-import shell_utils
+from . import shell_utils
 import re
-from view.status import *
+from .view.status import *
+
+from builtins import str as text
 
 
 def print_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    click.echo('Bashhub %s' % __version__)
+    click.echo(version_str)
     ctx.exit()
 
 
@@ -50,7 +52,7 @@ def bashhub():
 @bashhub.command()
 def version():
     """Display version"""
-    click.echo('Bashhub %s' % __version__)
+    click.echo(version_str)
 
 
 @bashhub.command()
@@ -66,7 +68,7 @@ def off(is_global):
         write_to_config_file('save_commands', 'False')
     else:
         f = io.open(BH_HOME + '/script.bh', 'w+', encoding='utf-8')
-        print(unicode("export BH_SAVE_COMMANDS='False'"), file=f)
+        print(text("export BH_SAVE_COMMANDS='False'"), file=f)
 
 
 @bashhub.command()
@@ -79,17 +81,17 @@ def on(local):
     f = io.open(BH_HOME + '/script.bh', 'w+', encoding='utf-8')
 
     if local:
-        print(unicode("export BH_SAVE_COMMANDS='True'"), file=f)
+        print(text("export BH_SAVE_COMMANDS='True'"), file=f)
     else:
-        print(unicode("unset BH_SAVE_COMMANDS"), file=f)
+        print(text("unset BH_SAVE_COMMANDS"), file=f)
         write_to_config_file('save_commands', 'True')
 
 
 @bashhub.command()
 @click.argument('command', type=str)
 @click.argument('path', type=click.Path(exists=True))
-@click.argument('pid', type=long)
-@click.argument('process_start_time', type=long)
+@click.argument('pid', type=int)
+@click.argument('process_start_time', type=int)
 @click.argument('exit_status', type=int)
 def save(command, path, pid, process_start_time, exit_status):
     """Save a command to Bashhub"""

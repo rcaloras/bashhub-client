@@ -10,19 +10,26 @@ import traceback
 import uuid
 import stat
 import socket
-import rest_client
-from version import __version__
-from model import *
-from bashhub_globals import *
+from . import rest_client
+from .version import __version__
+from .model import *
+from .bashhub_globals import *
 import requests
 from requests import ConnectionError
 from requests import HTTPError
-import ConfigParser
 import collections
+from builtins import input
+
+# Support for Python 2 and 3
+try:
+    import configparser
+    from configparser import NoSectionError, NoOptionError
+except ImportError:
+    import ConfigParser as configparser
 
 
 def query_yes_no(question, default="yes"):
-    """Ask a yes/no question via raw_input() and return their answer.
+    """Ask a yes/no question via input() and return their answer.
 
     "question" is a string that is presented to the user.
     "default" is the presumed answer if the user just hits <Enter>.
@@ -43,7 +50,7 @@ def query_yes_no(question, default="yes"):
 
     while True:
         sys.stdout.write(question + prompt)
-        choice = raw_input().lower()
+        choice = input().lower()
         if default is not None and choice == '':
             return valid[default]
         elif choice in valid:
@@ -54,8 +61,8 @@ def query_yes_no(question, default="yes"):
 
 
 def get_new_user_information():
-    email = raw_input("What's your email? ")
-    username = raw_input("What username would you like? ")
+    email = input("What's your email? ")
+    username = input("What username would you like? ")
     password = getpass.getpass("What password? ")
     print("\nEmail: " + email + " Username: " + username)
     all_good = query_yes_no("Are these correct?")
@@ -75,7 +82,7 @@ def get_user_information_and_login(username=None, password=None, attempts=0):
     # i.e. if we didn't just register a new user.
     if username == None and password == None:
         print("Please enter your bashhub credentials")
-        username = raw_input("Username: ")
+        username = input("Username: ")
         password = getpass.getpass("Password: ")
 
     # login once we have all of our information
@@ -107,7 +114,7 @@ def handle_system_information(username, password):
     # Register a new System if this one isn't recognized
     if system is None:
         hostname = socket.gethostname()
-        name_input = raw_input("What do you want to call this system? " +
+        name_input = input("What do you want to call this system? " +
                                "For example Home, File Server, ect. [%s]: " %
                                hostname)
 
@@ -205,13 +212,13 @@ def main():
 
         sys.exit(0)
 
-    except Exception, err:
+    except Exception as err:
         sys.stderr.write('Setup Error:\n%s\n' % str(err))
         traceback.print_exc()
         sys.exit(1)
     except KeyboardInterrupt:
         # To allow Ctrl+C (^C). Print a new line to drop the prompt.
-        print
+        print("")
         sys.exit()
 
 
