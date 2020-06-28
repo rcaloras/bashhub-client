@@ -171,7 +171,7 @@ def patch_system(system_patch, mac):
         return None
 
 
-def search(limit=None, path=None, query=None, system_name=None, unique=None):
+def search(limit=None, path=None, query=None, system_name=None, unique=None, session_id=None):
 
     payload = dict()
 
@@ -187,6 +187,9 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None):
     if system_name:
         payload["systemName"] = system_name
 
+    if session_id:
+        payload["sessionUuid"] = session_id
+
     payload["unique"] = str(unique).lower()
     url = BH_URL + "/api/v1/command/search"
 
@@ -199,6 +202,11 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None):
     except Exception as error:
         if r.status_code in (403, 401):
             print("Permissons Issue. Run bashhub setup to re-login.")
+        elif r.status_code in [400]:
+            print(
+                "Sorry, an error occurred communicating with Bashhub. Response Code: "
+                + str(r.status_code))
+            print(r.text)
         else:
             print(
                 "Sorry, an error occurred communicating with Bashhub. Response Code: "

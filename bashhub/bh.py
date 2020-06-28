@@ -39,6 +39,7 @@ def bh(app):
     query = app.params.query
     system_name = BH_SYSTEM_NAME if app.params.system else None
     path = os.getcwd() if app.params.directory else None
+    session_id = app.params.session
 
     # By default show unique on the client.
     unique = not app.params.duplicates
@@ -58,7 +59,8 @@ def bh(app):
                                   path=path,
                                   query=query,
                                   system_name=system_name,
-                                  unique=unique)
+                                  unique=unique,
+                                  session_id=session_id)
 
     if app.params.interactive:
         run_interactive(commands)
@@ -96,6 +98,12 @@ bh.add_param("-n",
              help="Limit the number of previous commands. Default is 100.",
              default=None,
              type=int)
+
+bh.add_param("-ses",
+             "--session",
+             help="Filter by specific session id. Default is None.",
+             default=None,
+             type=str)
 
 bh.add_param("query",
              nargs='?',
