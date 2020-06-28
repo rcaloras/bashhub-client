@@ -4,6 +4,9 @@
 # Swap files
 .*.swp
 
+# Exports for dev mode which should be for local development only
+dev-exports.sh
+
 # Setuptools distribution folder.
 /dist/
 
