@@ -98,17 +98,27 @@ def get_user_information_and_login(username=None, password=None, attempts=0):
     return result
 
 
+def get_mac_hostname():
+    mac = uuid.getnode()
+    hostname = socket.gethostname()
+    if (mac >> 40) & 1:
+        print("warning: cannot find MAC. Using hostname (%s)" % hostname)
+        mac = str(abs(hash(hostname)))
+    else:
+        mac = str(mac)
+    return mac, hostname
+
+
 # Update our hostname incase it changed.
 def update_system_info():
-    mac = uuid.getnode().__str__()
-    hostname = socket.gethostname()
+    mac, hostname = get_mac_hostname()
     patch = SystemPatch(hostname=hostname, client_version=__version__)
     return rest_client.patch_system(patch, mac)
 
 
 def handle_system_information(username, password):
 
-    mac = uuid.getnode().__str__()
+    mac, _ = get_mac_hostname()
     system = rest_client.get_system_information(mac)
     system_name = None
     # Register a new System if this one isn't recognized
