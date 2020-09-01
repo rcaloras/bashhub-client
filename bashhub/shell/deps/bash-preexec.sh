@@ -161,7 +161,6 @@ __bp_in_prompt_command() {
     for command in "${prompt_command_array[@]:-}"; do
         local trimmed_command
         trimmed_command=$(__bp_trim_whitespace "$command")
-        # Only execute each function if it actually exists.
         if [[ "$trimmed_command" == "$trimmed_arg" ]]; then
             return 0
         fi
@@ -229,10 +228,6 @@ __bp_preexec_invoke_exec() {
     if [[ -z "$this_command" ]]; then
         return
     fi
-
-    # If none of the previous checks have returned out of this function, then
-    # the command is in fact interactive and we should invoke the user's
-    # preexec functions.
 
     # Invoke every function defined in our function array.
     local preexec_function
