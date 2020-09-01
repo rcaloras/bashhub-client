@@ -45,7 +45,7 @@ zshprofile=~/.zshrc
 
 # Optional parameter to specify a github branch
 # to pull from.
-github_branch=${1:-'2.0.1'}
+github_branch=${1:-'2.0.2'}
 
 install_bashhub() {
     check_dependencies
