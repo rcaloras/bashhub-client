@@ -9,7 +9,7 @@
 # Author: Ryan Caloras (ryan@bashhub.com)
 # Forked from Original Author: Glyph Lefkowitz
 #
-# V0.4.0
+# V0.4.1
 #
 
 # General Usage:
@@ -85,24 +85,26 @@ __bp_adjust_histcontrol() {
 # and unset as soon as the trace hook is run.
 __bp_preexec_interactive_mode=""
 
+# Trims leading and trailing whitespace from $2 and writes it to the variable
+# name passed as $1
 __bp_trim_whitespace() {
-    local var=$@
-    var="${var#"${var%%[![:space:]]*}"}"   # remove leading whitespace characters
-    var="${var%"${var##*[![:space:]]}"}"   # remove trailing whitespace characters
-    echo -n "$var"
+    local var=${1:?} text=${2:-}
+    text="${text#"${text%%[![:space:]]*}"}"   # remove leading whitespace characters
+    text="${text%"${text##*[![:space:]]}"}"   # remove trailing whitespace characters
+    printf -v "$var" '%s' "$text"
 }
 
 
-# Returns a copy of the passed in string trimmed of whitespace
-# and removes any leading or trailing semi colons.
-# Used for manipulating substrings in PROMPT_COMMAND
+# Trims whitespace and removes any leading or trailing semicolons from $2 and
+# writes the resulting string to the variable name passed as $1. Used for
+# manipulating substrings in PROMPT_COMMAND
 __bp_sanitize_string() {
-    local sanitized_string
-    sanitized_string=$(__bp_trim_whitespace "${1:-}")
-    sanitized_string=${sanitized_string%;}
-    sanitized_string=${sanitized_string#;}
-    sanitized_string=$(__bp_trim_whitespace "$sanitized_string")
-    echo -n "$sanitized_string"
+    local var=${1:?} text=${2:-} sanitized
+    __bp_trim_whitespace sanitized "$text"
+    sanitized=${sanitized%;}
+    sanitized=${sanitized#;}
+    __bp_trim_whitespace sanitized "$sanitized"
+    printf -v "$var" '%s' "$sanitized"
 }
 
 # This function is installed as part of the PROMPT_COMMAND;
@@ -155,12 +157,11 @@ __bp_in_prompt_command() {
     IFS=$'\n;' read -rd '' -a prompt_command_array <<< "$PROMPT_COMMAND"
 
     local trimmed_arg
-    trimmed_arg=$(__bp_trim_whitespace "${1:-}")
+    __bp_trim_whitespace trimmed_arg "${1:-}"
 
-    local command
+    local command trimmed_command
     for command in "${prompt_command_array[@]:-}"; do
-        local trimmed_command
-        trimmed_command=$(__bp_trim_whitespace "$command")
+        __bp_trim_whitespace trimmed_command "$command"
         if [[ "$trimmed_command" == "$trimmed_arg" ]]; then
             return 0
         fi
@@ -289,17 +290,17 @@ __bp_install() {
         shopt -s extdebug > /dev/null 2>&1
     fi;
 
-    local __bp_existing_prompt_command
+    local existing_prompt_command
     # Remove setting our trap install string and sanitize the existing prompt command string
-    __bp_existing_prompt_command="${PROMPT_COMMAND//$__bp_install_string[;$'\n']}" # Edge case of appending to PROMPT_COMMAND
-    __bp_existing_prompt_command="${__bp_existing_prompt_command//$__bp_install_string}"
-    __bp_existing_prompt_command=$(__bp_sanitize_string "$__bp_existing_prompt_command")
+    existing_prompt_command="${PROMPT_COMMAND//$__bp_install_string[;$'\n']}" # Edge case of appending to PROMPT_COMMAND
+    existing_prompt_command="${existing_prompt_command//$__bp_install_string}"
+    __bp_sanitize_string existing_prompt_command "$existing_prompt_command"
 
     # Install our hooks in PROMPT_COMMAND to allow our trap to know when we've
     # actually entered something.
     PROMPT_COMMAND=$'__bp_precmd_invoke_cmd\n'
-    if [[ -n "$__bp_existing_prompt_command" ]]; then
-        PROMPT_COMMAND+=${__bp_existing_prompt_command}$'\n'
+    if [[ -n "$existing_prompt_command" ]]; then
+        PROMPT_COMMAND+=${existing_prompt_command}$'\n'
     fi;
     PROMPT_COMMAND+='__bp_interactive_mode'
 
@@ -317,7 +318,6 @@ __bp_install() {
 # after our session has started. This allows bash-preexec to be included
 # at any point in our bash profile.
 __bp_install_after_session_init() {
-
     # Make sure this is bash that's running this and return otherwise.
     if [[ -z "${BASH_VERSION:-}" ]]; then
         return 1;
@@ -328,7 +328,7 @@ __bp_install_after_session_init() {
     __bp_require_not_readonly PROMPT_COMMAND HISTCONTROL HISTTIMEFORMAT || return
 
     local sanitized_prompt_command
-    sanitized_prompt_command=$(__bp_sanitize_string "$PROMPT_COMMAND")
+    __bp_sanitize_string sanitized_prompt_command "$PROMPT_COMMAND"
     if [[ -n "$sanitized_prompt_command" ]]; then
         PROMPT_COMMAND=${sanitized_prompt_command}$'\n'
     fi;
