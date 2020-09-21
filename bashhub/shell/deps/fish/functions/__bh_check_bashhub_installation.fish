@@ -7,10 +7,7 @@
 function __bh_check_bashhub_installation
     set -l ret 0
     set -l config_path "$BH_HOME_DIRECTORY/config"
-    if [ -n "$FISH_VERSION" ] && [ -n "$__bh_enable_subshells" ] && [ "(trap)" -ne *"__bh_preexec_invoke_exec"* ]
-        echo "Bashhub's preexec hook is being overriden and is not saving commands. Please resolve what may be holding the DEBUG trap."
-        set ret 1
-    else if not [ -f "$config_path" ]
+    if not [ -f "$config_path" ]
         echo "Missing Bashhub config file. Please run 'bashhub setup' to generate one."
         set ret 2
     else if not grep -Fq "access_token" "$config_path"
