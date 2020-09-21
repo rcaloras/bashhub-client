@@ -23,6 +23,10 @@ For Zsh
 ```zsh
 curl -OL https://bashhub.com/setup && zsh setup
 ```
+For Fish
+```fish
+curl -OL https://bashhub.com/setup; and fish setup
+```
 
 Detailed installation instructions can be found at
 https://github.com/rcaloras/bashhub-client/wiki/Install
