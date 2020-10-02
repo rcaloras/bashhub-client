@@ -81,5 +81,8 @@ def is_valid_regex(regex):
     except re.error:
         return False
 
-BH_FILTER = os.getenv('BH_FILTER', '') if is_valid_regex(os.getenv('BH_FILTER', '')) \
-        else '__invalid__'
+def get_bh_filter():
+    filter = os.getenv('BH_FILTER', get_from_config('filter'))
+    return filter if is_valid_regex(filter) else '__invalid__'
+
+BH_FILTER =  get_bh_filter()

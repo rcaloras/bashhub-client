@@ -20,3 +20,8 @@ def test_write_to_config_file(tmpdir):
     config = configparser.ConfigParser()
     config.read(bashhub_globals.BH_HOME + '/config')
     assert config.get('bashhub', 'access_token') == 'some-auth-token'
+
+def test_get_bh_filter(tmpdir):
+    bashhub_globals.BH_HOME = tmpdir.mkdir('.bashhub').strpath
+    bashhub_globals.write_to_config_file('filter', 'echo')
+    assert bashhub_globals.BH_FILTER == 'echo'
