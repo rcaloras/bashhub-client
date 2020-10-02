@@ -19,11 +19,6 @@ except ImportError:
 # Current time in milleseconds to use across app.
 current_milli_time = lambda: int(round(time.time() * 1000))
 
-# Optional environment variable to configure for development
-# export BH_URL='http://localhost:9000'
-BH_URL = os.getenv('BH_URL', 'https://bashhub.com')
-
-
 BH_HOME = '~/.bashhub' if 'HOME' not in list(os.environ.keys()) \
         else os.environ['HOME'] + '/.bashhub'
 
@@ -49,22 +44,26 @@ def write_to_config_file(section, value):
         return False
 
 
-def get_from_config(key):
+def get_from_config(key, default=''):
     try:
         config = configparser.ConfigParser()
         config.read(BH_HOME + '/config')
         return config.get('bashhub', key)
     except NoSectionError as error:
-        return ""
+        return default
     except NoOptionError as error:
-        return ""
-
+        return default
 
 def get_access_token():
     access_token = get_from_config("access_token")
     if not access_token:
         print("Missing access token from Bashhub Config")
     return ""
+
+
+# Optional environment variable to configure for development
+# export BH_URL='http://localhost:9000'
+BH_URL = os.getenv('BH_URL', get_from_config('url', 'https://bashhub.com'))
 
 BH_SAVE_COMMANDS = os.getenv('BH_SAVE_COMMANDS', \
     get_from_config('save_commands')).lower() in ('true', 'yes', 't', 'on', '')
