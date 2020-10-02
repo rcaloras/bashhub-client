@@ -54,13 +54,6 @@ def get_from_config(key, default=''):
     except NoOptionError as error:
         return default
 
-def get_access_token():
-    access_token = get_from_config("access_token")
-    if not access_token:
-        print("Missing access token from Bashhub Config")
-    return ""
-
-
 # Optional environment variable to configure for development
 # export BH_URL='http://localhost:9000'
 BH_URL = os.getenv('BH_URL', get_from_config('url', 'https://bashhub.com'))
