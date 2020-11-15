@@ -121,7 +121,7 @@ def update_system_info():
     return rest_client.patch_system(patch, mac)
 
 
-def handle_system_information(username, password):
+def handle_system_information(username, password, attempts=0):
 
     mac = get_mac_address()
     system = rest_client.get_system_information(mac)
@@ -139,7 +139,11 @@ def handle_system_information(username, password):
         if system_name:
             print("Registered a new system " + name)
         else:
-            return (None, None)
+            if attempts < 3:
+                print("Looks like registering your system failed. Lets retry.")
+                return handle_system_information(username, password, attempts + 1)
+            else:
+                return (None, None)
 
     # Login with this new system
     access_token = rest_client.login_user(LoginForm(username, password, mac))
