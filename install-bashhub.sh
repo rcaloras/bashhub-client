@@ -52,7 +52,7 @@ fish_config="${XDG_CONFIG_HOME:-~/.config}/fish/config.fish"
 
 # Optional parameter to specify a github branch
 # to pull from.
-github_branch=${1:-'2.1.2'}
+github_branch=${1:-'2.1.3'}
 
 install_bashhub() {
     check_dependencies
