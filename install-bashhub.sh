@@ -265,15 +265,9 @@ setup_bashhub_files() {
         cp "$backup_config" "$bashhub_config"
         rm "$backup_config"
 
-        # Update our system info if we've got an access token
-        if grep -Fq "access_token" "$bashhub_config"; then
-            ../env/bin/bashhub util update_system_info
-
-            # Possibly an issue with our access token
-            # Lets rerun setup just to be safe.
-            if [[ "$?" != 0 ]]; then
-                ../env/bin/bashhub setup
-            fi
+        if ! ../env/bin/bashhub util update_system_info; then
+            # Run setup if we run into any issues updating our system info
+            ../env/bin/bashhub setup
         fi
     else
         # Setup our config file
