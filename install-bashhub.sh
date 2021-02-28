@@ -38,7 +38,7 @@ fi
 
 python_command='
 import sys
-if (3, 5, 0) < sys.version_info < (4,0):
+if (3, 5, 0) < sys.version_info < (3, 9, 0):
   sys.exit(0)
 elif (2, 7, 0) < sys.version_info < (3,0):
   sys.exit(0)
@@ -87,7 +87,7 @@ download_and_install_env() {
     # Only supporting 2.7 right now.
     python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
-        die "\n Sorry you need to have python 3.5-3.7 or 2.7 installed. Please install it and rerun this script." 1
+        die "\n Sorry you need to have python 3.5-3.8 or 2.7 installed. Please install it and rerun this script." 1
     fi
 
     # Set to whatever python interpreter you want for your first environment
@@ -108,7 +108,7 @@ download_and_install_env() {
 
 check_dependencies() {
     if [ -z "$(get_and_check_python_version)" ]; then
-        die "\n Sorry can't seem to find a version of python 3.5-3.7 or 2.7 installed" 1
+        die "\n Sorry can't seem to find a version of python 3.5-3.8 or 2.7 installed" 1
     fi
 
     if [ -z "$(detect_shell_type)" ]; then
