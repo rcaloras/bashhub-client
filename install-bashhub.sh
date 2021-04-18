@@ -99,6 +99,7 @@ download_and_install_env() {
     tar xzf virtualenv-$VERSION.tar.gz
 
     # Create the first "bootstrap" environment.
+    echo "Using Python path $PYTHON"
     $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" "$INITIAL_ENV"
 
     # Remove our virtual env setup files we don't need anymore
