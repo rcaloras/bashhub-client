@@ -77,12 +77,8 @@ get_and_check_python_version() {
 }
 
 download_and_install_env() {
-    # Select current version of virtualenv:
-    VERSION=16.7.10
     # Name your first "bootstrap" environment:
     INITIAL_ENV="env"
-    # Options for your first environment:
-    ENV_OPTS="--distribute"
 
     # Only supporting 2.7 right now.
     python_command=$(get_and_check_python_version)
@@ -92,19 +88,10 @@ download_and_install_env() {
 
     # Set to whatever python interpreter you want for your first environment
     PYTHON=$(which $python_command)
-    URL_BASE=https://pypi.python.org/packages/source/v/virtualenv
-
-    # --- Real work starts here ---
-    curl -OL  $URL_BASE/virtualenv-$VERSION.tar.gz
-    tar xzf virtualenv-$VERSION.tar.gz
 
     # Create the first "bootstrap" environment.
     echo "Using Python path $PYTHON"
-    $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" "$INITIAL_ENV"
-
-    # Remove our virtual env setup files we don't need anymore
-    rm -rf virtualenv-$VERSION
-    rm virtualenv-$VERSION.tar.gz
+    $PYTHON -m venv "$INITIAL_ENV"
 }
 
 check_dependencies() {
