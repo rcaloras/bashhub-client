@@ -13,3 +13,6 @@ dev-exports.sh
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
 /*.egg
+
+# macOS specific files
+/.DS_Store
