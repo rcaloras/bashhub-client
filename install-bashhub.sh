@@ -45,6 +45,16 @@ elif (2, 7, 0) < sys.version_info < (3,0):
 else:
   sys.exit(-1)'
 
+venv_available_command='
+import sys
+try:
+    __import__("venv")
+except ImportError:
+    sys.exit(-1)
+else:
+    sys.exit(0)
+'
+
 bashhub_config=~/.bashhub/config
 backup_config=~/.bashhub.config.backup
 zshprofile=~/.zshrc
@@ -77,30 +87,32 @@ get_and_check_python_version() {
 }
 
 download_and_install_env() {
-    # Select current version of virtualenv:
-    VERSION=16.7.10
-    # Name your first "bootstrap" environment:
-    INITIAL_ENV="env"
-    # Options for your first environment:
-    ENV_OPTS="--distribute"
 
-    # Only supporting 2.7 right now.
     python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
         die "\n Sorry you need to have python 3.5-3.8 or 2.7 installed. Please install it and rerun this script." 1
     fi
-
     # Set to whatever python interpreter you want for your first environment
     PYTHON=$(which $python_command)
-    URL_BASE=https://pypi.python.org/packages/source/v/virtualenv
 
-    # --- Real work starts here ---
+    # Prefer venv over downloading and installing virtualenv
+    if "$PYTHON" -c "$venv_available_command"; then
+        echo "Using Python path $PYTHON and preinstalled venv"
+        $PYTHON -m venv env
+        return 0
+    fi
+
+    echo "Using Python path $PYTHON"
+    # Download and install virtualenv if we don't have it available
+    # Should only be necessary for Python older than 3.6
+    VERSION=16.7.10
+    ENV_OPTS="--distribute"
+    URL_BASE=https://pypi.python.org/packages/source/v/virtualenv
     curl -OL  $URL_BASE/virtualenv-$VERSION.tar.gz
     tar xzf virtualenv-$VERSION.tar.gz
 
     # Create the first "bootstrap" environment.
-    echo "Using Python path $PYTHON"
-    $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" "$INITIAL_ENV"
+    $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" env
 
     # Remove our virtual env setup files we don't need anymore
     rm -rf virtualenv-$VERSION
