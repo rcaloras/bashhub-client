@@ -187,7 +187,7 @@ def update(version):
         github = "https://github.com/rcaloras/bashhub-client/archive/{0}.tar.gz".format(
             version)
         response = requests.get(github)
-        if response.status_code is not 200:
+        if response.status_code != 200:
             click.echo("Invalid version number {0}".format(version))
             sys.exit(1)
 

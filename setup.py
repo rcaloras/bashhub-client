@@ -18,7 +18,7 @@ setup(name='bashhub',
       install_requires=[
           'requests==2.23.0', 'jsonpickle==0.7.0', 'click==3.3',
           'npyscreen==4.10.5', 'python-dateutil==2.8.1', 'pyCLI==2.0.3',
-          'pymongo==2.9', 'inflection==0.3.1', 'humanize==0.5.1',
+          'pymongo==3.10.1', 'inflection==0.3.1', 'humanize==1.0.0',
           'future==0.16.0', 'mock==3.0.5'
       ],
       tests_require=tests_require,
