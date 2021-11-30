@@ -76,15 +76,9 @@ get_and_check_python_version() {
      return 1
 }
 
+# Boostrap virtualenv via zipapp
+# Details https://virtualenv.pypa.io/en/latest/installation.html#via-zipapp
 download_and_install_env() {
-    # Select current version of virtualenv:
-    VERSION=16.7.10
-    # Name your first "bootstrap" environment:
-    INITIAL_ENV="env"
-    # Options for your first environment:
-    ENV_OPTS="--distribute"
-
-    # Only supporting 2.7 right now.
     python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
         die "\n Sorry you need to have python 3.5-3.8 or 2.7 installed. Please install it and rerun this script." 1
@@ -92,19 +86,17 @@ download_and_install_env() {
 
     # Set to whatever python interpreter you want for your first environment
     PYTHON=$(which $python_command)
-    URL_BASE=https://pypi.python.org/packages/source/v/virtualenv
+    VERSION=20.10.0
+    VERSION_URL="https://github.com/pypa/get-virtualenv/raw/$VERSION/public/virtualenv.pyz"
+    # Alternatively use latest url for most recent that should be 2.7-3.9+
+    LATEST_URL="https://bootstrap.pypa.io/virtualenv/2.7/virtualenv.pyz"
 
     # --- Real work starts here ---
-    curl -OL  $URL_BASE/virtualenv-$VERSION.tar.gz
-    tar xzf virtualenv-$VERSION.tar.gz
-
-    # Create the first "bootstrap" environment.
+    curl -OL  $VERSION_URL
     echo "Using Python path $PYTHON"
-    $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" "$INITIAL_ENV"
-
-    # Remove our virtual env setup files we don't need anymore
-    rm -rf virtualenv-$VERSION
-    rm virtualenv-$VERSION.tar.gz
+    # Create the first "bootstrap" environment.
+    $PYTHON virtualenv.pyz env
+    rm virtualenv.pyz"
 }
 
 check_dependencies() {
