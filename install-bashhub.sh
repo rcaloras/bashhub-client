@@ -81,27 +81,26 @@ get_and_check_python_version() {
 download_and_install_env() {
     local python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
-        die "\n Sorry you need to have python 3.5-3.8 or 2.7.9+ installed. Please install it and rerun this script." 1
+        die "\n Sorry you need to have python 3.5-3.10 or 2.7.9+ installed. Please install it and rerun this script." 1
     fi
 
     # Set to whatever python interpreter you want for your first environment
     PYTHON=$(which $python_command)
+    echo "Using Python path $PYTHON"
+
     VERSION=20.10.0
     VERSION_URL="https://github.com/pypa/get-virtualenv/raw/$VERSION/public/virtualenv.pyz"
     # Alternatively use latest url for most recent that should be 2.7-3.9+
     LATEST_URL="https://bootstrap.pypa.io/virtualenv/2.7/virtualenv.pyz"
-
-    # --- Real work starts here ---
     curl -OL  $VERSION_URL
-    echo "Using Python path $PYTHON"
     # Create the first "bootstrap" environment.
-    $PYTHON virtualenv.pyz env
+    $PYTHON virtualenv.pyz -q env
     rm virtualenv.pyz
 }
 
 check_dependencies() {
     if [ -z "$(get_and_check_python_version)" ]; then
-        die "\n Sorry can't seem to find a version of python 3.5-3.8 or 2.7.9+ installed" 1
+        die "\n Sorry can't seem to find a version of python 3.5-3.10 or 2.7.9+ installed" 1
     fi
 
     if [ -z "$(detect_shell_type)" ]; then
