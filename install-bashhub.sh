@@ -45,6 +45,22 @@ elif (2, 7, 8) < sys.version_info < (3,0):
 else:
   sys.exit(-1)'
 
+# Prefer Python 3 versions over Python 2
+PYTHON_VERSION_ARRAY=(
+    "/usr/bin/python3"
+    "python3"
+    "python3.10"
+    "python3.9"
+    "python3.8"
+    "python3.7"
+    "python3.6"
+    "python3.5"
+    "python"
+    "python2.7"
+    "python27"
+    "python2"
+)
+
 bashhub_config=~/.bashhub/config
 backup_config=~/.bashhub.config.backup
 zshprofile=~/.zshrc
@@ -61,10 +77,8 @@ install_bashhub() {
 }
 
 get_and_check_python_version() {
-    # Prefer Python 3 versions over Python 2
-    local python_version_array=( "python3.10" "python3.9" "python3.8" "python3.7" "python3.6" "python3.5" "python3" "python" "python2.7" "python27" "python2")
 
-    for python_version in "${python_version_array[@]}"; do
+    for python_version in "${PYTHON_VERSION_ARRAY[@]}"; do
         if type "$python_version" &> /dev/null; then
             if "$python_version" -c "$PYTHON_VERSION_COMMAND"; then
                 echo "$python_version"
