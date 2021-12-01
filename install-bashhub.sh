@@ -38,7 +38,7 @@ fi
 
 PYTHON_VERSION_COMMAND='
 import sys
-if (3, 5, 0) < sys.version_info < (3, 9, 0):
+if (3, 5, 0) < sys.version_info < (3, 11, 0):
   sys.exit(0)
 elif (2, 7, 8) < sys.version_info < (3,0):
   sys.exit(0)
@@ -62,7 +62,7 @@ install_bashhub() {
 
 get_and_check_python_version() {
     # Prefer Python 3 versions over Python 2
-    local python_version_array=( "python3.8" "python3.7" "python3.6" "python3.5" "python3" "python" "python2.7" "python27" "python2")
+    local python_version_array=( "python3.10" "python3.9" "python3.8" "python3.7" "python3.6" "python3.5" "python3" "python" "python2.7" "python27" "python2")
 
     for python_version in "${python_version_array[@]}"; do
         if type "$python_version" &> /dev/null; then

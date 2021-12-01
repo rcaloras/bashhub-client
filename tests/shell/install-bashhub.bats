@@ -31,6 +31,8 @@ setup() {
 
 @test "get_and_check_python_version should find python3 first" {
   # Mock up some fake responses here.
+  python3.10() { return 1; }
+  python3.9() { return 1; }
   python3.8() { return 1; }
   python3.7() { return 1; }
   python3.6() { return 1; }
@@ -53,6 +55,8 @@ setup() {
   # Mock up some fake responses here.
 
   python3() { return 1; }
+  python3.10() { return 1; }
+  python3.9() { return 1; }
   python3.8() { return 1; }
   python3.7() { return 1; }
   python3.6() { return 1; }
