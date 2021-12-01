@@ -16,10 +16,10 @@ setup(name='bashhub',
       packages=find_packages(),
       include_package_data=True,
       install_requires=[
-          'requests==2.23.0', 'jsonpickle==0.7.0', 'click==3.3',
+          'requests==2.23.0', 'jsonpickle==2.0.0', 'click==6.7',
           'npyscreen==4.10.5', 'python-dateutil==2.8.1', 'pyCLI==2.0.3',
           'pymongo==3.10.1', 'inflection==0.3.1', 'humanize==1.0.0',
-          'future==0.16.0', 'mock==3.0.5'
+          'future==0.18.2', 'mock==3.0.5'
       ],
       tests_require=tests_require,
       extras_require={'test': tests_require},

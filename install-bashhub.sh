@@ -36,14 +36,30 @@ if [ -f ~/.bashrc ]; then
 fi
 '
 
-python_command='
+PYTHON_VERSION_COMMAND='
 import sys
-if (3, 5, 0) < sys.version_info < (3, 9, 0):
+if (3, 5, 0) < sys.version_info < (3, 11, 0):
   sys.exit(0)
-elif (2, 7, 0) < sys.version_info < (3,0):
+elif (2, 7, 8) < sys.version_info < (3,0):
   sys.exit(0)
 else:
   sys.exit(-1)'
+
+# Prefer Python 3 versions over Python 2
+PYTHON_VERSION_ARRAY=(
+    "/usr/bin/python3"
+    "python3"
+    "python3.10"
+    "python3.9"
+    "python3.8"
+    "python3.7"
+    "python3.6"
+    "python3.5"
+    "python"
+    "python2.7"
+    "python27"
+    "python2"
+)
 
 bashhub_config=~/.bashhub/config
 backup_config=~/.bashhub.config.backup
@@ -52,7 +68,7 @@ fish_config="${XDG_CONFIG_HOME:-~/.config}/fish/config.fish"
 
 # Optional parameter to specify a github branch
 # to pull from.
-github_branch=${1:-'2.1.3'}
+github_branch=${1:-'2.2.0'}
 
 install_bashhub() {
     check_dependencies
@@ -61,12 +77,10 @@ install_bashhub() {
 }
 
 get_and_check_python_version() {
-    # Prefer Python 3 versions over python 2
-    python_version_array=( "python3.8" "python3.7" "python3.6" "python3.5" "python3" "python" "python2.7" "python27" "python2")
 
-    for python_version in "${python_version_array[@]}"; do
+    for python_version in "${PYTHON_VERSION_ARRAY[@]}"; do
         if type "$python_version" &> /dev/null; then
-            if "$python_version" -c "$python_command"; then
+            if "$python_version" -c "$PYTHON_VERSION_COMMAND"; then
                 echo "$python_version"
                 return 0
             fi
@@ -76,40 +90,31 @@ get_and_check_python_version() {
      return 1
 }
 
+# Boostrap virtualenv via zipapp
+# Details https://virtualenv.pypa.io/en/latest/installation.html#via-zipapp
 download_and_install_env() {
-    # Select current version of virtualenv:
-    VERSION=16.7.10
-    # Name your first "bootstrap" environment:
-    INITIAL_ENV="env"
-    # Options for your first environment:
-    ENV_OPTS="--distribute"
-
-    # Only supporting 2.7 right now.
-    python_command=$(get_and_check_python_version)
+    local python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
-        die "\n Sorry you need to have python 3.5-3.8 or 2.7 installed. Please install it and rerun this script." 1
+        die "\n Sorry you need to have python 3.5-3.10 or 2.7.9+ installed. Please install it and rerun this script." 1
     fi
 
     # Set to whatever python interpreter you want for your first environment
     PYTHON=$(which $python_command)
-    URL_BASE=https://pypi.python.org/packages/source/v/virtualenv
-
-    # --- Real work starts here ---
-    curl -OL  $URL_BASE/virtualenv-$VERSION.tar.gz
-    tar xzf virtualenv-$VERSION.tar.gz
-
-    # Create the first "bootstrap" environment.
     echo "Using Python path $PYTHON"
-    $PYTHON virtualenv-$VERSION/virtualenv.py "$ENV_OPTS" "$INITIAL_ENV"
 
-    # Remove our virtual env setup files we don't need anymore
-    rm -rf virtualenv-$VERSION
-    rm virtualenv-$VERSION.tar.gz
+    VERSION=20.10.0
+    VERSION_URL="https://github.com/pypa/get-virtualenv/raw/$VERSION/public/virtualenv.pyz"
+    # Alternatively use latest url for most recent that should be 2.7-3.9+
+    LATEST_URL="https://bootstrap.pypa.io/virtualenv/2.7/virtualenv.pyz"
+    curl -OL  $VERSION_URL
+    # Create the first "bootstrap" environment.
+    $PYTHON virtualenv.pyz -q env
+    rm virtualenv.pyz
 }
 
 check_dependencies() {
     if [ -z "$(get_and_check_python_version)" ]; then
-        die "\n Sorry can't seem to find a version of python 3.5-3.8 or 2.7 installed" 1
+        die "\n Sorry can't seem to find a version of python 3.5-3.10 or 2.7.9+ installed" 1
     fi
 
     if [ -z "$(detect_shell_type)" ]; then
