@@ -36,11 +36,11 @@ if [ -f ~/.bashrc ]; then
 fi
 '
 
-python_command='
+PYTHON_VERSION_COMMAND='
 import sys
 if (3, 5, 0) < sys.version_info < (3, 9, 0):
   sys.exit(0)
-elif (2, 7, 0) < sys.version_info < (3,0):
+elif (2, 7, 8) < sys.version_info < (3,0):
   sys.exit(0)
 else:
   sys.exit(-1)'
@@ -61,12 +61,12 @@ install_bashhub() {
 }
 
 get_and_check_python_version() {
-    # Prefer Python 3 versions over python 2
-    python_version_array=( "python3.8" "python3.7" "python3.6" "python3.5" "python3" "python" "python2.7" "python27" "python2")
+    # Prefer Python 3 versions over Python 2
+    local python_version_array=( "python3.8" "python3.7" "python3.6" "python3.5" "python3" "python" "python2.7" "python27" "python2")
 
     for python_version in "${python_version_array[@]}"; do
         if type "$python_version" &> /dev/null; then
-            if "$python_version" -c "$python_command"; then
+            if "$python_version" -c "$PYTHON_VERSION_COMMAND"; then
                 echo "$python_version"
                 return 0
             fi
@@ -79,9 +79,9 @@ get_and_check_python_version() {
 # Boostrap virtualenv via zipapp
 # Details https://virtualenv.pypa.io/en/latest/installation.html#via-zipapp
 download_and_install_env() {
-    python_command=$(get_and_check_python_version)
+    local python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
-        die "\n Sorry you need to have python 3.5-3.8 or 2.7 installed. Please install it and rerun this script." 1
+        die "\n Sorry you need to have python 3.5-3.8 or 2.7.9+ installed. Please install it and rerun this script." 1
     fi
 
     # Set to whatever python interpreter you want for your first environment
@@ -96,12 +96,12 @@ download_and_install_env() {
     echo "Using Python path $PYTHON"
     # Create the first "bootstrap" environment.
     $PYTHON virtualenv.pyz env
-    rm virtualenv.pyz"
+    rm virtualenv.pyz
 }
 
 check_dependencies() {
     if [ -z "$(get_and_check_python_version)" ]; then
-        die "\n Sorry can't seem to find a version of python 3.5-3.8 or 2.7 installed" 1
+        die "\n Sorry can't seem to find a version of python 3.5-3.8 or 2.7.9+ installed" 1
     fi
 
     if [ -z "$(detect_shell_type)" ]; then
