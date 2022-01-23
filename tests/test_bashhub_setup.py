@@ -4,6 +4,7 @@ import socket
 from bashhub.bashhub_setup import  handle_system_information
 from bashhub import bashhub_setup
 import unittest
+import os
 
 try:
     from unittest.mock import patch, MagicMock
@@ -20,8 +21,9 @@ class BashhubSetupTest(unittest.TestCase):
 
 	def test_get_mac_addresss(self):
 		# Assuming uuid works
-		test_mac = bashhub_setup.get_mac_address()
-		assert str(uuid.getnode()) == test_mac
+		if not os.getenv('CI_INCOMPATIBLE', False):
+			test_mac = bashhub_setup.get_mac_address()
+			assert str(uuid.getnode()) == test_mac
 
 		# with uuid returning random
 		uuid.getnode = randomnode
