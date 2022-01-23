@@ -19,10 +19,17 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install python dependencies and bats
       run: |
         pip install .
         pip install pytest
+        sudo apt-get update
+        sudo apt-get install -y bats
+
     - name: Test with pytest
       run: |
         pytest
+
+    - name: Test with bats
+      run: |
+        bats tests/shell
