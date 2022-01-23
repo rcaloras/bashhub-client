@@ -11,7 +11,7 @@ jobs:
 
     env:
       functional_test: true
-      CI_INCOMPATIBLE: true
+      CI_UNSUPPORTED: true
 
     steps:
     - uses: actions/checkout@v2

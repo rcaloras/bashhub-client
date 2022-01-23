@@ -5,6 +5,7 @@ from bashhub.bashhub_setup import  handle_system_information
 from bashhub import bashhub_setup
 import unittest
 import os
+import pytest
 
 try:
     from unittest.mock import patch, MagicMock
@@ -16,15 +17,17 @@ def randomnode():
 def getnode():
 	return 1
 
+CI_UNSUPPORTED = os.getenv('CI_UNSUPPORTED', 'false').lower() == 'true'
 
 class BashhubSetupTest(unittest.TestCase):
 
+	@pytest.mark.skipif(CI_UNSUPPORTED, reason='uuid for mac address not supported on github actions')
 	def test_get_mac_addresss(self):
 		# Assuming uuid works
-		if not os.getenv('CI_INCOMPATIBLE', False):
-			test_mac = bashhub_setup.get_mac_address()
-			assert str(uuid.getnode()) == test_mac
+		test_mac = bashhub_setup.get_mac_address()
+		assert str(uuid.getnode()) == test_mac
 
+	def test_get_mac_addresss_where_uuid_is_random(self):
 		# with uuid returning random
 		uuid.getnode = randomnode
 		hostname_mac = bashhub_setup.get_mac_address()
