@@ -2,7 +2,7 @@
 
 Bashhub saves every terminal command entered across all sessions and systems and provides powerful querying across all commands.
 
-[![Build Status](https://api.travis-ci.org/rcaloras/bashhub-client.svg?branch=master)](https://travis-ci.org/rcaloras/bashhub-client)
+![Build Status](https://github.com/rcaloras/bashhub-client/actions/workflows/main.yml/badge.svg)
 [![GitHub version](https://badge.fury.io/gh/rcaloras%2Fbashhub-client.svg)](https://badge.fury.io/gh/rcaloras%2Fbashhub-client)
 
 ### Features
