@@ -38,7 +38,7 @@ fi
 
 PYTHON_VERSION_COMMAND='
 import sys
-if (3, 5, 0) < sys.version_info < (3, 10, 0):
+if (3, 5, 0) < sys.version_info < (3, 11, 0):
   sys.exit(0)
 elif (2, 7, 8) < sys.version_info < (3,0):
   sys.exit(0)
@@ -49,6 +49,7 @@ else:
 PYTHON_VERSION_ARRAY=(
     "/usr/bin/python3"
     "python3"
+    "python3.10"
     "python3.9"
     "python3.8"
     "python3.7"
