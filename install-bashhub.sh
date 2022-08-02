@@ -237,7 +237,7 @@ install_hooks_for_shell() {
             install_hooks_for_bash
             ;;
         *)
-        die "\n Bashhub only supports bash, fish, or zsh. Your defualt shell is $SHELL." 1
+        die "\n Bashhub only supports bash, fish, or zsh. Your default shell is $SHELL." 1
     esac
 }
 
