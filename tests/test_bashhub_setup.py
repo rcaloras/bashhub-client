@@ -31,7 +31,7 @@ class BashhubSetupTest(unittest.TestCase):
 		# with uuid returning random
 		uuid.getnode = randomnode
 		hostname_mac = bashhub_setup.get_mac_address()
-		assert str(abs(hash(socket.gethostname()))) == hostname_mac
+		assert socket.gethostname() == hostname_mac
 
 	@patch('bashhub.bashhub_setup.rest_client')
 	@patch('bashhub.bashhub_setup.input', side_effect=['sys1', 'sys2', "sys3", "sys4"])
