@@ -107,7 +107,7 @@ def get_mac_address():
     if (mac >> 40) & 1:
         hostname = socket.gethostname()
         print("warning: cannot find MAC. Using hostname (%s) to identify system" % hostname)
-        mac = str(abs(hash(hostname)))
+        mac = hostname
     else:
         mac = str(mac)
     return mac
