@@ -15,18 +15,11 @@ Bashhub saves every terminal command entered across all sessions and systems and
 
 ![gif](http://i.imgur.com/02ABZxn.gif)
 
-## Quick Install
-```bash
-curl -OL https://bashhub.com/setup && bash setup
+# Quick Install
+```shell
+curl -OL https://bashhub.com/setup && $SHELL setup
 ```
-For Zsh
-```zsh
-curl -OL https://bashhub.com/setup && zsh setup
-```
-For Fish
-```fish
-curl -OL https://bashhub.com/setup; and fish setup
-```
+For non default login shells, just specify the shell e.g. (`bash setup`, `zsh setup`, `fish setup`)
 
 Detailed installation instructions can be found at
 https://github.com/rcaloras/bashhub-client/wiki/Install
