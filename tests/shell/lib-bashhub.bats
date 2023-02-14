@@ -81,6 +81,7 @@ teardown() {
   rm "$BATS_TMPDIR/config"
   run '__bh_check_bashhub_installation'
   [[ $status == 2 ]]
+  unset -f trap
 }
 
 @test "__bh_precmd should check if our home directory exists" {
@@ -109,7 +110,6 @@ teardown() {
 }
 
 @test "__bh_precmd should only call process command if we have a command to save" {
-  skip "Failing inconsistently on travis. Need to debug, skipping for now"
 
   BH_HOME_DIRECTORY="$BATS_TMPDIR"
 
