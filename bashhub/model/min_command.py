@@ -1,5 +1,3 @@
-from bson.objectid import ObjectId
-import jsonpickle
 import json
 import requests
 from .serializable import Serializable

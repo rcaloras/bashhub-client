@@ -6,7 +6,6 @@ from requests import ConnectionError
 import os
 
 from .model import MinCommand
-from .model import MinCommand
 from .model import StatusView
 from .model import Command
 from .model import LoginResponse

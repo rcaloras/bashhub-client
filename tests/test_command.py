@@ -20,6 +20,12 @@ def test_to_json():
     to_json_command = Command.from_JSON(Command.to_JSON(command))
     assert to_json_command.username == 'some-user'
 
+def test_to_min_command():
+    min_command = command.to_min_command()
+    assert min_command.command == command.command
+    assert min_command.created == command.created
+    assert min_command.uuid == command.uuid
+
 
 def test_no_exit_status():
     no_exit_status = Command.from_JSON(no_exit_status_string)

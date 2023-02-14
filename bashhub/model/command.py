@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from .min_command import MinCommand
 from bson.objectid import ObjectId
 from time import *
 import jsonpickle
@@ -31,6 +32,9 @@ class Command(Serializable):
     # Optional fields not set by jsonpickle.
     exit_status = None
 
+    def to_min_command(self):
+        return MinCommand(self.command, self.created, self.uuid)
+
 
 class RegisterUser(Serializable):
     def __init__(self, email, username, password, registration_code=""):
@@ -48,5 +52,5 @@ class LoginForm(Serializable):
 
 
 class LoginResponse(Serializable):
-    def __init__(self, acces_token):
+    def __init__(self, access_token):
         self.access_token = access_token
