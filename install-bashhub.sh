@@ -102,11 +102,9 @@ download_and_install_env() {
     PYTHON=$(which $python_command)
     echo "Using Python path $PYTHON"
 
-    VERSION=20.10.0
-    VERSION_URL="https://github.com/pypa/get-virtualenv/raw/$VERSION/public/virtualenv.pyz"
-    # Alternatively use latest url for most recent that should be 2.7-3.9+
-    LATEST_URL="https://bootstrap.pypa.io/virtualenv/2.7/virtualenv.pyz"
-    curl -OL  $VERSION_URL
+    # Use latest url for most recent that should be 2.7-3.9+
+    LATEST_URL=" https://bootstrap.pypa.io/virtualenv.pyz"
+    curl -OL  $LATEST_URL
     # Create the first "bootstrap" environment.
     $PYTHON virtualenv.pyz -q env
     rm virtualenv.pyz
@@ -264,26 +262,26 @@ setup_bashhub_files() {
 
     # install our packages. bashhub and dependencies.
     echo "Pulling down a few dependencies...(this may take a moment)"
-    ../env/bin/pip -qq install .
+    ../env/local/bin/pip -qq install .
 
     # Check if we already have a config. If not run setup.
     if [ -e $backup_config ]; then
         cp "$backup_config" "$bashhub_config"
         rm "$backup_config"
 
-        if ! ../env/bin/bashhub util update_system_info; then
+        if ! ../env/local/bin/bashhub util update_system_info; then
             # Run setup if we run into any issues updating our system info
-            ../env/bin/bashhub setup
+            ../env/local/bin/bashhub setup
         fi
     else
         # Setup our config file
-        ../env/bin/bashhub setup
+        ../env/local/bin/bashhub setup
     fi
 
     # Wire up our bin directory
     mkdir -p ~/.bashhub/bin
-    ln -sf ../env/bin/bashhub ~/.bashhub/bin/bashhub
-    ln -sf ../env/bin/bh ~/.bashhub/bin/bh
+    ln -sf ../env/local/bin/bashhub ~/.bashhub/bin/bashhub
+    ln -sf ../env/local/bin/bh ~/.bashhub/bin/bh
 
     # Clean up what we downloaded
     cd ~/.bashhub
