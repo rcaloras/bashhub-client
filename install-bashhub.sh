@@ -264,26 +264,26 @@ setup_bashhub_files() {
 
     # install our packages. bashhub and dependencies.
     echo "Pulling down a few dependencies...(this may take a moment)"
-    ../env/bin/pip -qq install .
+    ../env/local/bin/pip -qq install .
 
     # Check if we already have a config. If not run setup.
     if [ -e $backup_config ]; then
         cp "$backup_config" "$bashhub_config"
         rm "$backup_config"
 
-        if ! ../env/bin/bashhub util update_system_info; then
+        if ! ../env/local/bin/bashhub util update_system_info; then
             # Run setup if we run into any issues updating our system info
-            ../env/bin/bashhub setup
+            ../env/local/bin/bashhub setup
         fi
     else
         # Setup our config file
-        ../env/bin/bashhub setup
+        ../env/local/bin/bashhub setup
     fi
 
     # Wire up our bin directory
     mkdir -p ~/.bashhub/bin
-    ln -sf ../env/bin/bashhub ~/.bashhub/bin/bashhub
-    ln -sf ../env/bin/bh ~/.bashhub/bin/bh
+    ln -sf ../env/local/bin/bashhub ~/.bashhub/bin/bashhub
+    ln -sf ../env/local/bin/bh ~/.bashhub/bin/bh
 
     # Clean up what we downloaded
     cd ~/.bashhub
