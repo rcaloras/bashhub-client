@@ -15,11 +15,12 @@ mkdir ~/git/ && cd ~/git
 git clone git@github.com:rcaloras/bashhub-client.git
 cd ~/git/bashhub-client
 ```
-Setup a new Python 2 virtualenv to install the project locally to and develop from. This example is with [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/index.html#introduction).
-The project should be converted to Python 3 as part of [Issue #56](https://github.com/rcaloras/bashhub-client/issues/56). 
+Setup a new Python 3 [venv](https://docs.python.org/3/library/venv.html) (virtual environment). 
 ```bash
-# setup a virtualenv specifying python 2
-mkvirtualenv -p python2.7 bashhub_dev
+# Setup a venv.
+python3 -m venv .venv
+# Activate the venv.
+source .venv/bin/activate
 # Install our project locally to develop, execute, and test against.
 pip install -e ".[test]"
 ```
@@ -50,7 +51,7 @@ From within this virtualenv `bh` and `bashhub` exectuables should now be wired u
 # pytest should run locally against our repo
 [rcaloras:~/git/bashhub-client] [bashhub_dev] master ± pytest
 ============= test session starts =================
-platform darwin -- Python 2.7.10, pytest-3.3.1, py-1.5.2, pluggy-0.6.0
+platform darwin -- Python 3.10.12, pytest-7.4.2, pluggy-1.3.0
 rootdir: /Users/rcaloras/git/bashhub-client, inifile:
 collected 10 items
 
@@ -61,11 +62,3 @@ tests/test_command_form.py ..                                                   
 tests/test_shell_utils.py .
 
 ```
-
-
-
-
-
-
-
-
