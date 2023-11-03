@@ -108,7 +108,7 @@ download_and_install_env() {
     LATEST_URL="https://bootstrap.pypa.io/virtualenv/2.7/virtualenv.pyz"
     curl -OL  $VERSION_URL
     # Create the first "bootstrap" environment.
-    $PYTHON virtualenv.pyz -q env
+    "$PYTHON" virtualenv.pyz -q env
     rm virtualenv.pyz
 }
 
@@ -153,7 +153,7 @@ install_hooks_for_zsh() {
 }
 
 install_hooks_for_fish() {
-    if [ ! -e $fish_config ]; then
+    if [ ! -e "$fish_config" ]; then
         die "No fish config cound be found" 1
     fi
 
@@ -201,11 +201,11 @@ install_hooks_for_bash() {
     fi
 
     # Add our file to our bashprofile if it doesn't exist yet
-    if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile
+    if grep -q "source ~/.bashhub/bashhub.sh" "$bashprofile"
     then
         :
     else
-        echo "$bash_profile_hook" >> $bashprofile
+        echo "$bash_profile_hook" >> "$bashprofile"
     fi
 
 }
@@ -250,7 +250,7 @@ setup_bashhub_files() {
 
     # Grab the code from master off github.
     echo "Pulling down bashhub-client from ${github_branch} branch"
-    curl -sL https://github.com/rcaloras/bashhub-client/archive/${github_branch}.tar.gz -o client.tar.gz
+    curl -sL "https://github.com/rcaloras/bashhub-client/archive/${github_branch}.tar.gz" -o client.tar.gz
     tar -xf client.tar.gz
     cd bashhub-client*
 
@@ -313,11 +313,11 @@ find_users_bash_file() {
     local largest_file_size=0
     for file in "${bash_file_array[@]}"
     do
-        if [ -e $file ]; then
+        if [ -e "$file" ]; then
             # Get our file size.
             local file_size=$(wc -c "$file" | awk '{print $1}')
 
-            if [ $file_size -gt $largest_file_size ]; then
+            if [ "$file_size" -gt "$largest_file_size" ]; then
                 local largest_file_size=$file_size
                 local largest_file=$file
             fi
@@ -326,12 +326,12 @@ find_users_bash_file() {
 
     # If we found the largest file, return it
     if [ -n "$largest_file" ]; then
-        echo $largest_file
+        echo "$largest_file"
         return 0
     fi
 }
 
-die () { echo -e $1; exit $2; }
+die () { echo -e "$1"; exit $2; }
 
 # Run our install so long as we're not in test.
 if [[ -z "$bashhub_install_test" ]]; then
