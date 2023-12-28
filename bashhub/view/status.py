@@ -5,7 +5,7 @@ from ..bashhub_globals import BH_URL
 
 status_view = """\
 === Bashhub Status
-{0}{1}
+{0}/{1}
 Total Commands: {2}
 Total Sessions: {3}
 Total Systems:  {4}
