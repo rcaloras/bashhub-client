@@ -176,6 +176,7 @@ def main():
 
         print(ascii_art)
         print("Welcome to bashhub setup!")
+        print(BH_URL)
         is_new_user = query_yes_no("Are you a new user?")
 
         # Initialize variaous Credentials for logging in.
