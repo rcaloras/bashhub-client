@@ -38,9 +38,16 @@ fi
 
 PYTHON_VERSION_COMMAND='
 import sys
-if (3, 6, 0) < sys.version_info < (3, 12, 0):
+if (3, 6, 0) < sys.version_info < (3, 13, 0):
   sys.exit(0)
 elif (2, 7, 8) < sys.version_info < (3,0):
+  sys.exit(0)
+else:
+  sys.exit(-1)'
+
+IS_PYTHON_VERSION_312='
+import sys
+if sys.version_info >= (3, 12, 0):
   sys.exit(0)
 else:
   sys.exit(-1)'
@@ -264,6 +271,15 @@ setup_bashhub_files() {
 
     # install our packages. bashhub and dependencies.
     echo "Pulling down a few dependencies...(this may take a moment)"
+    # Note: This is a hack to get bashhub working for python 3.12
+    if "python" -c "$IS_PYTHON_VERSION_312"; then
+        # upgrade pip
+        ../env/bin/python -m ensurepip --upgrade
+        ../env/bin/python -m pip install --upgrade setuptools pip
+        # Set requests to 2.32 for python 3.12
+        sed -i 's/requests==2.23.0/requests==2.32/' setup.py
+    fi
+    # Now install the remaining dependencies
     ../env/bin/pip -qq install .
 
     # Check if we already have a config. If not run setup.
