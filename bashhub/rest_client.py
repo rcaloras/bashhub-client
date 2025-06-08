@@ -166,7 +166,7 @@ def patch_system(system_patch, mac):
         return r.status_code
     except Exception as error:
         if r.status_code in (403, 401):
-            print("Permissons Issue. Run bashhub setup to re-login.")
+            print("Permissions Issue. Run bashhub setup to re-login.")
         return None
 
 
@@ -200,7 +200,7 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None, ses
         print("Sorry, looks like there's a connection error. Please try again later")
     except Exception as error:
         if r.status_code in (403, 401):
-            print("Permissons Issue. Run bashhub setup to re-login.")
+            print("Permissions Issue. Run bashhub setup to re-login.")
         elif r.status_code in [400]:
             print(
                 "Sorry, an error occurred communicating with Bashhub. Response Code: "
@@ -226,7 +226,7 @@ def save_command(command):
         pass
     except Exception as error:
         if r.status_code in (403, 401):
-            print("Permissons Issue. Run bashhub setup to re-login.")
+            print("Permissions Issue. Run bashhub setup to re-login.")
 
 
 def get_status_view(process_id, start_time):
@@ -242,7 +242,7 @@ def get_status_view(process_id, start_time):
         return None
     except Exception as error:
         if r.status_code in (403, 401):
-            print("Permissons Issue. Run bashhub setup to re-login.")
+            print("Permissions Issue. Run bashhub setup to re-login.")
         else:
             print(
                 "Sorry, an error occurred communicating with Bashhub. Response Code: "
