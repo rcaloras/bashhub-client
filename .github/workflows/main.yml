@@ -8,16 +8,16 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.11","3.7"]
+        python-version: ["3.13", "3.11", "3.9"]
 
     env:
       functional_test: true
       CI_UNSUPPORTED: true
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install python dependencies and bats
