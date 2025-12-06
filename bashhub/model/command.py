@@ -1,6 +1,5 @@
 #!/usr/bin/python
 from .min_command import MinCommand
-from bson.objectid import ObjectId
 from time import *
 import jsonpickle
 import sys

@@ -1,6 +1,5 @@
 import jsonpickle
 import json
-import requests
 import inflection
 from future.utils import iteritems
 

@@ -29,21 +29,23 @@ setup() {
   [[ $status == 0 ]]
 }
 
-@test "get_and_check_python_version should find python3.11 first" {
+@test "get_and_check_python_version should find python3.13 first" {
   # Mock up some fake responses here.
   /usr/bin/python3() { return 1; }
   python3() { return 1; }
-  python3.11() { return 0; }
+  python3.13() { return 0; }
 
   run 'get_and_check_python_version'
   [[ $status == 0 ]]
-  [[ "$output" == "python3.11" ]]
+  [[ "$output" == "python3.13" ]]
 }
 
 @test "get_and_check_python_version should find different python versions" {
   # Mock up some fake responses here.
   /usr/bin/python3() { return 1; }
   python3() { return 1; }
+  python3.13() { return 1; }
+  python3.12() { return 1; }
   python3.11() { return 1; }
   python3.10() { return 1; }
   python3.9() { return 1; }
