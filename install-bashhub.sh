@@ -104,7 +104,7 @@ download_and_install_env() {
     PYTHON=$(which $python_command)
     echo "Using Python path $PYTHON"
 
-    VERSION=20.10.0
+    VERSION=20.32.0
     VERSION_URL="https://github.com/pypa/get-virtualenv/raw/$VERSION/public/virtualenv.pyz"
     # Alternatively use latest url for most recent that should be 2.7-3.9+
     LATEST_URL="https://bootstrap.pypa.io/virtualenv/2.7/virtualenv.pyz"
