@@ -1,5 +1,4 @@
 import json
-import requests
 from .serializable import Serializable
 
 # For unicode support on __str__
