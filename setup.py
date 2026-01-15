@@ -13,6 +13,13 @@ setup(name='bashhub',
       author='Ryan Caloras',
       author_email='ryan@bashhub.com',
       license='Apache',
+      classifiers=[
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.9',
+          'Programming Language :: Python :: 3.11',
+          'Programming Language :: Python :: 3.13',
+          'Programming Language :: Python :: 3.14',
+      ],
       packages=find_packages(),
       include_package_data=True,
       install_requires=[
