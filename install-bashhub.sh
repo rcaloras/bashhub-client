@@ -90,7 +90,7 @@ get_and_check_python_version() {
 download_and_install_env() {
     local python_command=$(get_and_check_python_version)
     if [[ -z "$python_command" ]]; then
-        die "\n Sorry you need to have python 3.9-3.14 installed. Please install it and rerun this script." 1
+        die "\nSorry you need to have python 3.9-3.14 installed. Please install it and rerun this script." 1
     fi
 
     # Set to whatever python interpreter you want for your first environment
@@ -109,11 +109,11 @@ download_and_install_env() {
 
 check_dependencies() {
     if [ -z "$(get_and_check_python_version)" ]; then
-        die "\n Sorry can't seem to find a version of python 3.9-3.14 installed" 1
+        die "\nSorry can't seem to find a version of python 3.9-3.14 installed" 1
     fi
 
     if [ -z "$(detect_shell_type)" ]; then
-        die "\n Sorry, couldn't detect your shell type. Bashhub only supports bash or zsh. Your defualt shell is $SHELL." 1
+        die "\nSorry, couldn't detect your shell type. Bashhub only supports bash or zsh. Your defualt shell is $SHELL." 1
     fi;
 }
 
@@ -232,7 +232,7 @@ install_hooks_for_shell() {
             install_hooks_for_bash
             ;;
         *)
-        die "\n Bashhub only supports bash, fish, or zsh. Your default shell is $SHELL." 1
+        die "\nBashhub only supports bash, fish, or zsh. Your default shell is $SHELL." 1
     esac
 }
 
