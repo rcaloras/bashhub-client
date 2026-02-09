@@ -8,13 +8,8 @@ import re
 import time
 import stat
 
-# Support for Python 2 and 3
-try:
-    import configparser
-    from configparser import NoSectionError, NoOptionError
-except ImportError:
-    import ConfigParser as configparser
-    from ConfigParser import NoSectionError, NoOptionError
+import configparser
+from configparser import NoSectionError, NoOptionError
 
 # Current time in milleseconds to use across app.
 current_milli_time = lambda: int(round(time.time() * 1000))

@@ -14,11 +14,6 @@ from .bashhub_globals import BH_URL, BH_AUTH
 from .version import __version__
 from requests import ConnectionError
 from requests import HTTPError
-import requests.packages.urllib3
-
-# Disable warnings caused by old Python versions 2.7.6 >=
-# Remove once we've successfully migrated to Python 3
-requests.packages.urllib3.disable_warnings()
 
 # Build our user agent string
 user_agent = 'bashhub/%s' % __version__
@@ -158,6 +153,7 @@ def patch_system(system_patch, mac):
 
     url = BH_URL + "/api/v1/system/{0}".format(mac)
 
+    r = None
     try:
         r = requests.patch(url,
                            data=system_patch.to_JSON(),
@@ -165,7 +161,7 @@ def patch_system(system_patch, mac):
         r.raise_for_status()
         return r.status_code
     except Exception as error:
-        if r.status_code in (403, 401):
+        if r is not None and r.status_code in (403, 401):
             print("Permissions Issue. Run bashhub setup to re-login.")
         return None
 
@@ -192,6 +188,7 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None, ses
     payload["unique"] = str(unique).lower()
     url = BH_URL + "/api/v1/command/search"
 
+    r = None
     try:
         r = requests.get(url, params=payload, headers=json_auth_headers())
         return MinCommand.from_JSON_list(r.json())
@@ -199,24 +196,26 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None, ses
     except ConnectionError as error:
         print("Sorry, looks like there's a connection error. Please try again later")
     except Exception as error:
-        if r.status_code in (403, 401):
-            print("Permissions Issue. Run bashhub setup to re-login.")
-        elif r.status_code in [400]:
-            print(
-                "Sorry, an error occurred communicating with Bashhub. Response Code: "
-                + str(r.status_code))
-            print(r.text)
-        else:
-            print(
-                "Sorry, an error occurred communicating with Bashhub. Response Code: "
-                + str(r.status_code))
-            print(error)
+        if r is not None:
+            if r.status_code in (403, 401):
+                print("Permissions Issue. Run bashhub setup to re-login.")
+            elif r.status_code in [400]:
+                print(
+                    "Sorry, an error occurred communicating with Bashhub. Response Code: "
+                    + str(r.status_code))
+                print(r.text)
+            else:
+                print(
+                    "Sorry, an error occurred communicating with Bashhub. Response Code: "
+                    + str(r.status_code))
+                print(error)
     return []
 
 
 def save_command(command):
     url = BH_URL + "/api/v1/command"
 
+    r = None
     try:
         r = requests.post(url,
                           data=command.to_JSON(),
@@ -225,7 +224,7 @@ def save_command(command):
         print("Sorry, looks like there's a connection error")
         pass
     except Exception as error:
-        if r.status_code in (403, 401):
+        if r is not None and r.status_code in (403, 401):
             print("Permissions Issue. Run bashhub setup to re-login.")
 
 
@@ -233,6 +232,7 @@ def get_status_view(process_id, start_time):
     url = BH_URL + "/api/v1/client-view/status"
 
     payload = {'processId': process_id, 'startTime': start_time}
+    r = None
     try:
         r = requests.get(url, params=payload, headers=json_auth_headers())
         status_view_json = json.dumps(r.json())
@@ -241,10 +241,11 @@ def get_status_view(process_id, start_time):
         print("Sorry, looks like there's a connection error")
         return None
     except Exception as error:
-        if r.status_code in (403, 401):
-            print("Permissions Issue. Run bashhub setup to re-login.")
-        else:
-            print(
-                "Sorry, an error occurred communicating with Bashhub. Response Code: "
-                + str(r.status_code))
+        if r is not None:
+            if r.status_code in (403, 401):
+                print("Permissions Issue. Run bashhub setup to re-login.")
+            else:
+                print(
+                    "Sorry, an error occurred communicating with Bashhub. Response Code: "
+                    + str(r.status_code))
         return None

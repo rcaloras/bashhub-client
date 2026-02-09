@@ -17,14 +17,7 @@ import requests
 from requests import ConnectionError
 from requests import HTTPError
 import collections
-from builtins import input
-
-# Support for Python 2 and 3
-try:
-    import configparser
-    from configparser import NoSectionError, NoOptionError
-except ImportError:
-    import ConfigParser as configparser
+import configparser
 
 
 def query_yes_no(question, default="yes"):

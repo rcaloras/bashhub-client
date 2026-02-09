@@ -2,7 +2,6 @@ import jsonpickle
 import json
 import requests
 import inflection
-from future.utils import iteritems
 
 
 class Serializable(object):
@@ -19,7 +18,7 @@ class Serializable(object):
     @classmethod
     def convert_json(cls, d, convert):
         new_d = {}
-        for k, v in iteritems(d):
+        for k, v in d.items():
             new_d[convert(k)] = cls.convert_json(v, convert) if isinstance(
                 v, dict) else v
         return new_d

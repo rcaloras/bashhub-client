@@ -6,12 +6,10 @@ import io
 import os
 import traceback
 import datetime
-from builtins import input
 from .bashhub_globals import *
 from . import rest_client
 from .i_search import InteractiveSearch
 from .version import version_str
-from builtins import str as text
 
 @click.command()
 @click.argument('query', type=str, default='')
@@ -105,7 +103,7 @@ def run_interactive(commands):
     command = i_search.return_value
     if command is not None:
         f = io.open(BH_HOME + '/response.bh', 'w+', encoding='utf-8')
-        print(text(command.command), file=f)
+        print(command.command, file=f)
 
 def unix_milliseconds_timestamp_to_datetime(timestamp):
     return datetime.datetime.fromtimestamp(int(timestamp) / 1000) \

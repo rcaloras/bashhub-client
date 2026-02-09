@@ -2,7 +2,6 @@
 """
 Sampled from Lyle Scott scrolling curses
 """
-from __future__ import print_function
 import curses
 import sys
 import random

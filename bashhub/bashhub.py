@@ -1,5 +1,4 @@
 #!/usr/bin/python
-from __future__ import print_function
 from time import *
 import click
 import traceback
@@ -22,7 +21,6 @@ from . import shell_utils
 import re
 from .view.status import *
 
-from builtins import str as text
 
 
 def print_version(ctx, param, value):
@@ -68,7 +66,7 @@ def off(is_global):
         write_to_config_file('save_commands', 'False')
     else:
         f = io.open(BH_HOME + '/script.bh', 'w+', encoding='utf-8')
-        print(text("export BH_SAVE_COMMANDS='False'"), file=f)
+        print(str("export BH_SAVE_COMMANDS='False'"), file=f)
 
 
 @bashhub.command()
@@ -81,9 +79,9 @@ def on(local):
     f = io.open(BH_HOME + '/script.bh', 'w+', encoding='utf-8')
 
     if local:
-        print(text("export BH_SAVE_COMMANDS='True'"), file=f)
+        print(str("export BH_SAVE_COMMANDS='True'"), file=f)
     else:
-        print(text("unset BH_SAVE_COMMANDS"), file=f)
+        print(str("unset BH_SAVE_COMMANDS"), file=f)
         write_to_config_file('save_commands', 'True')
 
 
@@ -198,8 +196,7 @@ def update(version):
     with open(filename, 'wb') as out_file:
         shutil.copyfileobj(response.raw, out_file)
 
-    shell_command = "bash -e {0} {1}".format(filename, version)
-    subprocess.call(shell_command, shell=True)
+    subprocess.call(["bash", "-e", filename, version])
     os.remove(filename)
 
 

@@ -2,8 +2,6 @@ from setuptools import setup, find_packages
 import install_bashhub
 from bashhub.version import __version__ as version
 
-exec (open('bashhub/version.py').read())
-
 tests_require = ['pytest>=3.3.1']
 
 setup(name='bashhub',
@@ -26,7 +24,7 @@ setup(name='bashhub',
           'requests==2.32.5', 'jsonpickle==3.0.1', 'click==6.7',
           'npyscreen==4.10.5', 'python-dateutil==2.8.1',
           'inflection==0.3.1', 'humanize==4.6.0',
-          'future==0.18.3', 'mock==3.0.5'
+          'mock==3.0.5'
       ],
       tests_require=tests_require,
       extras_require={'test': tests_require},
