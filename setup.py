@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-import install_bashhub
 from bashhub.version import __version__ as version
 
 tests_require = ['pytest>=3.3.1']
