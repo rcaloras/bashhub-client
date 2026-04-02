@@ -22,7 +22,7 @@ base_headers = {'User-Agent': user_agent, 'X-Bashhub-version': __version__}
 
 json_headers = dict(
     {'content-type': 'application/json',
-     'Accept': 'text/plain'}, **base_headers)
+     'Accept': 'application/json'}, **base_headers)
 
 
 def json_auth_headers():
