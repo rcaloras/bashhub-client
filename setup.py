@@ -22,8 +22,7 @@ setup(name='bashhub',
       install_requires=[
           'requests==2.32.5', 'jsonpickle==3.0.1', 'click==6.7',
           'npyscreen==5.0.2', 'python-dateutil==2.9.0.post0',
-          'inflection==0.3.1', 'humanize==4.6.0',
-          'mock==3.0.5'
+          'inflection==0.3.1', 'humanize==4.6.0'
       ],
       tests_require=tests_require,
       extras_require={'test': tests_require},

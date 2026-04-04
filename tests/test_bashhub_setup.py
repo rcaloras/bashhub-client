@@ -7,10 +7,7 @@ import unittest
 import os
 import pytest
 
-try:
-    from unittest.mock import patch, MagicMock
-except ImportError:
-    from mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 def randomnode():
 	return 1 << 40

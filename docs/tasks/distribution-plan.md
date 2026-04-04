@@ -6,7 +6,7 @@ Modernize how bashhub is packaged and distributed to eliminate the hard dependen
 
 ## Status
 
-In progress — no steps completed yet.
+In progress — Phase 1 started.
 
 ## Findings
 
@@ -29,7 +29,7 @@ In progress — no steps completed yet.
 
 ### Phase 1 — Quick fixes (low effort, high value)
 
-- [ ] Remove `mock==3.0.5` from `install_requires`; keep only in `tests_require`/`extras_require`
+- [x] Remove `mock==3.0.5` from `install_requires`; keep only in `tests_require`/`extras_require`
 - [ ] Relax exact version pins to minimum bounds (e.g. `requests>=2.28`) in `install_requires`
 - [ ] Migrate `setup.py` to `pyproject.toml`
   - Replace `pkg_resources` usage in `install_bashhub.py` with `importlib.resources`
