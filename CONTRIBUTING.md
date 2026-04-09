@@ -7,7 +7,7 @@ The latest development version can be found on https://github.com/rcaloras/bashh
 
 ## Dev Environment Setup
 You should be able to develop and execute Bashhub's client locally as well as run its unit tests. This typically involves cloning the repo and setting up a virtualenv to develop with. 
-Bashhub is currently setup as Python 2 project built with setuptools.
+Bashhub uses modern Python packaging via `pyproject.toml` and setuptools.
 
 ```bash
 # setup and clone our repo locally
@@ -29,15 +29,15 @@ This should setup the project locally. Output should look something like:
 ```bash
 [rcaloras:~/git/bashhub-client] [bashhub_dev] master ± pip install -e ".[test]"
 Obtaining file:///Users/rcaloras/git/bashhub-client
-Collecting requests==1.2.3 (from bashhub===-version-)
-  Using cached requests-1.2.3.tar.gz
-Collecting jsonpickle==0.7.0 (from bashhub===-version-)
-  Using cached jsonpickle-0.7.0.tar.gz
+Installing build dependencies ... done
+Checking if build backend supports build_editable ... done
+Getting requirements to build editable ... done
+Preparing editable metadata (pyproject.toml) ... done
+Collecting requests>=2.32.5
+Collecting jsonpickle>=4.1.1
 ...
-Successfully built requests jsonpickle npyscreen pyCLI pymongo inflection humanize
-Installing collected packages: requests, jsonpickle, click, npyscreen, six, python-dateutil, pyCLI, pymongo, inflection, humanize, bashhub
-  Running setup.py develop for bashhub
-Successfully installed bashhub click-3.3 humanize-0.5.1 inflection-0.2.1 jsonpickle-0.7.0 npyscreen-4.9.1 pyCLI-2.0.3 pymongo-2.6 python-dateutil-2.4.0 requests-1.2.3 six-1.11.0
+Successfully built bashhub
+Successfully installed bashhub click-8.1.8 humanize-4.13.0 inflection-0.5.1 jsonpickle-4.1.1 npyscreen-5.0.2 pytest-8.x python-dateutil-2.9.0.post0 requests-2.32.5
 ```
 From within this virtualenv `bh` and `bashhub` exectuables should now be wired up for development. You should also be able to run pytest (you may have to start a new terminal session).
 

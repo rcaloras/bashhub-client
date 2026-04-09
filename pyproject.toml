@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bashhub"
+description = "Bashhub.com python client"
+readme = "README.md"
+requires-python = ">=3.9,<3.15"
+authors = [{ name = "Ryan Caloras", email = "ryan@bashhub.com" }]
+license = "Apache-2.0"
+dynamic = ["version"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "requests>=2.32.5",
+    "jsonpickle>=4.1.1",
+    "click>=8.1.8",
+    "npyscreen>=5.0.2",
+    "python-dateutil>=2.9.0.post0",
+    "inflection>=0.5.1",
+    "humanize>=4.13.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/rcaloras/bashhub-client"
+
+[project.optional-dependencies]
+test = ["pytest>=3.3.1"]
+
+[project.scripts]
+bh = "bashhub.bh:main"
+bashhub = "bashhub.bashhub:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "bashhub.version.__version__" }
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["bashhub*"]
+
+[tool.setuptools.package-data]
+bashhub = ["shell/*.fish", "shell/*.sh", "shell/*.zsh", "shell/deps/*.sh"]
