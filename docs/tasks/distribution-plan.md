@@ -21,7 +21,7 @@ In progress — Phase 1 started.
 ### Problems identified
 - **Hard system Python dependency** — the root cause of the Python 3.14/npyscreen issue going undetected until after release
 - **Not on PyPI** — install pulls a tarball from GitHub with a manually-bumped hardcoded version tag
-- **Legacy `setup.py`** — `pyproject.toml` is the standard since PEP 517/518; `pkg_resources` used in `install_bashhub.py` is also deprecated
+- **Legacy `setup.py`** — `pyproject.toml` is the standard since PEP 517/518; packaging should be modernized without changing the current `install-bashhub.sh` installer path in Phase 1
 - **`mock` in `install_requires`** — test-only dependency incorrectly listed as a runtime dependency
 - **Exact-pinned deps in `install_requires`** — causes conflicts when installed alongside other packages; pinning belongs in a lockfile, not `install_requires`
 
@@ -31,8 +31,8 @@ In progress — Phase 1 started.
 
 - [x] Remove `mock==3.0.5` from `install_requires`; keep only in `tests_require`/`extras_require`
 - [x] Relax exact version pins to minimum bounds (e.g. `requests>=2.28`) in `install_requires`
-- [ ] Migrate `setup.py` to `pyproject.toml`
-  - Replace `pkg_resources` usage in `install_bashhub.py` with `importlib.resources`
+- [x] Migrate `setup.py` to `pyproject.toml`
+  - `install_bashhub.py` is legacy/unused; the active install path is `install-bashhub.sh`, so no installer Python changes are needed in Phase 1
 
 ### Phase 2 — PyPI publishing + modern install
 
