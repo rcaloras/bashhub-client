@@ -30,8 +30,10 @@ __bh_setup_bashhub() {
         # Hook bashhub into preexec and precmd.
         __bh_hook_bashhub
 
-        # Install our tab completion
-        source "$BH_DEPS_DIRECTORY/bashhub_completion_handler.sh"
+        # Install our tab completion (requires bash 4.0+ for compopt)
+        if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
+            eval "$(_BASHHUB_COMPLETE=bash_source bashhub)"
+        fi
     fi
 }
 
