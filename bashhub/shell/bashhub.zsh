@@ -29,8 +29,7 @@ __bh_setup_bashhub() {
 
         # Install our tab completion.
         autoload compinit && compinit
-        autoload bashcompinit && bashcompinit
-        source $BH_DEPS_DIRECTORY/bashhub_completion_handler.sh
+        eval "$(_BASHHUB_COMPLETE=zsh_source bashhub)"
 
         # Turn on Bash style comments. Otherwise zsh tries to execute #some-comment.
         setopt interactivecomments
