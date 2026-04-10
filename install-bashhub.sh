@@ -266,7 +266,7 @@ setup_bashhub_files() {
         cp "$backup_config" "$bashhub_config"
         rm "$backup_config"
 
-        if ! ../env/bin/bashhub util update_system_info; then
+        if ! ../env/bin/bashhub util update-system-info; then
             # Run setup if we run into any issues updating our system info
             ../env/bin/bashhub setup
         fi
