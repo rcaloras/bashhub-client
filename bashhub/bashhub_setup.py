@@ -10,6 +10,7 @@ import uuid
 import stat
 import socket
 from . import rest_client
+from .validation import validate_email, validate_username, validate_password
 from .version import __version__
 from .model import *
 from .bashhub_globals import *
@@ -52,10 +53,35 @@ def query_yes_no(question, default="yes"):
                              "(or 'y' or 'n').\n")
 
 
+def prompt_until_valid(prompt, validator, secret=False):
+    """Prompt the user until validator() returns None. Re-prompts with the
+    error message on failure."""
+    while True:
+        value = getpass.getpass(prompt) if secret else input(prompt)
+        error = validator(value)
+        if error is None:
+            return value
+        print(error)
+
+
+def prompt_password_with_confirmation():
+    """Prompt for a password, validate it, then require a matching
+    confirmation. Re-prompts from the start if the confirmation doesn't
+    match."""
+    while True:
+        password = prompt_until_valid(
+            "What password? ", validate_password, secret=True)
+        confirm = getpass.getpass("Confirm password: ")
+        if password == confirm:
+            return password
+        print("Passwords did not match. Please try again.")
+
+
 def get_new_user_information():
-    email = input("What's your email? ")
-    username = input("What username would you like? ")
-    password = getpass.getpass("What password? ")
+    email = prompt_until_valid("What's your email? ", validate_email)
+    username = prompt_until_valid(
+        "What username would you like? ", validate_username)
+    password = prompt_password_with_confirmation()
     print("\nEmail: " + email + " Username: " + username)
     all_good = query_yes_no("Are these correct?")
 
