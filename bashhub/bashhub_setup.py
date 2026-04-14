@@ -158,7 +158,7 @@ def handle_system_information(username, password, attempts=0):
             print("Registered a new system " + name)
         else:
             if attempts < 3:
-                print("Looks like registering your system failed. Lets retry.")
+                print("Looks like registering your system failed. Let's retry.")
                 return handle_system_information(username, password, attempts + 1)
             else:
                 return (None, None)
