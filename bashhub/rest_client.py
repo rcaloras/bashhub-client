@@ -15,6 +15,40 @@ from .version import __version__
 from requests import ConnectionError
 from requests import HTTPError
 
+def _extract_error_message(response, fallback):
+    """Return a clean error string from an API response.
+
+    The server sends plain text for 401/409/422 and JSON (DRF format) for
+    400. Try plain text first (if it looks usable), then attempt JSON
+    extraction, then fall back to the provided generic string."""
+    text = response.text.strip() if response.text else ""
+
+    # If the body is plain text (no JSON braces), use it directly.
+    if text and not text.startswith("{") and not text.startswith("["):
+        return text
+
+    # Try to extract a message from DRF-style JSON:
+    # {"field": ["error msg", ...]} or {"detail": "error msg"}
+    try:
+        data = response.json()
+        if isinstance(data, dict):
+            if "detail" in data:
+                return str(data["detail"])
+            # Collect first message from each field
+            messages = []
+            for value in data.values():
+                if isinstance(value, list) and value:
+                    messages.append(str(value[0]))
+                elif isinstance(value, str):
+                    messages.append(value)
+            if messages:
+                return " ".join(messages)
+    except Exception:
+        pass
+
+    return fallback
+
+
 # Build our user agent string
 user_agent = 'bashhub/%s' % __version__
 
@@ -50,10 +84,11 @@ def register_user(register_user):
         print("Looks like there's a connection error. Please try again later")
     except HTTPError as error:
         if response.status_code in (409, 422):
-            print(response.text)
+            print(_extract_error_message(
+                response, "Registration failed. Please try again."))
         else:
-            print(error)
-            print("Please try again...")
+            print(_extract_error_message(
+                response, "Sorry, an unexpected error occurred. Please try again."))
     return None
 
 
@@ -72,11 +107,14 @@ def login_user(login_form):
         print("Looks like there's a connection error. Please try again later")
         return None
     except HTTPError as error:
-        if response.status_code in (409, 401):
-            print(response.text)
+        if response.status_code == 401:
+            print("Incorrect username or password.")
+        elif response.status_code == 409:
+            print(_extract_error_message(
+                response, "Login failed. Please try again."))
         else:
-            print(error)
-            print("Please try again...")
+            print(_extract_error_message(
+                response, "Sorry, an unexpected error occurred. Please try again."))
         return None
 
 
@@ -94,10 +132,11 @@ def register_system(register_system):
         print("Looks like there's a connection error. Please try again later")
     except HTTPError as error:
         if response.status_code == 409:
-            print(response.text)
+            print(_extract_error_message(
+                response, "System registration failed. Please try again."))
         else:
-            print(error)
-            print("Please try again...")
+            print(_extract_error_message(
+                response, "Sorry, an unexpected error occurred. Please try again."))
     return None
 
 
