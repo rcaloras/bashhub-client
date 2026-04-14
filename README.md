@@ -1,4 +1,4 @@
-<img src="https://bashhub.com/assets/images/bashhub-logo.png" alt="Bashhub Logo">
+<img src="https://bashhub.com/static/web/images/bashhub-logo.png" alt="Bashhub Logo">
 
 Bashhub saves every terminal command entered across all sessions and systems and provides powerful querying across all commands.
 
