@@ -2,23 +2,25 @@
 This file should be used for declaring any global variables that need to be
 pulled in from environment variables or are just used across multiple files.
 """
-
-import os
-import re
-import time
-import stat
+from __future__ import annotations
 
 import configparser
-from configparser import NoSectionError, NoOptionError
+import os
+import re
+import stat
+import time as _time
+from configparser import NoOptionError, NoSectionError
+
 
 # Current time in milleseconds to use across app.
-current_milli_time = lambda: int(round(time.time() * 1000))
+def current_milli_time() -> int:
+    return int(round(_time.time() * 1000))
 
 BH_HOME = '~/.bashhub' if 'HOME' not in list(os.environ.keys()) \
         else os.environ['HOME'] + '/.bashhub'
 
 
-def write_to_config_file(section, value):
+def write_to_config_file(section: str, value: str) -> bool:
     exists = os.path.exists(BH_HOME)
     file_path = BH_HOME + '/config'
     permissions = stat.S_IRUSR | stat.S_IWUSR
@@ -39,14 +41,14 @@ def write_to_config_file(section, value):
         return False
 
 
-def get_from_config(key, default=''):
+def get_from_config(key: str, default: str = '') -> str:
     try:
         config = configparser.ConfigParser()
         config.read(BH_HOME + '/config')
         return config.get('bashhub', key)
-    except NoSectionError as error:
+    except NoSectionError:
         return default
-    except NoOptionError as error:
+    except NoOptionError:
         return default
 
 # Optional environment variable to configure for development
@@ -65,18 +67,18 @@ BH_DEBUG = os.getenv('BH_DEBUG', get_from_config("debug"))
 # Get our token from the environment if one is present
 # otherwise retrieve it from our config. Needs to
 # be a function since we may change our token during setup
-def BH_AUTH():
+def BH_AUTH() -> str:
     return os.getenv('BH_ACCESS_TOKEN', get_from_config("access_token"))
 
 
-def is_valid_regex(regex):
+def is_valid_regex(regex: str) -> bool:
     try:
         re.compile(regex)
         return True
     except re.error:
         return False
 
-def get_bh_filter():
+def get_bh_filter() -> str:
     filter = os.getenv('BH_FILTER', get_from_config('filter'))
     return filter if is_valid_regex(filter) else '__invalid__'
 

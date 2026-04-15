@@ -5,24 +5,26 @@ returns None if the input is valid, or a user-facing error string otherwise.
 The reserved-username list and uniqueness checks are intentionally not
 mirrored here -- they are enforced server-side and surfaced via API errors.
 """
+from __future__ import annotations
+
 import re
 
 # Matches server regex in bashhub-server api/views/user.py
 USERNAME_REGEX = re.compile(r"^[a-zA-Z0-9\-_]+$")
-USERNAME_MIN = 1
-USERNAME_MAX = 39
+USERNAME_MIN: int = 1
+USERNAME_MAX: int = 39
 
-EMAIL_MAX = 254
+EMAIL_MAX: int = 254
 # Pragmatic format check: non-empty local, @, non-empty domain with a dot.
 # Matches what the server actually verifies (has @ and a dot in the domain).
 EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 # Client-only guardrail. The server enforces no minimum, but we reject
 # obviously-weak passwords here for UX.
-PASSWORD_MIN = 8
+PASSWORD_MIN: int = 8
 
 
-def validate_email(email):
+def validate_email(email: str) -> str | None:
     if not email:
         return "Email cannot be empty."
     if len(email) > EMAIL_MAX:
@@ -32,7 +34,7 @@ def validate_email(email):
     return None
 
 
-def validate_username(username):
+def validate_username(username: str) -> str | None:
     if not username:
         return "Username cannot be empty."
     if len(username) < USERNAME_MIN or len(username) > USERNAME_MAX:
@@ -44,7 +46,7 @@ def validate_username(username):
     return None
 
 
-def validate_password(password):
+def validate_password(password: str) -> str | None:
     if not password:
         return "Password cannot be empty."
     if len(password) < PASSWORD_MIN:

@@ -1,10 +1,18 @@
+from __future__ import annotations
+
 from .serializable import Serializable
 
 
 class StatusView(Serializable):
-    def __init__(self, username, total_commands, total_sessions, total_systems,
-                 total_commands_today, session_name, session_start_time,
-                 session_total_commands):
+    def __init__(self,
+                 username: str,
+                 total_commands: int,
+                 total_sessions: int,
+                 total_systems: int,
+                 total_commands_today: int,
+                 session_name: str | None,
+                 session_start_time: int,
+                 session_total_commands: int) -> None:
         self.username = username
         self.total_commands = total_commands
         self.total_sessions = total_sessions

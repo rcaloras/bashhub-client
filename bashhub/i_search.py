@@ -1,16 +1,21 @@
 #!/usr/bin/env python
+from __future__ import annotations
+
+import curses
+import curses.ascii
+import datetime
+from typing import Any
 
 import npyscreen
-import datetime
-import time
+
 from . import rest_client
-import curses
+from .model import Command, MinCommand
 
 
 class CommandList(npyscreen.MultiLineAction):
-    def __init__(self, *args, **keywords):
+    def __init__(self, *args: Any, **keywords: Any) -> None:
         super(CommandList, self).__init__(*args, **keywords)
-        self.command_handlers = {}
+        self.command_handlers: dict[int, Any] = {}
 
         # Any non highlited command handlers
         self.add_handlers({
@@ -39,7 +44,7 @@ class CommandList(npyscreen.MultiLineAction):
         # It'd be nice to allow clicking to select a line.
         curses.mousemask(0)
 
-    def delete_command(self, command):
+    def delete_command(self, command: MinCommand) -> None:
         confirmed = npyscreen.notify_ok_cancel(
             str(command), "Delete Command")
         if confirmed:
@@ -48,29 +53,29 @@ class CommandList(npyscreen.MultiLineAction):
                 self.parent.parentApp.commands.remove(command)
                 self.parent.update_list()
 
-    def exit_app(self, vl):
+    def exit_app(self, vl: Any) -> None:
         self.parent.parentApp.switchForm(None)
 
-    def display_value(self, vl):
+    def display_value(self, vl: Any) -> str:
         return "{0}".format(vl)
 
-    def add_command_handlers(self, command_handlers):
+    def add_command_handlers(self, command_handlers: dict[int, Any]) -> None:
         self.command_handlers = command_handlers
         # wire up to use npyscreens h_act_on_hightlited
         event_handlers = dict((key, self.h_act_on_highlighted)
                               for (key, value) in command_handlers.items())
         self.add_handlers(event_handlers)
 
-    def actionHighlighted(self, command, keypress):
+    def actionHighlighted(self, command: MinCommand, keypress: int) -> Any:
         if keypress in self.command_handlers:
             return self.command_handlers[keypress](command)
 
-    def go_to_command_details(self, command):
+    def go_to_command_details(self, command: MinCommand) -> None:
         command_details = rest_client.get_command(command.uuid)
         self.parent.parentApp.getForm('EDITRECORDFM').value = command_details
         self.parent.parentApp.switchForm('EDITRECORDFM')
 
-    def select_command(self, command):
+    def select_command(self, command: MinCommand) -> None:
         self.parent.parentApp.return_value = command
         self.parent.parentApp.switchForm(None)
 
@@ -80,25 +85,25 @@ class CommandListDisplay(npyscreen.FormMutt):
 
     #COMMAND_WIDGET_CLASS = None
 
-    def beforeEditing(self):
+    def beforeEditing(self) -> None:
         self.wStatus1.value = "Bashhub Commands "
         self.update_list()
 
-    def update_list(self):
+    def update_list(self) -> None:
         self.wMain.values = self.parentApp.commands
         self.wMain.display()
 
 
 class EditRecord(npyscreen.ActionForm):
-    def __init__(self, *args, **keywords):
+    def __init__(self, *args: Any, **keywords: Any) -> None:
         super(EditRecord, self).__init__()
         self.add_handlers({
             "q": self.previous_form,
             curses.ascii.ESC: self.exit_app
         })
 
-    def create(self):
-        self.value = None
+    def create(self) -> None:
+        self.value: Command | None = None
         self.command = self.add(npyscreen.TitleFixedText, name="Command:")
         self.path = self.add(npyscreen.TitleFixedText, name="Path:")
         self.created = self.add(npyscreen.TitleFixedText, name="Created At:")
@@ -110,13 +115,13 @@ class EditRecord(npyscreen.ActionForm):
                                    name="Session Id:")
         self.uuid = self.add(npyscreen.TitleFixedText, name="UUID:")
 
-    def exit_app(self, vl):
+    def exit_app(self, vl: Any) -> None:
         self.parentApp.switchForm(None)
 
-    def previous_form(self, vl):
+    def previous_form(self, vl: Any) -> None:
         self.parentApp.switchFormPrevious()
 
-    def beforeEditing(self):
+    def beforeEditing(self) -> None:
         if self.value:
             record = self.value
             self.name = "Command Details"
@@ -138,20 +143,21 @@ class EditRecord(npyscreen.ActionForm):
         else:
             self.command = "not found"
 
-    def on_ok(self):
+    def on_ok(self) -> None:
         self.parentApp.switchFormPrevious()
 
-    def on_cancel(self):
+    def on_cancel(self) -> None:
         self.parentApp.switchFormPrevious()
 
 
 class InteractiveSearch(npyscreen.NPSAppManaged):
-    def __init__(self, commands, rest_client=None):
+    def __init__(self, commands: list[MinCommand],
+                 rest_client: Any = None) -> None:
         super(InteractiveSearch, self).__init__()
         self.commands = commands
         self.rest_client = rest_client
-        self.return_value = None
+        self.return_value: MinCommand | None = None
 
-    def onStart(self):
+    def onStart(self) -> None:
         self.addForm("MAIN", CommandListDisplay)
         self.addForm("EDITRECORDFM", EditRecord)

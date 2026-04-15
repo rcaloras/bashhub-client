@@ -1,27 +1,21 @@
 #!/usr/bin/python
-from time import *
-import jsonpickle
-import json
-import sys
-import requests
+from __future__ import annotations
+
 import getpass
+import socket
+import sys
 import traceback
 import uuid
-import stat
-import socket
+from typing import Callable
+
 from . import rest_client
-from .validation import validate_email, validate_username, validate_password
-from .version import __version__
-from .model import *
 from .bashhub_globals import *
-import requests
-from requests import ConnectionError
-from requests import HTTPError
-import collections
-import configparser
+from .model import *
+from .validation import validate_email, validate_password, validate_username
+from .version import __version__
 
 
-def query_yes_no(question, default="yes"):
+def query_yes_no(question: str, default: str = "yes") -> bool:
     """Ask a yes/no question via input() and return their answer.
 
     "question" is a string that is presented to the user.
@@ -32,7 +26,7 @@ def query_yes_no(question, default="yes"):
     The "answer" return value is one of "yes" or "no".
     """
     valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
-    if default == None:
+    if default is None:
         prompt = " [y/n] "
     elif default == "yes":
         prompt = " [Y/n] "
@@ -53,7 +47,11 @@ def query_yes_no(question, default="yes"):
                              "(or 'y' or 'n').\n")
 
 
-def prompt_until_valid(prompt, validator, secret=False):
+def prompt_until_valid(
+    prompt: str,
+    validator: Callable[[str], str | None],
+    secret: bool = False,
+) -> str:
     """Prompt the user until validator() returns None. Re-prompts with the
     error message on failure."""
     while True:
@@ -64,7 +62,7 @@ def prompt_until_valid(prompt, validator, secret=False):
         print(error)
 
 
-def prompt_password_with_confirmation():
+def prompt_password_with_confirmation() -> str:
     """Prompt for a password, validate it, then require a matching
     confirmation. Re-prompts from the start if the confirmation doesn't
     match."""
@@ -77,7 +75,7 @@ def prompt_password_with_confirmation():
         print("Passwords did not match. Please try again.")
 
 
-def get_new_user_information():
+def get_new_user_information() -> RegisterUser:
     email = prompt_until_valid("What's your email? ", validate_email)
     username = prompt_until_valid(
         "What username would you like? ", validate_username)
@@ -91,59 +89,63 @@ def get_new_user_information():
         return get_new_user_information()
 
 
-def get_user_information_and_login(username=None, password=None, attempts=0):
+def get_user_information_and_login(
+    username: str | None = None,
+    password: str | None = None,
+    attempts: int = 0,
+) -> tuple[str | None, str | None, str | None]:
     if attempts == 4:
         print("Too many bad attempts.")
-        return None
+        return (None, None, None)
 
     # Only collect user information if we don't already have it
     # i.e. if we didn't just register a new user.
-    if username == None and password == None:
+    if username is None and password is None:
         print("Please enter your bashhub credentials")
         username = input("Username: ")
         password = getpass.getpass("Password: ")
 
     # login once we have all of our information
+    assert username is not None and password is not None
     access_token = rest_client.login_user(LoginForm(username, password))
 
     # Package our result to include our credentials to later login our system.
     if access_token:
-        result = (username, password, access_token)
-    else:
-        result = get_user_information_and_login(attempts=attempts + 1) or (
-            None, None, None)
-
-    return result
+        return (username, password, access_token)
+    return get_user_information_and_login(attempts=attempts + 1) or (
+        None, None, None)
 
 
-def get_mac_address():
+def get_mac_address() -> str:
     """Get the mac address for our system as a fingerprint. If we can't
     get the mac, use the hash of our hostname as a subtitute"""
 
-    mac = uuid.getnode()
+    mac_int = uuid.getnode()
     # check if getnode fails
-    if (mac >> 40) & 1:
+    if (mac_int >> 40) & 1:
         hostname = socket.gethostname()
         print("warning: cannot find MAC. Using hostname (%s) to identify system" % hostname)
-        mac = hostname
-    else:
-        mac = str(mac)
-    return mac
+        return hostname
+    return str(mac_int)
 
 
 # Update our hostname incase it changed.
-def update_system_info():
+def update_system_info() -> int | None:
     mac = get_mac_address()
     hostname = socket.gethostname()
     patch = SystemPatch(hostname=hostname, client_version=__version__)
     return rest_client.patch_system(patch, mac)
 
 
-def handle_system_information(username, password, attempts=0):
+def handle_system_information(
+    username: str,
+    password: str,
+    attempts: int = 0,
+) -> tuple[str | None, str | None]:
 
     mac = get_mac_address()
     system = rest_client.get_system_information(mac)
-    system_name = None
+    system_name: str | None = None
     # Register a new System if this one isn't recognized
     if system is None:
         hostname = socket.gethostname()
@@ -179,7 +181,7 @@ def handle_system_information(username, password, attempts=0):
     return (access_token, system_name)
 
 
-def main():
+def main() -> None:
     try:
 
         ascii_art = r"""
@@ -197,9 +199,9 @@ def main():
         is_new_user = query_yes_no("Are you a new user?")
 
         # Initialize variaous Credentials for logging in.
-        username = None
-        password = None
-        access_token = None
+        username: str | None = None
+        password: str | None = None
+        access_token: str | None = None
 
         # If this is a new user walk them through the registration flow
         if is_new_user:
@@ -219,7 +221,7 @@ def main():
 
         (username, password, access_token) = get_user_information_and_login(
             username, password)
-        if access_token == None:
+        if access_token is None:
             print("\nSorry looks like logging in failed.")
             print("If you forgot your password please reset it. "
                   "https://bashhub.com/password-reset")
@@ -234,15 +236,17 @@ def main():
             print("Writing your config file failed.")
             sys.exit(1)
 
+        assert username is not None and password is not None
         (access_token, system_name) = handle_system_information(username,
                                                                 password)
 
-        if access_token == None:
+        if access_token is None:
             print("Sorry looks like getting your info failed.\
                     Exiting...")
             sys.exit(0)
 
         # write out our system scoped token and the system name
+        assert access_token is not None and system_name is not None
         write_to_config_file("access_token", access_token)
         write_to_config_file("system_name", system_name)
         update_system_info()

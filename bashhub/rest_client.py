@@ -1,21 +1,30 @@
 #!/usr/bin/python
+from __future__ import annotations
+
 import json
-import sys
+from typing import Any
+
 import requests
-from requests import ConnectionError
-import os
+from requests import ConnectionError, HTTPError
 
-from .model import MinCommand
-from .model import StatusView
-from .model import Command
-from .model import LoginResponse
-from .model import System
-from .bashhub_globals import BH_URL, BH_AUTH
+from .bashhub_globals import BH_AUTH, BH_URL
+from .model import Command, LoginResponse, MinCommand, StatusView
+from .model.command import LoginForm, RegisterUser
+from .model.command_form import CommandForm
+from .model.system import RegisterSystem, System, SystemPatch
 from .version import __version__
-from requests import ConnectionError
-from requests import HTTPError
 
-def _extract_error_message(response, fallback):
+# Build our user agent string
+user_agent = 'bashhub/%s' % __version__
+
+base_headers: dict[str, str] = {'User-Agent': user_agent, 'X-Bashhub-version': __version__}
+
+json_headers: dict[str, str] = dict(
+    {'content-type': 'application/json',
+     'Accept': 'application/json'}, **base_headers)
+
+
+def _extract_error_message(response: requests.Response, fallback: str) -> str:
     """Return a clean error string from an API response.
 
     The server sends plain text for 401/409/422 and JSON (DRF format) for
@@ -30,12 +39,12 @@ def _extract_error_message(response, fallback):
     # Try to extract a message from DRF-style JSON:
     # {"field": ["error msg", ...]} or {"detail": "error msg"}
     try:
-        data = response.json()
+        data: Any = response.json()
         if isinstance(data, dict):
             if "detail" in data:
                 return str(data["detail"])
             # Collect first message from each field
-            messages = []
+            messages: list[str] = []
             for value in data.values():
                 if isinstance(value, list) and value:
                     messages.append(str(value[0]))
@@ -49,27 +58,17 @@ def _extract_error_message(response, fallback):
     return fallback
 
 
-# Build our user agent string
-user_agent = 'bashhub/%s' % __version__
-
-base_headers = {'User-Agent': user_agent, 'X-Bashhub-version': __version__}
-
-json_headers = dict(
-    {'content-type': 'application/json',
-     'Accept': 'application/json'}, **base_headers)
-
-
-def json_auth_headers():
+def json_auth_headers() -> dict[str, str]:
     return dict({'Authorization': 'Bearer {0}'.format(BH_AUTH())},
                 **json_headers)
 
 
-def base_auth_headers():
+def base_auth_headers() -> dict[str, str]:
     return dict({'Authorization': 'Bearer {0}'.format(BH_AUTH())},
                 **base_headers)
 
 
-def register_user(register_user):
+def register_user(register_user: RegisterUser) -> str | None:
     url = BH_URL + "/api/v1/user"
     try:
         response = requests.post(url,
@@ -80,9 +79,9 @@ def register_user(register_user):
         # Return our username on a successful response
         return register_user.username
 
-    except ConnectionError as error:
+    except ConnectionError:
         print("Looks like there's a connection error. Please try again later")
-    except HTTPError as error:
+    except HTTPError:
         if response.status_code in (409, 422):
             print(_extract_error_message(
                 response, "Registration failed. Please try again."))
@@ -92,7 +91,7 @@ def register_user(register_user):
     return None
 
 
-def login_user(login_form):
+def login_user(login_form: LoginForm) -> str | None:
     url = BH_URL + "/api/v1/login"
     try:
         response = requests.post(url,
@@ -103,10 +102,10 @@ def login_user(login_form):
         login_response_json = json.dumps(response.json())
         return LoginResponse.from_JSON(login_response_json).access_token
 
-    except ConnectionError as error:
+    except ConnectionError:
         print("Looks like there's a connection error. Please try again later")
         return None
-    except HTTPError as error:
+    except HTTPError:
         if response.status_code == 401:
             print("Incorrect username or password.")
         elif response.status_code == 409:
@@ -118,9 +117,8 @@ def login_user(login_form):
         return None
 
 
-def register_system(register_system):
+def register_system(register_system: RegisterSystem) -> str | None:
     url = BH_URL + "/api/v1/system"
-    headers = {'content-type': 'application/json'}
     try:
         response = requests.post(url,
                                  data=register_system.to_JSON(),
@@ -128,9 +126,9 @@ def register_system(register_system):
         response.raise_for_status()
         return register_system.name
 
-    except ConnectionError as error:
+    except ConnectionError:
         print("Looks like there's a connection error. Please try again later")
-    except HTTPError as error:
+    except HTTPError:
         if response.status_code == 409:
             print(_extract_error_message(
                 response, "System registration failed. Please try again."))
@@ -140,7 +138,7 @@ def register_system(register_system):
     return None
 
 
-def get_system_information(mac):
+def get_system_information(mac: str) -> System | None:
     url = BH_URL + '/api/v1/system'
     payload = {'mac': mac}
     try:
@@ -150,13 +148,14 @@ def get_system_information(mac):
         response.raise_for_status()
         system_json = json.dumps(response.json())
         return System.from_JSON(system_json)
-    except ConnectionError as error:
+    except ConnectionError:
         print("Looks like there's a connection error. Please try again later")
-    except HTTPError as error:
+        return None
+    except HTTPError:
         return None
 
 
-def get_command(uuid):
+def get_command(uuid: str) -> Command | None:
     url = BH_URL + "/api/v1/command/{0}".format(uuid)
     try:
         response = requests.get(url, headers=json_auth_headers())
@@ -164,7 +163,7 @@ def get_command(uuid):
         json_command = json.dumps(response.json())
         return Command.from_JSON(json_command)
 
-    except ConnectionError as error:
+    except ConnectionError:
         print("Looks like there's a connection error. Please try again later")
     except HTTPError as error:
         print(error)
@@ -173,14 +172,14 @@ def get_command(uuid):
     return None
 
 
-def delete_command(uuid):
+def delete_command(uuid: str) -> str | None:
     url = BH_URL + "/api/v1/command/{0}".format(uuid)
     try:
         response = requests.delete(url, headers=base_auth_headers())
         response.raise_for_status()
         return uuid
 
-    except ConnectionError as error:
+    except ConnectionError:
         pass
     except HTTPError as error:
         print(error)
@@ -188,7 +187,7 @@ def delete_command(uuid):
     return None
 
 
-def patch_system(system_patch, mac):
+def patch_system(system_patch: SystemPatch, mac: str) -> int | None:
 
     url = BH_URL + "/api/v1/system/{0}".format(mac)
 
@@ -199,15 +198,22 @@ def patch_system(system_patch, mac):
                            headers=json_auth_headers())
         r.raise_for_status()
         return r.status_code
-    except Exception as error:
+    except Exception:
         if r is not None and r.status_code in (403, 401):
             print("Permissions Issue. Run bashhub setup to re-login.")
         return None
 
 
-def search(limit=None, path=None, query=None, system_name=None, unique=None, session_id=None):
+def search(
+    limit: int | None = None,
+    path: str | None = None,
+    query: str | None = None,
+    system_name: str | None = None,
+    unique: bool | None = None,
+    session_id: str | None = None,
+) -> list[MinCommand]:
 
-    payload = dict()
+    payload: dict[str, Any] = dict()
 
     if limit:
         payload["limit"] = limit
@@ -232,9 +238,9 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None, ses
         r = requests.get(url, params=payload, headers=json_auth_headers())
         return MinCommand.from_JSON_list(r.json())
 
-    except ConnectionError as error:
+    except ConnectionError:
         print("Sorry, looks like there's a connection error. Please try again later")
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001
         if r is not None:
             if r.status_code in (403, 401):
                 print("Permissions Issue. Run bashhub setup to re-login.")
@@ -251,7 +257,7 @@ def search(limit=None, path=None, query=None, system_name=None, unique=None, ses
     return []
 
 
-def save_command(command):
+def save_command(command: CommandForm) -> None:
     url = BH_URL + "/api/v1/command"
 
     r = None
@@ -259,15 +265,15 @@ def save_command(command):
         r = requests.post(url,
                           data=command.to_JSON(),
                           headers=json_auth_headers())
-    except ConnectionError as error:
+    except ConnectionError:
         print("Sorry, looks like there's a connection error")
         pass
-    except Exception as error:
+    except Exception:
         if r is not None and r.status_code in (403, 401):
             print("Permissions Issue. Run bashhub setup to re-login.")
 
 
-def get_status_view(process_id, start_time):
+def get_status_view(process_id: int, start_time: int) -> StatusView | None:
     url = BH_URL + "/api/v1/client-view/status"
 
     payload = {'processId': process_id, 'startTime': start_time}
@@ -276,10 +282,10 @@ def get_status_view(process_id, start_time):
         r = requests.get(url, params=payload, headers=json_auth_headers())
         status_view_json = json.dumps(r.json())
         return StatusView.from_JSON(status_view_json)
-    except ConnectionError as error:
+    except ConnectionError:
         print("Sorry, looks like there's a connection error")
         return None
-    except Exception as error:
+    except Exception:  # noqa: BLE001
         if r is not None:
             if r.status_code in (403, 401):
                 print("Permissions Issue. Run bashhub setup to re-login.")

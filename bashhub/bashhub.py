@@ -1,29 +1,27 @@
 #!/usr/bin/python
-from time import *
-import click
-import traceback
-import dateutil.parser
-import sys
-import os
+from __future__ import annotations
+
 import io
-
-from .model import CommandForm
-from . import rest_client
-from . import bashhub_setup
-from . import bashhub_globals
-from .bashhub_globals import BH_FILTER, BH_HOME, BH_SAVE_COMMANDS
-from .bashhub_globals import write_to_config_file
-from .version import version_str
-import shutil
-import requests
-import subprocess
-from . import shell_utils
+import os
 import re
-from .view.status import *
+import shutil
+import subprocess
+import sys
+from time import mktime
+
+import click
+import dateutil.parser
+import requests
+
+from . import bashhub_globals, bashhub_setup, rest_client, shell_utils
+from .bashhub_globals import BH_FILTER, BH_HOME, write_to_config_file
+from .model import CommandForm
+from .version import version_str
+from .view.status import build_status_view
 
 
-
-def print_version(ctx, param, value):
+def print_version(ctx: click.Context, param: click.Parameter,
+                  value: bool) -> None:
     if not value or ctx.resilient_parsing:
         return
     click.echo(version_str)
@@ -42,13 +40,13 @@ CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
               help='Display version',
               expose_value=False,
               is_eager=True)
-def bashhub():
+def bashhub() -> None:
     """Bashhub command line client"""
     pass
 
 
 @bashhub.command()
-def version():
+def version() -> None:
     """Display version"""
     click.echo(version_str)
 
@@ -60,7 +58,7 @@ def version():
               default=False,
               is_flag=True,
               help="Turn off saving commands for all sessions.")
-def off(is_global):
+def off(is_global: bool) -> None:
     """Turn off saving commands to Bashhub. Applies for this current session."""
     if is_global:
         write_to_config_file('save_commands', 'False')
@@ -74,7 +72,7 @@ def off(is_global):
               "--local",
               help="Turn on saving commands for only this session.",
               is_flag=True)
-def on(local):
+def on(local: bool) -> None:
     """Turn on saving commands to Bashhub. Applies globally."""
     f = io.open(BH_HOME + '/script.bh', 'w+', encoding='utf-8')
 
@@ -91,22 +89,23 @@ def on(local):
 @click.argument('pid', type=int)
 @click.argument('process_start_time', type=int)
 @click.argument('exit_status', type=int)
-def save(command, path, pid, process_start_time, exit_status):
+def save(command: str, path: str, pid: int, process_start_time: int,
+         exit_status: int) -> None:
     """Save a command to Bashhub"""
     pid_start_time = unix_time_to_epoc_millis(process_start_time)
-    command = command.strip()
+    command_text = command.strip()
 
     # Check if we have commands saving turned on
     if not bashhub_globals.BH_SAVE_COMMANDS:
         return
 
     # Check if we should ignore this command.
-    if "#ignore" in command:
+    if "#ignore" in command_text:
         return
 
     # Check if we should filter this command.
     bh_filter = bashhub_globals.BH_FILTER
-    if bh_filter and re.findall(bh_filter, command):
+    if bh_filter and re.findall(bh_filter, command_text):
         return
 
     # Check that we have an auth token.
@@ -114,18 +113,18 @@ def save(command, path, pid, process_start_time, exit_status):
         print("No auth token found. Run 'bashhub setup' to login.")
         return
 
-    command = CommandForm(command, path, exit_status, pid, pid_start_time)
-    rest_client.save_command(command)
+    command_form = CommandForm(command_text, path, exit_status, pid, pid_start_time)
+    rest_client.save_command(command_form)
 
 
 @bashhub.command()
-def setup():
+def setup() -> None:
     """Run Bashhub user and system setup"""
     bashhub_setup.main()
 
 
 @bashhub.command()
-def status():
+def status() -> None:
     """Stats for this session and user"""
     # Get our user and session information from our context
     (ppid, start_time) = shell_utils.get_session_information()
@@ -136,9 +135,10 @@ def status():
 
 @bashhub.command()
 @click.pass_context
-def help(ctx):
+def help(ctx: click.Context) -> None:
     """Show this message and exit"""
-    click.echo(ctx.parent.get_help())
+    if ctx.parent is not None:
+        click.echo(ctx.parent.get_help())
 
 # Dynamic help text containing the BH_FILTER variable.
 filtered_text = "BH_FILTER={0}".format(
@@ -157,7 +157,7 @@ is configured via a regex exported as BH_FILTER.
               '--regex',
               default=BH_FILTER,
               help='Regex to filter against')
-def filter(command, regex):
+def filter(command: str, regex: str) -> None:
 
     # Check if the regex we receive is valid
     if not bashhub_globals.is_valid_regex(regex):
@@ -178,7 +178,7 @@ def filter(command, regex):
 
 @bashhub.command()
 @click.argument('version', type=str, default='')
-def update(version):
+def update(version: str) -> None:
     """Update your Bashhub installation"""
 
     if version != '':
@@ -201,40 +201,39 @@ def update(version):
 
 
 @bashhub.group()
-def util():
+def util() -> None:
     """Misc utils used by Bashhub"""
     pass
 
 
 @util.command()
-def update_system_info():
+def update_system_info() -> None:
     """Updates system info for Bashhub"""
     result = bashhub_setup.update_system_info()
     # Exit code based on if our update call was successful
-    sys.exit(0) if result != None else sys.exit(1)
+    sys.exit(0) if result is not None else sys.exit(1)
 
 
 @util.command()
 @click.argument('date_string', type=str)
-def parsedate(date_string):
+def parsedate(date_string: str) -> None:
     """date string to seconds since the unix epoch"""
     try:
         date = dateutil.parser.parse(date_string)
         unix_time = int(mktime(date.timetuple()))
         click.echo(unix_time)
-    except Exception as e:
+    except Exception:
         # Should really log an error here
         click.echo(0)
 
 
-def unix_time_to_epoc_millis(unix_time):
+def unix_time_to_epoc_millis(unix_time: int) -> int:
     return int(unix_time) * 1000
 
 
-def main():
+def main() -> None:
     try:
         bashhub()
     except Exception as e:
-        formatted = traceback.format_exc(e)
         click.echo("Oops, looks like an exception occured: " + str(e))
         sys.exit(1)

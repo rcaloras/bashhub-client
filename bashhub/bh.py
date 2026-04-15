@@ -1,15 +1,20 @@
 #!/usr/bin/python
+from __future__ import annotations
 
-import click
-import sys
+import datetime
 import io
 import os
+import sys
 import traceback
-import datetime
-from .bashhub_globals import *
+
+import click
+
 from . import rest_client
+from .bashhub_globals import *
 from .i_search import InteractiveSearch
+from .model import MinCommand
 from .version import version_str
+
 
 @click.command()
 @click.argument('query', type=str, default='')
@@ -49,7 +54,9 @@ from .version import version_str
              help="Print version information",
              default=False,
              is_flag=True)
-def bh(query, number, session, directory, system, interactive, duplicates, timestamps, version):
+def bh(query: str, number: int | None, session: str | None, directory: bool,
+       system: bool, interactive: bool, duplicates: bool, timestamps: bool,
+       version: bool) -> None:
     """Bashhhub Search
 
     QUERY - Like string to search for
@@ -86,7 +93,7 @@ def bh(query, number, session, directory, system, interactive, duplicates, times
         print_commands(commands, use_timestamps)
 
 
-def print_commands(commands, use_timestamps):
+def print_commands(commands: list[MinCommand], use_timestamps: bool) -> None:
     for command in reversed(commands):
         if use_timestamps:
             timestamp = unix_milliseconds_timestamp_to_datetime(command.created)
@@ -95,7 +102,7 @@ def print_commands(commands, use_timestamps):
             print(command.command)
 
 
-def run_interactive(commands):
+def run_interactive(commands: list[MinCommand]) -> None:
     i_search = InteractiveSearch(commands, rest_client)
     i_search.run()
     # numpy bullshit since it doesn't return anything.
@@ -105,11 +112,11 @@ def run_interactive(commands):
         f = io.open(BH_HOME + '/response.bh', 'w+', encoding='utf-8')
         print(command.command, file=f)
 
-def unix_milliseconds_timestamp_to_datetime(timestamp):
+def unix_milliseconds_timestamp_to_datetime(timestamp: int) -> str:
     return datetime.datetime.fromtimestamp(int(timestamp) / 1000) \
         .strftime('%Y-%m-%d %H:%M:%S')
 
-def main():
+def main() -> None:
     try:
         bh()
     except Exception as e:
