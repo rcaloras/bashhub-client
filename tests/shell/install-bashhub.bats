@@ -2,6 +2,8 @@
 
 setup() {
   bashhub_install_test="true"
+  unset UV_TOOL_LIST_OUTPUT
+  unset bashhub_version
   source "${BATS_TEST_DIRNAME}"/../../install-bashhub.sh
 }
 
@@ -29,58 +31,50 @@ setup() {
   [[ $status == 0 ]]
 }
 
-@test "get_and_check_python_version should find python3.14 first" {
-  # Mock up some fake responses here.
-  /usr/bin/python3() { return 1; }
-  python3() { return 1; }
-  python3.14() { return 0; }
+@test "install_or_upgrade_bashhub_package should install bashhub when missing" {
+  UV_COMMAND_LOG="$BATS_TMPDIR/uv.log"
+  export UV_COMMAND_LOG
 
-  run 'get_and_check_python_version'
+  uv() {
+    echo "$*" >> "$UV_COMMAND_LOG"
+  }
+
+  run install_or_upgrade_bashhub_package uv
   [[ $status == 0 ]]
-  [[ "$output" == "python3.14" ]]
+  [[ "$(cat "$UV_COMMAND_LOG")" == *"python install 3.13 --quiet"* ]]
+  [[ "$(cat "$UV_COMMAND_LOG")" == *"tool install --python 3.13 bashhub --quiet"* ]]
 }
 
-@test "get_and_check_python_version should find different python versions" {
-  # Mock up some fake responses here.
-  /usr/bin/python3() { return 1; }
-  python3() { return 1; }
-  python3.14() { return 1; }
-  python3.13() { return 1; }
-  python3.12() { return 1; }
-  python3.11() { return 1; }
-  python3.10() { return 1; }
-  python3.9() { return 0; }
-  python() { return 1;}
+@test "install_or_upgrade_bashhub_package should upgrade bashhub when installed" {
+  UV_COMMAND_LOG="$BATS_TMPDIR/uv.log"
+  UV_TOOL_LIST_OUTPUT="bashhub v3.0.3"
+  export UV_COMMAND_LOG
+  export UV_TOOL_LIST_OUTPUT
 
-  run 'get_and_check_python_version'
+  uv() {
+    echo "$*" >> "$UV_COMMAND_LOG"
+    if [[ "$1 $2" == "tool list" ]]; then
+      echo "$UV_TOOL_LIST_OUTPUT"
+    fi
+  }
+
+  run install_or_upgrade_bashhub_package uv
   [[ $status == 0 ]]
-  [[ "$output" == "python3.9" ]]
-
-  # Should find the default installation if no others.
-  python() { return 0; }
-  python3.9() { return 1;}
-
-  run 'get_and_check_python_version'
-  [[ $status == 0 ]]
-  [[ "$output" == "python" ]]
-
+  [[ "$(cat "$UV_COMMAND_LOG")" == *"python install 3.13 --quiet"* ]]
+  [[ "$(cat "$UV_COMMAND_LOG")" == *"tool upgrade bashhub --quiet"* ]]
 }
 
-@test "get_and_check_python_version should fail if there's no valid python versions" {
-  # Mock up which to not work for anything.
-  type() { return 1; }
+@test "install_or_upgrade_bashhub_package should reinstall requested version" {
+  UV_COMMAND_LOG="$BATS_TMPDIR/uv.log"
+  bashhub_version="3.0.4"
+  export UV_COMMAND_LOG
 
-  run 'get_and_check_python_version'
-  [[ $status == 1 ]]
-}
+  uv() {
+    echo "$*" >> "$UV_COMMAND_LOG"
+  }
 
-@test "download_and_install_env should succeed" {
-  if [[ -z $functional_test ]]; then
-    skip "skipping functional test"
-  fi
-
-  cd "$BATS_TMPDIR"
-  run 'download_and_install_env'
+  run install_or_upgrade_bashhub_package uv
   [[ $status == 0 ]]
-  [[ -e env ]]
+  [[ "$(cat "$UV_COMMAND_LOG")" == *"python install 3.13 --quiet"* ]]
+  [[ "$(cat "$UV_COMMAND_LOG")" == *"tool install --python 3.13 --reinstall bashhub==3.0.4 --quiet"* ]]
 }

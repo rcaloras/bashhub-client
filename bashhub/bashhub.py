@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 import os
+from importlib import resources
 import re
 import shutil
 import subprocess
@@ -212,6 +213,12 @@ def update_system_info() -> None:
     result = bashhub_setup.update_system_info()
     # Exit code based on if our update call was successful
     sys.exit(0) if result is not None else sys.exit(1)
+
+
+@util.command()
+def shell_dir() -> None:
+    """Print the installed Bashhub shell assets directory"""
+    click.echo(resources.files("bashhub").joinpath("shell"))
 
 
 @util.command()

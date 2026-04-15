@@ -36,34 +36,18 @@ if [ -f ~/.bashrc ]; then
 fi
 '
 
-PYTHON_VERSION_COMMAND='
-import sys
-if (3, 9, 0) < sys.version_info < (3, 15, 0):
-  sys.exit(0)
-else:
-  sys.exit(-1)'
+bashhub_config="$HOME/.bashhub/config"
+backup_config="$HOME/.bashhub.config.backup"
+zshprofile="$HOME/.zshrc"
+fish_config="${XDG_CONFIG_HOME:-$HOME/.config}/fish/config.fish"
+uv_python_version=${UV_PYTHON_VERSION:-'3.13'}
 
-# Prefer Python 3 versions over Python 2
-PYTHON_VERSION_ARRAY=(
-    "python3.14"
-    "python3.13"
-    "python3.12"
-    "python3.11"
-    "python3.10"
-    "python3.9"
-    "/usr/bin/python3"
-    "python3"
-    "python"
-)
-
-bashhub_config=~/.bashhub/config
-backup_config=~/.bashhub.config.backup
-zshprofile=~/.zshrc
-fish_config="${XDG_CONFIG_HOME:-~/.config}/fish/config.fish"
-
-# Optional parameter to specify a github branch
-# to pull from.
-github_branch=${1:-'3.0.3'}
+# Optional parameter to specify a Bashhub version from PyPI.
+if [[ -z "$bashhub_install_test" ]]; then
+    bashhub_version=${1:-''}
+else
+    bashhub_version=${bashhub_version:-''}
+fi
 
 install_bashhub() {
     check_dependencies
@@ -71,54 +55,18 @@ install_bashhub() {
     setup_bashhub_files
 }
 
-get_and_check_python_version() {
-
-    for python_version in "${PYTHON_VERSION_ARRAY[@]}"; do
-        if type "$python_version" &> /dev/null; then
-            if "$python_version" -c "$PYTHON_VERSION_COMMAND"; then
-                echo "$python_version"
-                return 0
-            fi
-        fi
-
-     done
-     return 1
-}
-
-# Boostrap virtualenv via zipapp
-# Details https://virtualenv.pypa.io/en/latest/installation.html#via-zipapp
-download_and_install_env() {
-    local python_command=$(get_and_check_python_version)
-    if [[ -z "$python_command" ]]; then
-        die "\nSorry you need to have python 3.9-3.14 installed. Please install it and rerun this script." 1
-    fi
-
-    # Set to whatever python interpreter you want for your first environment
-    PYTHON=$(which $python_command)
-    echo "Using Python path $PYTHON"
-
-    VERSION=20.32.0
-    VERSION_URL="https://github.com/pypa/get-virtualenv/raw/$VERSION/public/virtualenv.pyz"
-    # Alternatively use latest url for most recent that should be 2.7-3.9+
-    LATEST_URL="https://bootstrap.pypa.io/virtualenv/2.7/virtualenv.pyz"
-    curl -OL  $VERSION_URL
-    # Create the first "bootstrap" environment.
-    $PYTHON virtualenv.pyz -q env
-    rm virtualenv.pyz
-}
-
 check_dependencies() {
-    if [ -z "$(get_and_check_python_version)" ]; then
-        die "\nSorry can't seem to find a version of python 3.9-3.14 installed" 1
-    fi
-
     if [ -z "$(detect_shell_type)" ]; then
-        die "\nSorry, couldn't detect your shell type. Bashhub only supports bash or zsh. Your defualt shell is $SHELL." 1
+        die "\nSorry, couldn't detect your shell type. Bashhub only supports bash, fish, or zsh. Your defualt shell is $SHELL." 1
     fi;
+
+    if ! find_uv_command &> /dev/null && ! command -v curl &> /dev/null; then
+        die "\nSorry, Bashhub needs curl to install uv." 1
+    fi
 }
 
 check_already_installed() {
-    if [ -e ~/.bashhub ]; then
+    if [ -e "$HOME/.bashhub" ]; then
         echo -e "\nLooks like Bashhub is already installed.
         \nLets go ahead and update it.\n"
 
@@ -127,13 +75,94 @@ check_already_installed() {
             cp "$bashhub_config" "$backup_config"
         fi
 
-        rm -r ~/.bashhub
+        rm -r "$HOME/.bashhub"
+    fi
+}
+
+find_uv_command() {
+    if command -v uv &> /dev/null; then
+        command -v uv
+        return 0
+    elif [ -x "$HOME/.local/bin/uv" ]; then
+        echo "$HOME/.local/bin/uv"
+        return 0
+    fi
+
+    return 1
+}
+
+install_uv() {
+    echo "Installing uv..." >&2
+
+    if ! curl -LsSf https://astral.sh/uv/install.sh | env UV_NO_MODIFY_PATH=1 sh -s -- --quiet; then
+        die "\nSorry, Bashhub couldn't install uv. Please check your network connection and rerun this script." 1
+    fi
+}
+
+ensure_uv() {
+    local uv_command
+    uv_command=$(find_uv_command || true)
+
+    if [ -z "$uv_command" ]; then
+        install_uv
+        uv_command=$(find_uv_command || true)
+    fi
+
+    if [ -z "$uv_command" ]; then
+        die "\nSorry, Bashhub couldn't install or find uv." 1
+    fi
+
+    echo "$uv_command"
+}
+
+install_or_upgrade_bashhub_package() {
+    local uv_command=$1
+
+    "$uv_command" python install "$uv_python_version" --quiet
+
+    if [ -n "$bashhub_version" ]; then
+        echo "Installing bashhub $bashhub_version..."
+        "$uv_command" tool install --python "$uv_python_version" --reinstall "bashhub==$bashhub_version" --quiet
+    elif "$uv_command" tool list | grep -q "^bashhub "; then
+        echo "Updating bashhub..."
+        "$uv_command" tool upgrade bashhub --quiet
+    else
+        echo "Installing bashhub..."
+        "$uv_command" tool install --python "$uv_python_version" bashhub --quiet
+    fi
+}
+
+copy_shell_files() {
+    local shell_dir
+    shell_dir=$(bashhub util shell-dir)
+
+    if [ -z "$shell_dir" ] || [ ! -d "$shell_dir" ]; then
+        die "\nSorry, Bashhub couldn't find its installed shell files." 1
+    fi
+
+    cp -r "$shell_dir/deps" "$HOME/.bashhub/"
+    cp "$shell_dir"/bashhub.* "$HOME/.bashhub/"
+}
+
+run_bashhub_setup() {
+    # Check if we already have a config. If not run setup.
+    if [ -e "$backup_config" ]; then
+        cp "$backup_config" "$bashhub_config"
+        rm "$backup_config"
+
+        if ! bashhub util update-system-info; then
+            # Run setup if we run into any issues updating our system info
+            bashhub setup
+        fi
+    else
+        # Setup our config file
+        bashhub setup
     fi
 }
 
 install_hooks_for_zsh() {
     # If we're using zsh, install our zsh hooks
-    if [ ! -e ~/.zshrc ]; then
+    if [ ! -e "$HOME/.zshrc" ]; then
         die "No zshfile (.zshrc could be found)" 1
     fi
 
@@ -148,11 +177,11 @@ install_hooks_for_zsh() {
 }
 
 install_hooks_for_fish() {
-    if [ ! -e $fish_config ]; then
+    if [ ! -e "$fish_config" ]; then
         die "No fish config cound be found" 1
     fi
 
-    if grep -q "source ~/.bashhub/bashhub.fish" "$fish_config"
+    if grep -q "bashhub.fish" "$fish_config"
     then
         :
     else
@@ -165,9 +194,9 @@ install_hooks_for_fish() {
 # OS X and Linux shells use them diffferently. Source .bashrc
 # from .bash_profile and everything should work the same now.
 generate_bash_config_file() {
-    touch ~/.bashrc
-    touch ~/.bash_profile
-    echo "$bash_config_source" >> ~/.bash_profile
+    touch "$HOME/.bashrc"
+    touch "$HOME/.bash_profile"
+    echo "$bash_config_source" >> "$HOME/.bash_profile"
     echo "Created ~/.bash_profile and ~/.bashrc"
 }
 
@@ -196,11 +225,11 @@ install_hooks_for_bash() {
     fi
 
     # Add our file to our bashprofile if it doesn't exist yet
-    if grep -q "source ~/.bashhub/bashhub.sh" $bashprofile
+    if grep -q "source ~/.bashhub/bashhub.sh" "$bashprofile"
     then
         :
     else
-        echo "$bash_profile_hook" >> $bashprofile
+        echo "$bash_profile_hook" >> "$bashprofile"
     fi
 
 }
@@ -238,56 +267,20 @@ install_hooks_for_shell() {
 
 
 setup_bashhub_files() {
+    local uv_command
 
-    mkdir -p ~/.bashhub
-    cd ~/.bashhub
-    download_and_install_env
+    mkdir -p "$HOME/.bashhub"
+    uv_command=$(ensure_uv)
+    export PATH="$HOME/.local/bin:$PATH"
 
-    # Grab the code from master off github.
-    echo "Pulling down bashhub-client from ${github_branch} branch"
-    curl -sL https://github.com/rcaloras/bashhub-client/archive/${github_branch}.tar.gz -o client.tar.gz
-    tar -xf client.tar.gz
-    cd bashhub-client*
-
-    # Copy over our dependencies.
-    cp -r bashhub/shell/deps ~/.bashhub/
-
-    # Copy over our bashhub sh and zsh files.
-    cp bashhub/shell/bashhub.* ~/.bashhub/
-
+    install_or_upgrade_bashhub_package "$uv_command"
+    copy_shell_files
     install_hooks_for_shell
-
-    # install our packages. bashhub and dependencies.
-    echo "Pulling down a few dependencies...(this may take a moment)"
-    ../env/bin/pip -qq install .
-
-    # Check if we already have a config. If not run setup.
-    if [ -e $backup_config ]; then
-        cp "$backup_config" "$bashhub_config"
-        rm "$backup_config"
-
-        if ! ../env/bin/bashhub util update-system-info; then
-            # Run setup if we run into any issues updating our system info
-            ../env/bin/bashhub setup
-        fi
-    else
-        # Setup our config file
-        ../env/bin/bashhub setup
-    fi
-
-    # Wire up our bin directory
-    mkdir -p ~/.bashhub/bin
-    ln -sf ../env/bin/bashhub ~/.bashhub/bin/bashhub
-    ln -sf ../env/bin/bh ~/.bashhub/bin/bh
-
-    # Clean up what we downloaded
-    cd ~/.bashhub
-    rm client.tar.gz
-    rm -r bashhub-client*
+    run_bashhub_setup
 
     # Make sure our config is only readable to us.
     chmod 600 "$bashhub_config"
-    chmod 700 ~/.bashhub
+    chmod 700 "$HOME/.bashhub"
 
     if [ -e "$bashhub_config" ]; then
         echo "Should be good to go! Please close and restart your terminal session."
@@ -303,16 +296,16 @@ setup_bashhub_files() {
 #
 find_users_bash_file() {
 
-    bash_file_array=( ~/.bash_profile ~/.bashrc ~/.profile)
+    bash_file_array=( "$HOME/.bash_profile" "$HOME/.bashrc" "$HOME/.profile")
 
     local largest_file_size=0
     for file in "${bash_file_array[@]}"
     do
-        if [ -e $file ]; then
+        if [ -e "$file" ]; then
             # Get our file size.
             local file_size=$(wc -c "$file" | awk '{print $1}')
 
-            if [ $file_size -gt $largest_file_size ]; then
+            if [ "$file_size" -gt "$largest_file_size" ]; then
                 local largest_file_size=$file_size
                 local largest_file=$file
             fi
@@ -321,7 +314,7 @@ find_users_bash_file() {
 
     # If we found the largest file, return it
     if [ -n "$largest_file" ]; then
-        echo $largest_file
+        echo "$largest_file"
         return 0
     fi
 }

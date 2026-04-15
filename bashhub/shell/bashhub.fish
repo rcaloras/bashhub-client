@@ -30,7 +30,7 @@ end
 
 # Avoid duplicate inclusion
 if [ "$__bh_imported" = "defined" ]
-    __bh_path_add "$HOME/.bashhub/bin"
+    __bh_path_add "$HOME/.local/bin"
 else
     set -Ux __bh_imported "defined"
     set -Ux BH_HOME_DIRECTORY "$HOME/.bashhub/"
