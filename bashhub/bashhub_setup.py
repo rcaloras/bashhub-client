@@ -106,7 +106,8 @@ def get_user_information_and_login(
         password = getpass.getpass("Password: ")
 
     # login once we have all of our information
-    assert username is not None and password is not None
+    if username is None or password is None:
+        return (None, None, None)
     access_token = rest_client.login_user(LoginForm(username, password))
 
     # Package our result to include our credentials to later login our system.
@@ -236,17 +237,18 @@ def main() -> None:
             print("Writing your config file failed.")
             sys.exit(1)
 
-        assert username is not None and password is not None
+        if username is None or password is None:
+            print("Sorry looks like getting your credentials failed. Exiting...")
+            sys.exit(1)
         (access_token, system_name) = handle_system_information(username,
                                                                 password)
 
-        if access_token is None:
-            print("Sorry looks like getting your info failed.\
+        if access_token is None or system_name is None:
+            print("Sorry looks like getting your access_token or system_name failed.\
                     Exiting...")
             sys.exit(0)
 
         # write out our system scoped token and the system name
-        assert access_token is not None and system_name is not None
         write_to_config_file("access_token", access_token)
         write_to_config_file("system_name", system_name)
         update_system_info()
