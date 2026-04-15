@@ -118,8 +118,32 @@ def get_user_information_and_login(
 
 
 def get_mac_address() -> str:
-    """Get the mac address for our system as a fingerprint. If we can't
-    get the mac, use the hash of our hostname as a subtitute"""
+    """Get the mac address for our system as a fingerprint.
+
+    The mac is our stable, opaque identifier for a machine — the
+    server keys systems on ``(user, mac)``. To avoid drift between
+    runs (multi-interface boxes, VPN/Docker churn, random-mac
+    fallbacks), we prefer a value that we've previously agreed on
+    with the server and persisted in ``~/.bashhub/config``.
+
+    Resolution order:
+      1. ``mac`` from the config file, if present. This is the
+         source of truth once we've successfully registered or
+         reconciled with the server.
+      2. ``uuid.getnode()`` — today's behavior, used only on the
+         very first run before anything has been written to config.
+      3. Hostname, if ``getnode()`` synthesized a random multicast
+         value (indicating it couldn't find any hardware MAC).
+
+    Note: we do *not* persist the computed value here. Persisting
+    happens only after the server confirms the value (on successful
+    register / PATCH / name-fallback resolve), so a transient bad
+    value never gets pinned into config.
+    """
+
+    cached = get_from_config("mac")
+    if cached:
+        return cached
 
     mac_int = uuid.getnode()
     # check if getnode fails
@@ -130,12 +154,40 @@ def get_mac_address() -> str:
     return str(mac_int)
 
 
-# Update our hostname incase it changed.
+# Update our hostname in case it changed, and opportunistically pin
+# the mac into local config / reconcile server-side if it drifted.
 def update_system_info() -> int | None:
     mac = get_mac_address()
     hostname = socket.gethostname()
     patch = SystemPatch(hostname=hostname, client_version=__version__)
-    return rest_client.patch_system(patch, mac)
+    result = rest_client.patch_system(patch, mac)
+
+    if result is not None:
+        # Happy path. Pin mac into config if it wasn't already there
+        # so future runs are immune to uuid.getnode() drift.
+        if not get_from_config("mac"):
+            write_to_config_file("mac", mac)
+        return result
+
+    # PATCH failed. If we have a stored system_name, try to self-heal
+    # by looking the system up by name and rewriting its mac on the
+    # server to match the one we just computed. This covers the
+    # common `bashhub update` scenario where uuid.getnode() returned
+    # a different value than what was originally registered.
+    system_name = get_from_config("system_name")
+    if not system_name:
+        return None
+
+    system = rest_client.get_system_information(name=system_name)
+    if system is None:
+        return None
+
+    reconcile = SystemPatch(
+        mac=mac, hostname=hostname, client_version=__version__)
+    reconciled = rest_client.patch_system(reconcile, system.mac)
+    if reconciled is not None:
+        write_to_config_file("mac", mac)
+    return reconciled
 
 
 def handle_system_information(
@@ -145,7 +197,12 @@ def handle_system_information(
 ) -> tuple[str | None, str | None]:
 
     mac = get_mac_address()
-    system = rest_client.get_system_information(mac)
+    # Pass both mac and the previously-stored system_name (if any) so
+    # the server's mac->name fallback can recognize this box in one
+    # round-trip when the mac has drifted since last registration.
+    stored_system_name = get_from_config("system_name") or None
+    system = rest_client.get_system_information(
+        mac=mac, name=stored_system_name)
     system_name: str | None = None
     # Register a new System if this one isn't recognized
     if system is None:
@@ -159,6 +216,9 @@ def handle_system_information(
             name, mac, hostname, __version__))
         if system_name:
             print("Registered a new system " + name)
+            # Pin the mac we just registered into local config so
+            # future runs read it back instead of recomputing.
+            write_to_config_file("mac", mac)
         else:
             if attempts < 3:
                 print("Looks like registering your system failed. Let's retry.")
@@ -178,6 +238,16 @@ def handle_system_information(
         system_name = system.name
         print("Welcome back! Looks like this box is already registered as " +
               system.name + ".")
+        # The server may have matched by name rather than mac (the
+        # "drifted" case). If so, PATCH the server's mac to the
+        # current client value so both sides converge. Either way,
+        # pin the mac we agreed on into config.
+        if system.mac != mac:
+            hostname = socket.gethostname()
+            reconcile = SystemPatch(
+                mac=mac, hostname=hostname, client_version=__version__)
+            rest_client.patch_system(reconcile, system.mac)
+        write_to_config_file("mac", mac)
 
     return (access_token, system_name)
 
