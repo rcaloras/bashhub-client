@@ -7,15 +7,16 @@ setup() {
 }
 
 setup_fake_home_dir() {
-  mkdir "${BATS_TEST_DIRNAME}/test_home"
-  HOME="${BATS_TEST_DIRNAME}/test_home"
+  rm -rf "${BATS_TEST_DIRNAME}/test_home"
+  mkdir -p "${BATS_TEST_DIRNAME}/test_home"
+  export HOME="${BATS_TEST_DIRNAME}/test_home"
   cd "$HOME"
   echo "# This is a test bashrc" >> .bashrc
   echo "# This is a test zshrc" >> .zshrc
 }
 
 teardown() {
-  rm -r "${BATS_TEST_DIRNAME}/test_home"
+  rm -rf "${BATS_TEST_DIRNAME}/test_home"
 }
 
 install_bashhub() {
@@ -23,36 +24,63 @@ install_bashhub() {
 }
 
 @test "install_hooks_for_shell should install for bash" {
-  BASH_VERSION=1
-  run 'install_hooks_for_shell'
+  run install_hooks_for_shell
   [[ $status == 0 ]]
-  in_profile=$(grep -q 'bashhub.sh' ~/.bashrc; echo $?;)
+  in_profile=$(grep -q 'bashhub.sh' "$HOME/.bashrc"; echo $?;)
   [[ "$in_profile" == 0 ]]
+
+  run install_hooks_for_shell
+  [[ $status == 0 ]]
+  hook_count=$(grep -c 'source ~/.bashhub/bashhub.sh' "$HOME/.bashrc")
+  [[ "$hook_count" == 1 ]]
 }
 
 @test "install_hooks_for_shell should install for zsh" {
-  ZSH_VERSION=1
-  run 'install_hooks_for_shell'
+  export ZSH_VERSION=1
+  run install_hooks_for_shell
   [[ $status == 0 ]]
-  in_profile=$(grep -q 'bashhub.zsh' ~/.zshrc; echo $?;)
+  in_profile=$(grep -q 'bashhub.zsh' "$HOME/.zshrc"; echo $?;)
   [[ "$in_profile" == 0 ]]
+
+  run install_hooks_for_shell
+  [[ $status == 0 ]]
+  hook_count=$(grep -c 'source ~/.bashhub/bashhub.zsh' "$HOME/.zshrc")
+  [[ "$hook_count" == 1 ]]
 }
 
 @test "install_hooks_for_shell should fail for unsupported" {
   unset BASH_VERSION
-  run 'install_hooks_for_shell'
+  run install_hooks_for_shell
   [[ $status == 1 ]]
 }
 
 @test "generate .bash_profile and .bashrc and link them" {
-  rm ~/.bashrc
-  rm ~/.zshrc
-  run 'generate_bash_config_file'
+  rm "$HOME/.bashrc"
+  rm "$HOME/.zshrc"
+  run generate_bash_config_file
   [[ $status == 0 ]]
-  [[ -f ~/.bashrc  ]]
-  [[ -f ~/.bash_profile ]]
+  [[ -f "$HOME/.bashrc"  ]]
+  [[ -f "$HOME/.bash_profile" ]]
   # Should source .bashrc in .bash_profile
-  in_profile=$(grep -q 'source ~/.bashrc' ~/.bash_profile; echo $?;)
+  in_profile=$(grep -q 'source ~/.bashrc' "$HOME/.bash_profile"; echo $?;)
   [[ "$in_profile" == 0 ]]
 }
 
+@test "check_already_installed should preserve existing config" {
+  mkdir -p "$HOME/.bashhub"
+  echo "access_token = test" > "$HOME/.bashhub/config"
+
+  run check_already_installed
+  [[ $status == 0 ]]
+  [[ -f "$backup_config" ]]
+  grep -q "access_token = test" "$backup_config"
+  [[ ! -d "$HOME/.bashhub" ]]
+}
+
+@test "check_already_installed should not create bashhub directory" {
+  rm -rf "$HOME/.bashhub"
+
+  run check_already_installed
+  [[ $status == 0 ]]
+  [[ ! -d "$HOME/.bashhub" ]]
+}

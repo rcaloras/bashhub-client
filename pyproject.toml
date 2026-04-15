@@ -77,4 +77,10 @@ include-package-data = true
 include = ["bashhub*"]
 
 [tool.setuptools.package-data]
-bashhub = ["shell/*.fish", "shell/*.sh", "shell/*.zsh", "shell/deps/*.sh"]
+bashhub = [
+    "shell/*.fish",
+    "shell/*.sh",
+    "shell/*.zsh",
+    "shell/deps/*.sh",
+    "shell/deps/fish/functions/*.fish",
+]

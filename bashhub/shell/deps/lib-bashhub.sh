@@ -23,8 +23,8 @@ contains_element() {
   return 1
 }
 
-# Make sure our bin directory is on our path
-__bh_path_add "$HOME/.bashhub/bin"
+# Make sure uv's tool bin directory is on our path
+__bh_path_add "$HOME/.local/bin"
 
 #
 # Function to be run by our preexec hook.
