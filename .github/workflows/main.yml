@@ -23,13 +23,21 @@ jobs:
     - name: Install python dependencies and bats
       run: |
         python -m pip install --upgrade pip setuptools build
-        pip install ".[test]"
+        pip install ".[dev]"
         sudo apt-get update
         sudo apt-get install -y bats
 
     - name: Build package
       run: |
         python -m build
+
+    - name: Lint with ruff
+      run: |
+        ruff check bashhub/
+
+    - name: Type check with mypy
+      run: |
+        mypy bashhub/
 
     - name: Test with pytest
       run: |
