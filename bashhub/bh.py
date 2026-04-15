@@ -18,7 +18,11 @@ from .version import version_str
 
 @click.command()
 @click.argument('query', type=str, default='')
-@click.option('-n', '--number', default=None, help='Limit the number of previous commands. Default is 100.', type=int)
+@click.option('-n',
+              '--number',
+              default=None,
+              help='Limit the number of previous commands. Default is 100.',
+              type=click.IntRange(1, 10000))
 @click.option("-ses",
              "--session",
              help="Filter by specific session id. Default is None.",
@@ -129,4 +133,5 @@ def main() -> None:
         click.echo()
         sys.exit()
 
-main()
+if __name__ == "__main__":
+    main()
