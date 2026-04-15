@@ -2,11 +2,14 @@
 """
 Sampled from Lyle Scott scrolling curses
 """
+from __future__ import annotations
+
 import curses
-import sys
-import random
-import time
 import locale
+import sys
+from typing import Any
+
+from .model import MinCommand
 
 
 class InteractiveSearch:
@@ -19,27 +22,27 @@ class InteractiveSearch:
     PREFIX_SELECTED = '_X_'
     PREFIX_DESELECTED = '___'
 
-    outputLines = []
-    commands = []
-    screen = None
+    outputLines: list[str] = []
+    commands: list[MinCommand] = []
+    screen: Any = None  # curses.window, untyped to avoid runtime import issues
 
-    def __init__(self, commands):
+    def __init__(self, commands: list[MinCommand]) -> None:
 
         self.commands = commands
         # Parse out our input
         self.outputLines = [x.__str__() for x in commands]
-        self.nOutputLines = len(self.outputLines)
+        self.nOutputLines: int = len(self.outputLines)
 
-        self.topLineNum = 0
-        self.highlightLineNum = 0
-        self.markedLineNums = []
+        self.topLineNum: int = 0
+        self.highlightLineNum: int = 0
+        self.markedLineNums: list[int] = []
 
-    def run(self):
+    def run(self) -> MinCommand | None:
         # Locale set to support utf-8 characters.
         locale.setlocale(locale.LC_ALL, "")
         return curses.wrapper(self._run)
 
-    def _run(self, screen):
+    def _run(self, screen: Any) -> MinCommand:
         self.screen = screen
         curses.cbreak()
         curses.start_color()
@@ -58,20 +61,20 @@ class InteractiveSearch:
             elif c == self.ESC_KEY or c == ord('q'):
                 sys.exit()
 
-    def markLine(self):
+    def markLine(self) -> None:
         linenum = self.topLineNum + self.highlightLineNum
         if linenum in self.markedLineNums:
             self.markedLineNums.remove(linenum)
         else:
             self.markedLineNums.append(linenum)
 
-    def selectLine(self):
+    def selectLine(self) -> MinCommand:
         linenum = self.topLineNum + self.highlightLineNum
         self.screen.erase()
         self.restoreScreen()
         return self.commands[linenum]
 
-    def displayScreen(self):
+    def displayScreen(self) -> None:
         # clear screen
         self.screen.erase()
 
@@ -89,7 +92,7 @@ class InteractiveSearch:
         self.screen.refresh()
 
     # move highlight up/down one line
-    def updown(self, increment):
+    def updown(self, increment: int) -> None:
         nextLineNum = self.highlightLineNum + increment
 
         # paging
@@ -110,11 +113,11 @@ class InteractiveSearch:
         ) != self.nOutputLines and self.highlightLineNum != curses.LINES:
             self.highlightLineNum = nextLineNum
 
-    def restoreScreen(self):
+    def restoreScreen(self) -> None:
         curses.nocbreak()
         curses.echo()
         curses.endwin()
 
     # catch any weird termination situations
-    def __del__(self):
+    def __del__(self) -> None:
         self.restoreScreen()

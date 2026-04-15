@@ -1,7 +1,11 @@
-import dateutil.parser
+from __future__ import annotations
+
 import datetime
+
 import humanize
+
 from bashhub.bashhub_globals import BH_URL
+from bashhub.model.status_view import StatusView
 
 status_view = """\
 === Bashhub Status
@@ -15,7 +19,7 @@ Commands In Session: {7}
 Commands Today: {8}
 """
 
-def build_status_view(model):
+def build_status_view(model: StatusView) -> str:
     date = datetime.datetime.fromtimestamp(model.session_start_time / 1000.0)
     date_str = humanize.naturaltime(date)
     return status_view.format(

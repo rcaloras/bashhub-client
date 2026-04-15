@@ -1,6 +1,11 @@
-from .command import *
-from .command_form import *
-from .system import *
-from .min_command import MinCommand
-from .status_view import StatusView
-from .serializable import Serializable
+from .command import Command as Command
+from .command import LoginForm as LoginForm
+from .command import LoginResponse as LoginResponse
+from .command import RegisterUser as RegisterUser
+from .command_form import CommandForm as CommandForm
+from .min_command import MinCommand as MinCommand
+from .serializable import Serializable as Serializable
+from .status_view import StatusView as StatusView
+from .system import RegisterSystem as RegisterSystem
+from .system import System as System
+from .system import SystemPatch as SystemPatch

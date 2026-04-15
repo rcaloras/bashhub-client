@@ -27,7 +27,18 @@ pytest tests/test_command.py
 pytest tests/test_command.py::TestCommand::test_json_serialize
 ```
 
-There is no separate lint or build step. The package is installed via `pip install -e .` for development.
+```bash
+# Type check
+mypy bashhub/
+
+# Lint
+ruff check bashhub/
+
+# Lint and auto-fix
+ruff check bashhub/ --fix
+```
+
+Install dev dependencies (includes mypy, ruff, type stubs): `pip install -e ".[dev]"`
 
 ## Entry Points
 
