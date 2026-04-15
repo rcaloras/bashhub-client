@@ -138,9 +138,21 @@ def register_system(register_system: RegisterSystem) -> str | None:
     return None
 
 
-def get_system_information(mac: str) -> System | None:
+def get_system_information(
+    mac: str | None = None,
+    name: str | None = None,
+) -> System | None:
+    """Look up a system by mac and/or name.
+
+    The server tries mac first and falls back to name if mac misses,
+    so passing both lets the client self-heal from a drifted mac in a
+    single round-trip."""
     url = BH_URL + '/api/v1/system'
-    payload = {'mac': mac}
+    payload: dict[str, str] = {}
+    if mac:
+        payload['mac'] = mac
+    if name:
+        payload['name'] = name
     try:
         response = requests.get(url,
                                 params=payload,

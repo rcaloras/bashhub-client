@@ -60,6 +60,8 @@ BH_SAVE_COMMANDS = os.getenv('BH_SAVE_COMMANDS', \
 
 BH_SYSTEM_NAME = get_from_config("system_name")
 
+BH_MAC = get_from_config("mac")
+
 # Check if debug mode is enabled
 BH_DEBUG = os.getenv('BH_DEBUG', get_from_config("debug"))
 
