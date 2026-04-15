@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import io
 import os
-from importlib import resources
 import re
 import shutil
 import subprocess
 import sys
+from importlib import resources
 from time import mktime
 
 import click
