@@ -112,6 +112,7 @@ ensure_uv() {
         die "\nSorry, Bashhub couldn't install or find uv." 1
     fi
 
+
     echo "$uv_command"
 }
 
@@ -119,6 +120,8 @@ install_or_upgrade_bashhub_package() {
     local uv_command=$1
 
     "$uv_command" python install "$uv_python_version" --quiet
+
+    echo "Using UV: $uv_command"
 
     if [ -n "$bashhub_version" ]; then
         echo "Installing bashhub $bashhub_version..."
