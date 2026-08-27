@@ -2,7 +2,7 @@
 
 ## Summary
 
-Bashhub updates should use UV for the Python runtime, package environment, and executable shims. The Bashhub installer remains responsible for Bashhub-specific setup: shell integration, config preservation, setup repair, and local file permissions.
+Bashhub updates should use UV for the Python runtime and package environment. The Bashhub installer exposes the resulting executables through stable `~/.bashhub/bin` shims and remains responsible for shell integration, config preservation, setup repair, and local file permissions.
 
 ## Update Model
 

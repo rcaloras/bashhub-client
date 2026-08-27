@@ -84,3 +84,18 @@ install_bashhub() {
   [[ $status == 0 ]]
   [[ ! -d "$HOME/.bashhub" ]]
 }
+
+@test "link_bashhub_commands should create stable command shims" {
+  fake_uv_tool_bin="$BATS_TMPDIR/uv-tool-bin"
+  mkdir -p "$fake_uv_tool_bin"
+  touch "$fake_uv_tool_bin/bashhub" "$fake_uv_tool_bin/bh"
+  chmod +x "$fake_uv_tool_bin/bashhub" "$fake_uv_tool_bin/bh"
+
+  uv() {
+    echo "$fake_uv_tool_bin"
+  }
+
+  link_bashhub_commands uv
+  [[ "$(readlink "$HOME/.bashhub/bin/bashhub")" == "$fake_uv_tool_bin/bashhub" ]]
+  [[ "$(readlink "$HOME/.bashhub/bin/bh")" == "$fake_uv_tool_bin/bh" ]]
+}
