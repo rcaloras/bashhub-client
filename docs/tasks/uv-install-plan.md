@@ -12,7 +12,7 @@ The question is: what would replacing this with `uv tool install` look like, and
 
 ### install-bashhub.sh — Dramatically simplified
 
-The bulk of the script (virtualenv bootstrap, tarball download, pip install, symlinking) collapses into roughly:
+The bulk of the script (virtualenv bootstrap, tarball download, and pip install) collapses into roughly:
 
 ```bash
 # 1. Install uv (single binary, no Python required)
@@ -25,20 +25,20 @@ uv tool install git+https://github.com/rcaloras/bashhub-client@3.0.2
 bashhub setup
 ```
 
-That's it. `check_dependencies`, `download_and_install_env`, the entire virtualenv section, and the symlink wiring all go away.
+The installer still copies Bashhub's shell assets and creates stable `bh` and `bashhub` shims in `~/.bashhub/bin` that point to UV's managed tool executables.
 
-### Shell hooks — Minor PATH change
+### Shell hooks — Stable Bashhub PATH
 
 The hooks currently do:
 ```bash
 __bh_path_add "$HOME/.bashhub/bin"   # current
 ```
 
-With uv, binaries land at `~/.local/bin` (on Linux/macOS). This is typically already on PATH, so this line may not even be needed. But to be safe, it becomes:
+UV's tool executable directory may vary with XDG configuration. The installer discovers it with `uv tool dir --bin`, then points Bashhub's stable command paths at the installed executables. The hooks remain unchanged:
 ```bash
-__bh_path_add "$HOME/.local/bin"     # uv tool default
+__bh_path_add "$HOME/.bashhub/bin"
 ```
-The hooks already call `bashhub` by name (not hardcoded paths), so nothing else changes there.
+This keeps UV's storage details private and allows open shells that already include `~/.bashhub/bin` to use the refreshed command shims after an update.
 
 ### Config/data directory — Unchanged
 `~/.bashhub/config`, shell deps, and all user data stay at `~/.bashhub/`. Only the binary location moves.
@@ -95,9 +95,7 @@ PyInstaller is a longer-term option worth revisiting after PyPI publishing is in
 ## Files to Change
 
 - `install-bashhub.sh` — replace virtualenv bootstrap + pip install with uv install
-- `bashhub/shell/bashhub.sh` — update `__bh_path_add` target (line ~27 in lib-bashhub.sh)
-- `bashhub/shell/bashhub.zsh` — same
-- `bashhub/shell/bashhub.fish` — same
+- `install-bashhub.sh` — discover UV's tool bin and refresh stable `~/.bashhub/bin` shims
 - `docs/tasks/distribution-plan.md` — this is tracked under Phase 2
 
 ## Verification

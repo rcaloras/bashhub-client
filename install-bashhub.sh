@@ -132,6 +132,20 @@ install_or_upgrade_bashhub_package() {
     fi
 }
 
+link_bashhub_commands() {
+    local uv_command=$1
+    local uv_tool_bin
+    uv_tool_bin=$("$uv_command" tool dir --bin)
+
+    if [ ! -x "$uv_tool_bin/bashhub" ] || [ ! -x "$uv_tool_bin/bh" ]; then
+        die "\nSorry, Bashhub couldn't find its UV-installed commands." 1
+    fi
+
+    mkdir -p "$HOME/.bashhub/bin"
+    ln -sf "$uv_tool_bin/bashhub" "$HOME/.bashhub/bin/bashhub"
+    ln -sf "$uv_tool_bin/bh" "$HOME/.bashhub/bin/bh"
+}
+
 copy_shell_files() {
     local shell_dir
     shell_dir=$(bashhub util shell-dir)
@@ -271,9 +285,10 @@ setup_bashhub_files() {
 
     mkdir -p "$HOME/.bashhub"
     uv_command=$(ensure_uv)
-    export PATH="$HOME/.local/bin:$PATH"
 
     install_or_upgrade_bashhub_package "$uv_command"
+    link_bashhub_commands "$uv_command"
+    export PATH="$HOME/.bashhub/bin:$PATH"
     copy_shell_files
     install_hooks_for_shell
     run_bashhub_setup
