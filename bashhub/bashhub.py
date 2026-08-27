@@ -4,7 +4,6 @@ from __future__ import annotations
 import io
 import os
 import re
-import shutil
 import subprocess
 import sys
 from importlib import resources
@@ -192,13 +191,20 @@ def update(version: str) -> None:
 
     query_param = '?version={0}'.format(version) if version else ''
     url = 'https://bashhub.com/setup' + query_param
-    response = requests.get(url, stream=True)
     filename = 'update-bashhub.sh'
-    with open(filename, 'wb') as out_file:
-        shutil.copyfileobj(response.raw, out_file)
+    download_installer(url, filename)
 
     subprocess.call(["bash", "-e", filename, version])
     os.remove(filename)
+
+
+def download_installer(url: str, filename: str) -> None:
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+
+    with open(filename, 'wb') as out_file:
+        for chunk in response.iter_content(chunk_size=8192):
+            out_file.write(chunk)
 
 
 @bashhub.group()
