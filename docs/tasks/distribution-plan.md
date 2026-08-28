@@ -6,7 +6,8 @@ Modernize how bashhub is packaged and distributed to eliminate the hard dependen
 
 ## Status
 
-In progress — Phase 1 started.
+Phase 1 and Phase 2 are complete. Bashhub is published to PyPI and the hosted
+installer uses uv-managed tool installs.
 
 ## Findings
 
@@ -36,11 +37,15 @@ In progress — Phase 1 started.
 
 ### Phase 2 — PyPI publishing + modern install
 
-- [ ] Publish package to PyPI
-- [ ] Update `install-bashhub.sh` to install via `uv tool install bashhub` (primary) or `pipx install bashhub` (fallback)
+- [x] Publish package to PyPI
+- [x] Update `install-bashhub.sh` to install via `uv tool install bashhub`
   - `uv` bundles its own Python — eliminates system Python requirement entirely
   - Remove the manual `virtualenv.pyz` bootstrap and GitHub tarball download
-- [ ] Update install docs / README to reflect new install method
+- [x] Update install docs / README to reflect the new install method
+
+`pipx` remains an optional manual alternative; the hosted installer does not
+fall back to it. Bashhub uses stable `~/.bashhub/bin` shims while uv owns the
+tool environment and Python runtime.
 
 ### Phase 3 — Platform distribution (medium effort)
 
