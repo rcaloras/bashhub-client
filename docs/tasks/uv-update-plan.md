@@ -62,3 +62,17 @@ The installer should safely converge the local machine to the desired state with
 - Bashhub is published to PyPI as `bashhub`.
 - UV is the primary supported install and update mechanism.
 - `pipx` can be documented as an alternate manual path, but is not an automatic installer fallback.
+
+## Uninstall Model
+
+Uninstalling Bashhub removes only Bashhub-owned state and its uv-managed tool:
+
+```bash
+uv tool uninstall bashhub
+rm -rf ~/.bashhub
+```
+
+Users should also remove the marked `### Bashhub.com Installation` block from
+the shell profile where the installer added it. UV itself remains installed by
+default because it may own other tools and managed Python runtimes. Its removal
+is a separate, user-directed action.

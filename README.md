@@ -21,8 +21,7 @@ curl -OL https://bashhub.com/setup && $SHELL setup
 ```
 For non default login shells, just specify the shell e.g. (`bash setup`, `zsh setup`, `fish setup`)
 
-Detailed installation instructions can be found at
-https://github.com/rcaloras/bashhub-client/wiki/Install
+The installer uses [uv](https://docs.astral.sh/uv/) to install Bashhub. Detailed installation instructions can be found at https://github.com/rcaloras/bashhub-client/wiki/Install
 
 # Usage
 Bashhub can be accessed from the command line in a couple ways:
