@@ -48,7 +48,7 @@ This keeps UV's storage details private and allows open shells that already incl
 
 ### Upgrades — Much better UX
 ```bash
-uv tool upgrade bashhub   # vs. re-running the install script
+uv tool install --python 3.13 --reinstall bashhub   # vs. re-running the install script
 ```
 
 ---
@@ -73,7 +73,7 @@ uv tool upgrade bashhub   # vs. re-running the install script
 | Requires uv | No | Yes (~15 MB binary) | No |
 | Works offline | No (downloads at install) | No (downloads at install) | Yes (after download) |
 | Cross-platform | Manual per-platform | Yes, automatic | Requires per-platform build |
-| Update mechanism | Re-run install script | `uv tool upgrade bashhub` | Re-download binary |
+| Update mechanism | Re-run install script | `uv tool install --reinstall bashhub` | Re-download binary |
 
 **uv solves the system Python problem** (the root cause of the 3.14/npyscreen incident) but trades it for a dependency on uv. uv itself is a single static binary ~15 MB — much lighter than requiring a specific Python version.
 
@@ -102,6 +102,6 @@ PyInstaller is a longer-term option worth revisiting after PyPI publishing is in
 
 1. Fresh install on a machine without Python — verify `bh` and `bashhub` are available
 2. Run `bashhub setup` through the new install flow
-3. Run `uv tool upgrade bashhub` and verify it works
+3. Run `uv tool install --python 3.13 --reinstall bashhub` and verify it works
 4. Verify shell hooks still capture and save commands correctly
 5. Run existing test suite: `pytest tests/`

@@ -126,12 +126,9 @@ install_or_upgrade_bashhub_package() {
     if [ -n "$bashhub_version" ]; then
         echo "Installing bashhub $bashhub_version..."
         "$uv_command" tool install --python "$uv_python_version" --reinstall "bashhub==$bashhub_version" --quiet
-    elif "$uv_command" tool list | grep -q "^bashhub "; then
-        echo "Updating bashhub..."
-        "$uv_command" tool upgrade bashhub --quiet
     else
-        echo "Installing bashhub..."
-        "$uv_command" tool install --python "$uv_python_version" bashhub --quiet
+        echo "Installing latest bashhub..."
+        "$uv_command" tool install --python "$uv_python_version" --reinstall bashhub --quiet
     fi
 }
 
