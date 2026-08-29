@@ -21,7 +21,6 @@ classifiers = [
 ]
 dependencies = [
     "requests>=2.32.5",
-    "jsonpickle>=4.1.1",
     "click>=8.1.8",
     "npyscreen>=5.0.2",
     "python-dateutil>=2.9.0.post0",
@@ -48,7 +47,7 @@ bashhub = "bashhub.bashhub:main"
 
 [tool.mypy]
 python_version = "3.9"
-ignore_missing_imports = true   # npyscreen, jsonpickle, inflection, humanize lack stubs
+ignore_missing_imports = true   # npyscreen, inflection, humanize lack stubs
 warn_return_any = true
 warn_unused_configs = true
 check_untyped_defs = true
