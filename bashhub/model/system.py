@@ -31,6 +31,15 @@ class RegisterSystem(Serializable):
 
 @dataclass
 class SystemPatch(Serializable):
+    """A partial update for PATCH /api/v1/system/<mac>.
+
+    Only the fields the caller sets are sent. Every call site names the
+    fields it wants to change and leaves the rest alone, so serializing the
+    unset ones as null said something the caller never meant."""
+
+    # Unset fields are omitted rather than sent as null.
+    _omit_none = True
+
     name: str | None = None
     mac: str | None = None
     hostname: str | None = None

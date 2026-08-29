@@ -44,8 +44,14 @@ class Serializable(object):
     if TYPE_CHECKING:
         __dataclass_fields__: ClassVar[dict[str, Field[Any]]]
 
+    # Set on models representing a partial update, where a field the caller
+    # left unset must stay off the wire rather than being sent as null.
+    _omit_none: ClassVar[bool] = False
+
     def to_dict(self) -> dict[str, Any]:
         fields = dataclasses.asdict(self)
+        if self._omit_none:
+            fields = {k: v for k, v in fields.items() if v is not None}
         return _convert_keys(fields, _lower_camelize)
 
     def to_JSON(self) -> str:

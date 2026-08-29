@@ -4,6 +4,7 @@ These cover the parsing contract shared by every model: camelCase on the
 wire, snake_case in Python, unknown server fields ignored, and malformed
 responses failing here rather than downstream.
 """
+import dataclasses
 import json
 from dataclasses import dataclass
 
@@ -275,3 +276,51 @@ class TestNestedListConversion:
             tag_list: list
 
         assert json.loads(Parent([]).to_JSON())["tagList"] == []
+
+
+class TestPartialUpdatePayloads:
+    """SystemPatch sends only the fields the caller set.
+
+    Each call site names the fields it wants changed; serializing the rest
+    as null told the server something the caller never meant, and the
+    server had to be taught to ignore those nulls before PATCH worked.
+    """
+
+    def test_unset_fields_are_omitted(self):
+        payload = json.loads(
+            SystemPatch(hostname="myhost", client_version="3.1.0").to_JSON())
+        assert payload == {"hostname": "myhost", "clientVersion": "3.1.0"}
+
+    def test_mac_reconcile_payload_omits_only_name(self):
+        payload = json.loads(
+            SystemPatch(mac="151965074237064",
+                        hostname="myhost",
+                        client_version="3.1.0").to_JSON())
+        assert payload == {
+            "mac": "151965074237064",
+            "hostname": "myhost",
+            "clientVersion": "3.1.0",
+        }
+
+    def test_explicitly_set_fields_are_all_sent(self):
+        payload = json.loads(SystemPatch("n", "m", "h", "3.1.0").to_JSON())
+        assert payload == {
+            "name": "n",
+            "mac": "m",
+            "hostname": "h",
+            "clientVersion": "3.1.0",
+        }
+
+    def test_patch_with_nothing_set_sends_an_empty_object(self):
+        assert json.loads(SystemPatch().to_JSON()) == {}
+
+    def test_omit_none_is_not_a_dataclass_field(self):
+        """It is a class-level flag, so it must never reach the wire."""
+        names = [f.name for f in dataclasses.fields(SystemPatch)]
+        assert names == ["name", "mac", "hostname", "client_version"]
+        assert "_omitNone" not in json.loads(SystemPatch(name="n").to_JSON())
+
+    def test_other_models_still_send_their_nulls(self):
+        """Omitting is opt-in; full-representation models are unchanged."""
+        assert json.loads(LoginForm("user", "pw").to_JSON())["mac"] is None
+        assert json.loads(System("n", "m", "i").to_JSON())["hostname"] is None
