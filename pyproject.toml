@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "wheel"]
+requires = ["setuptools>=80", "setuptools-scm>=9.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -32,11 +32,12 @@ dependencies = [
 Homepage = "https://github.com/rcaloras/bashhub-client"
 
 [project.optional-dependencies]
-test = ["pytest>=3.3.1"]
+test = ["pytest>=3.3.1", "setuptools-scm>=9.2"]
 dev = [
     "pytest>=3.3.1",
     "mypy>=1.0",
     "ruff>=0.4",
+    "setuptools-scm>=9.2",
     "types-requests",
     "types-python-dateutil",
 ]
@@ -66,8 +67,14 @@ ignore = ["E501"]
 "bashhub/bashhub_setup.py" = ["F403", "F405"]
 "bashhub/bh.py" = ["F403", "F405"]
 
-[tool.setuptools.dynamic]
-version = { attr = "bashhub.version.__version__" }
+[tool.setuptools_scm]
+version_file = "bashhub/_version.py"
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"
+write_to_source = false
+
+[tool.setuptools_scm.tag]
+strict = true
 
 [tool.setuptools]
 include-package-data = true
