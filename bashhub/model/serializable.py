@@ -14,10 +14,16 @@ T = TypeVar('T', bound='Serializable')
 
 def _convert_keys(d: dict[str, Any],
                   convert: Callable[[str], str]) -> dict[str, Any]:
-    return {
-        convert(k): _convert_keys(v, convert) if isinstance(v, dict) else v
-        for k, v in d.items()
-    }
+    return {convert(k): _convert_value(v, convert) for k, v in d.items()}
+
+
+def _convert_value(value: Any, convert: Callable[[str], str]) -> Any:
+    """Convert keys of any dict reachable from value, including inside lists."""
+    if isinstance(value, dict):
+        return _convert_keys(value, convert)
+    if isinstance(value, list):
+        return [_convert_value(item, convert) for item in value]
+    return value
 
 
 def _lower_camelize(string: str) -> str:

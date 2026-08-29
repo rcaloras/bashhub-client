@@ -5,6 +5,7 @@ wire, snake_case in Python, unknown server fields ignored, and malformed
 responses failing here rather than downstream.
 """
 import json
+from dataclasses import dataclass
 
 import pytest
 
@@ -16,6 +17,7 @@ from bashhub.model import (
     MinCommand,
     RegisterSystem,
     RegisterUser,
+    Serializable,
     StatusView,
     System,
     SystemPatch,
@@ -221,3 +223,55 @@ class TestModelHelpers:
 
     def test_system_patch_str_handles_unset_fields(self):
         assert str(SystemPatch(hostname="h")) == " "
+
+
+class TestNestedListConversion:
+    """Key conversion must reach dicts nested inside lists.
+
+    No model has a list field today, so these use a local model. Before
+    this was fixed the conversion recursed into dicts only, leaving keys
+    inside lists in whichever case they arrived in.
+    """
+
+    def test_response_list_of_objects_has_keys_converted(self):
+        @dataclass
+        class Parent(Serializable):
+            name: str
+            child_items: list
+
+        parent = Parent.from_JSON(
+            '{"name":"n","childItems":[{"someKey":1},{"someKey":2}]}')
+        assert parent.child_items == [{"some_key": 1}, {"some_key": 2}]
+
+    def test_outgoing_list_of_objects_has_keys_camelized(self):
+        @dataclass
+        class Parent(Serializable):
+            name: str
+            child_items: list
+
+        payload = json.loads(
+            Parent("n", [{"some_key": 1}, {"other_key": 2}]).to_JSON())
+        assert payload["childItems"] == [{"someKey": 1}, {"otherKey": 2}]
+
+    def test_conversion_reaches_through_nested_lists(self):
+        @dataclass
+        class Parent(Serializable):
+            deep_field: list
+
+        parent = Parent.from_JSON('{"deepField":[[{"innerKey":1}]]}')
+        assert parent.deep_field == [[{"inner_key": 1}]]
+
+    def test_scalar_list_items_pass_through_untouched(self):
+        @dataclass
+        class Parent(Serializable):
+            tag_list: list
+
+        parent = Parent.from_JSON('{"tagList":["someString",2,null,true]}')
+        assert parent.tag_list == ["someString", 2, None, True]
+
+    def test_empty_list_round_trips(self):
+        @dataclass
+        class Parent(Serializable):
+            tag_list: list
+
+        assert json.loads(Parent([]).to_JSON())["tagList"] == []
