@@ -277,9 +277,12 @@ def save_command(command: CommandForm) -> None:
         r = requests.post(url,
                           data=command.to_JSON(),
                           headers=json_auth_headers())
+        # Without this the 401/403 branch below is unreachable: requests does
+        # not raise on a 4xx, so an expired token silently dropped every
+        # command instead of telling the user to re-run setup.
+        r.raise_for_status()
     except ConnectionError:
         print("Sorry, looks like there's a connection error")
-        pass
     except Exception:
         if r is not None and r.status_code in (403, 401):
             print("Permissions Issue. Run bashhub setup to re-login.")
