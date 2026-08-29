@@ -9,12 +9,15 @@ from bashhub.bashhub import bashhub, bashhub_globals, download_installer, rest_c
 from bashhub.version import __version__
 
 
-def test_bashhub_save():
+def test_bashhub_save(monkeypatch):
     def print_failed(command):
         print("Failed")
         pass
 
-    rest_client.save_command = print_failed
+    # Restore afterwards: assigning directly left the stub in place for every
+    # later test in the run, including the save_command tests in
+    # test_rest_client.py.
+    monkeypatch.setattr(rest_client, 'save_command', print_failed)
 
     runner = CliRunner()
     args = ['save', 'echo "Running bashhub tests"', '/tmp', '1', '100000', '1']

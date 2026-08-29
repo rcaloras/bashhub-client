@@ -7,7 +7,7 @@ import requests
 
 from bashhub import rest_client
 from bashhub.rest_client import _extract_error_message
-from bashhub.model import RegisterUser, LoginForm, RegisterSystem
+from bashhub.model import CommandForm, RegisterUser, LoginForm, RegisterSystem
 
 
 def _mock_response(status_code, text="", json_body=None):
@@ -205,3 +205,52 @@ class TestRegisterSystemErrors(unittest.TestCase):
         assert result is None
         mock_print.assert_called_once_with(
             "Sorry, an unexpected error occurred. Please try again.")
+
+
+class TestSaveCommandErrorSurfacing(unittest.TestCase):
+    """save_command runs per shell command, so a silent failure is invisible.
+
+    requests does not raise on a 4xx, so without an explicit status check the
+    401/403 branch was unreachable and an expired token dropped every command
+    with no indication to the user.
+    """
+
+    def _save(self):
+        return rest_client.save_command(
+            CommandForm("ls -la", "/tmp", 0, 123, 1438653798957))
+
+    def _run_with_response(self, response):
+        with patch.object(rest_client.requests, "post", return_value=response), \
+             patch.object(rest_client, "BH_AUTH", return_value="token"), \
+             patch("builtins.print") as printed:
+            self._save()
+        return [call.args[0] for call in printed.call_args_list]
+
+    def test_expired_token_tells_the_user_to_re_login(self):
+        assert self._run_with_response(_mock_response(401)) == [
+            "Permissions Issue. Run bashhub setup to re-login."
+        ]
+
+    def test_forbidden_tells_the_user_to_re_login(self):
+        assert self._run_with_response(_mock_response(403)) == [
+            "Permissions Issue. Run bashhub setup to re-login."
+        ]
+
+    def test_successful_save_prints_nothing(self):
+        response = MagicMock(spec=requests.Response)
+        response.status_code = 200
+        response.raise_for_status.return_value = None
+        assert self._run_with_response(response) == []
+
+    def test_server_error_stays_quiet(self):
+        """A 5xx is transient and this runs on every command — don't spam."""
+        assert self._run_with_response(_mock_response(500)) == []
+
+    def test_connection_error_is_reported(self):
+        with patch.object(rest_client.requests, "post",
+                          side_effect=requests.ConnectionError()), \
+             patch.object(rest_client, "BH_AUTH", return_value="token"), \
+             patch("builtins.print") as printed:
+            self._save()
+        assert printed.call_args_list[0].args[0] == (
+            "Sorry, looks like there's a connection error")
