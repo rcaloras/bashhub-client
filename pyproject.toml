@@ -32,12 +32,11 @@ dependencies = [
 Homepage = "https://github.com/rcaloras/bashhub-client"
 
 [project.optional-dependencies]
-test = ["pytest>=3.3.1", "setuptools-scm>=9.2"]
+test = ["pytest>=3.3.1"]
 dev = [
     "pytest>=3.3.1",
     "mypy>=1.0",
     "ruff>=0.4",
-    "setuptools-scm>=9.2",
     "types-requests",
     "types-python-dateutil",
 ]
