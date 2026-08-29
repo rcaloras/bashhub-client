@@ -74,14 +74,15 @@ teardown() {
 
 @test "__bh_check_bashhub_installation should find we're missing a config" {
 
-  # Bash and trap.
-  trap() { echo "__bp_preexec_invoke_exec"; }
+  # Install a harmless DEBUG trap that looks like bash-preexec's hook. Mocking
+  # the trap builtin itself prevents modern Bats from managing its ERR trap.
+  trap ': # __bp_preexec_invoke_exec' DEBUG
 
   # No config file
   rm "$BATS_TMPDIR/config"
   run '__bh_check_bashhub_installation'
+  trap - DEBUG
   [[ $status == 2 ]]
-  unset -f trap
 }
 
 @test "__bh_precmd should check if our home directory exists" {
@@ -133,5 +134,4 @@ teardown() {
   # __BH_SAVE_COMMAND should get unset
   [[ -z "$__BH_SAVE_COMMAND" ]]
 }
-
 

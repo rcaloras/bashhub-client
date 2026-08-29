@@ -5,9 +5,11 @@ setup() {
 }
 
 make_release_repo() {
-    release_repo="$BATS_TEST_TMPDIR/release-repo"
-    release_origin="$BATS_TEST_TMPDIR/release-origin.git"
-    fake_bin="$BATS_TEST_TMPDIR/bin"
+    test_tmp_parent=${BATS_TEST_TMPDIR:-${BATS_TMPDIR:-/tmp}}
+    test_root=$(mktemp -d "$test_tmp_parent/bashhub-release.XXXXXX")
+    release_repo="$test_root/release-repo"
+    release_origin="$test_root/release-origin.git"
+    fake_bin="$test_root/bin"
 
     mkdir -p "$release_repo/script" "$release_repo/bashhub" "$fake_bin"
     cp "$release_script" "$release_repo/script/release"
