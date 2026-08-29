@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from .serializable import Serializable
 
 
+@dataclass
 class MinCommand(Serializable):
-    def __init__(self, command: str, created: int, uuid: str) -> None:
-        self.command = command
-        self.created = created
-        self.uuid = uuid
+    command: str
+    created: int
+    uuid: str
 
     def __str__(self) -> str:
         return self.command
