@@ -1,42 +1,40 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from .serializable import Serializable
 
 
+@dataclass
 class System(Serializable):
-    def __init__(self, name: str, mac: str, id: str, created: int,
-                 updated: int, hostname: str, client_version: str) -> None:
-        self.name = name
-        self.mac = mac
-        self.id = id
-        self.created = created
-        self.updated = updated
-        self.hostname = hostname
-        self.client_version = client_version
+    """A registered system, as returned by GET/POST /api/v1/system.
+
+    hostname/clientVersion are null for systems registered without them."""
+
+    name: str
+    mac: str
+    id: str
+    hostname: str | None = None
+    client_version: str | None = None
 
     def __str__(self) -> str:
         return self.name + " " + self.id
 
 
+@dataclass
 class RegisterSystem(Serializable):
-    def __init__(self, name: str, mac: str, hostname: str,
-                 client_version: str) -> None:
-        self.name = name
-        self.mac = mac
-        self.hostname = hostname
-        self.client_version = client_version
+    name: str
+    mac: str
+    hostname: str
+    client_version: str
 
 
+@dataclass
 class SystemPatch(Serializable):
-    def __init__(self,
-                 name: str | None = None,
-                 mac: str | None = None,
-                 hostname: str | None = None,
-                 client_version: str | None = None) -> None:
-        self.name = name
-        self.mac = mac
-        self.hostname = hostname
-        self.client_version = client_version
+    name: str | None = None
+    mac: str | None = None
+    hostname: str | None = None
+    client_version: str | None = None
 
     def __str__(self) -> str:
         return f"{self.name or ''} {self.mac or ''}"

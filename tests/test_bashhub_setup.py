@@ -20,8 +20,6 @@ def _make_system(name='my-box', mac='123456789', hostname='my-box'):
 		name=name,
 		mac=mac,
 		id='sys-id',
-		created=0,
-		updated=0,
 		hostname=hostname,
 		client_version='test',
 	)

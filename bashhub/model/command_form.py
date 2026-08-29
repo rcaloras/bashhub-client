@@ -1,18 +1,29 @@
 from __future__ import annotations
 
-import uuid
+import uuid as uuid_module
+from dataclasses import dataclass, field
 from time import time
 
 from .serializable import Serializable
 
 
+def _new_uuid() -> str:
+    return str(uuid_module.uuid4())
+
+
+def _now_millis() -> int:
+    return int(round(time() * 1000))
+
+
+@dataclass
 class CommandForm(Serializable):
-    def __init__(self, command: str, path: str, exit_status: int,
-                 process_id: int, process_start_time: int) -> None:
-        self.uuid = uuid.uuid4().__str__()
-        self.command = command
-        self.path = path
-        self.exit_status = exit_status
-        self.process_id = int(process_id)
-        self.process_start_time = process_start_time
-        self.created = int(round(time() * 1000))
+    command: str
+    path: str
+    exit_status: int
+    process_id: int
+    process_start_time: int
+    uuid: str = field(default_factory=_new_uuid)
+    created: int = field(default_factory=_now_millis)
+
+    def __post_init__(self) -> None:
+        self.process_id = int(self.process_id)

@@ -1,54 +1,76 @@
 from __future__ import annotations
 
+import dataclasses
 import json
-from typing import Any, Callable, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, TypeVar
 
 import inflection
-import jsonpickle
+
+if TYPE_CHECKING:
+    from dataclasses import Field
 
 T = TypeVar('T', bound='Serializable')
 
 
+def _convert_keys(d: dict[str, Any],
+                  convert: Callable[[str], str]) -> dict[str, Any]:
+    return {
+        convert(k): _convert_keys(v, convert) if isinstance(v, dict) else v
+        for k, v in d.items()
+    }
+
+
+def _lower_camelize(string: str) -> str:
+    return inflection.camelize(string, False)
+
+
 class Serializable(object):
+    """Base for API models.
+
+    Subclasses are dataclasses whose fields are snake_case; the wire format
+    is camelCase. Parsing goes through the dataclass constructor, so a
+    response missing a required field fails here rather than surfacing as an
+    AttributeError wherever the object is eventually used.
+    """
+
+    # Every subclass is a dataclass; declaring this lets mypy accept the
+    # dataclasses.asdict/fields calls below on the base type.
+    if TYPE_CHECKING:
+        __dataclass_fields__: ClassVar[dict[str, Field[Any]]]
+
+    def to_dict(self) -> dict[str, Any]:
+        fields = dataclasses.asdict(self)
+        return _convert_keys(fields, _lower_camelize)
+
     def to_JSON(self) -> str:
-        underscores = jsonpickle.encode(self)
-        temp = json.loads(underscores)
-        camel_case = self.convert_json(temp, self.lower_camelize)
-        return cast(str, jsonpickle.encode(camel_case))
+        return json.dumps(self.to_dict())
 
     @classmethod
-    def lower_camelize(cls, string: str) -> str:
-        return inflection.camelize(string, False)
-
-    @classmethod
-    def convert_json(
-        cls, d: dict[str, Any], convert: Callable[[str], str]
-    ) -> dict[str, Any]:
-        new_d = {}
-        for k, v in d.items():
-            new_d[convert(k)] = cls.convert_json(v, convert) if isinstance(
-                v, dict) else v
-        return new_d
+    def from_dict(cls: type[T], data: dict[str, Any]) -> T:
+        attributes = _convert_keys(data, inflection.underscore)
+        known = {f.name for f in dataclasses.fields(cls)}  # type: ignore[arg-type]
+        # Ignore fields the server sends that this client doesn't model, so
+        # adding a field server-side stays backwards compatible.
+        try:
+            return cls(**{k: v for k, v in attributes.items() if k in known})
+        except TypeError as error:
+            raise ValueError(
+                "{0}: could not build from response: {1}".format(
+                    cls.__name__, error)) from error
 
     @classmethod
     def from_JSON(cls: type[T], response: str) -> T:
-        temp_camel_case = json.loads(response)
-        temp = cls.convert_json(temp_camel_case, inflection.underscore)
-
-        # Add back our python classname so jsonpickle
-        # knows what class to deserialize it as
-        class_name = cls.__module__ + '.' + cls.__name__
-        temp['py/object'] = class_name
-
-        pickle = json.dumps(temp)
-        return cast(T, jsonpickle.decode(pickle))
+        data = json.loads(response)
+        if not isinstance(data, dict):
+            raise ValueError("{0}: expected a JSON object, got {1}".format(
+                cls.__name__,
+                type(data).__name__))
+        return cls.from_dict(data)
 
     @classmethod
     def from_JSON_list(cls: type[T], response: list[Any]) -> list[T]:
-
-        #response = json.load(response)
-
-        # Use list comprehension to map every json object
-        # back to its object with from_JSON
-        items = [cls.from_JSON(json.dumps(item)) for item in response]
-        return items
+        if not isinstance(response, list):
+            raise ValueError("{0}: expected a JSON array, got {1}".format(
+                cls.__name__,
+                type(response).__name__))
+        return [cls.from_dict(item) for item in response]
