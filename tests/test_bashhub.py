@@ -1,14 +1,12 @@
 import os
+from importlib.metadata import version as installed_version
 from pathlib import Path
 
-import click
 import pytest
 from click.testing import CliRunner
 
-from bashhub.bashhub import bashhub, download_installer
+from bashhub.bashhub import bashhub, bashhub_globals, download_installer, rest_client
 from bashhub.version import __version__
-from bashhub.bashhub import rest_client
-from bashhub.bashhub import bashhub_globals
 
 
 def test_bashhub_save():
@@ -55,6 +53,10 @@ def test_bashhub_version():
     runner = CliRunner()
     result = runner.invoke(bashhub, ['version'])
     assert __version__ in result.output
+
+
+def test_bashhub_version_matches_installed_distribution():
+    assert __version__ == installed_version('bashhub')
 
 
 def test_bashhub_update_writes_decoded_installer_response(monkeypatch):
