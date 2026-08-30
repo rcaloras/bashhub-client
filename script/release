@@ -72,11 +72,11 @@ generate_title() {
 
 run_checks() {
     echo "Running ruff..."
-    uv run ruff check bashhub/
+    uv run --locked --extra dev ruff check bashhub/
     echo "Running mypy..."
-    uv run mypy bashhub/
+    uv run --locked --extra dev mypy bashhub/
     echo "Running pytest..."
-    uv run pytest
+    uv run --locked --extra dev pytest
     echo "Running shell tests..."
     bats tests/shell
 }

@@ -69,6 +69,6 @@ Install dev dependencies (includes mypy, ruff, type stubs): `pip install -e ".[d
 
 ## Key Conventions
 
-- Python 3 only (3.9, 3.11, 3.13, 3.14). No Python 2 compatibility code.
+- Python 3 only (3.11–3.14). No Python 2 compatibility code.
 - Errors are caught and printed as user-friendly messages; functions degrade gracefully rather than raising exceptions
 - 401/403 API errors prompt users to run `bashhub setup`
