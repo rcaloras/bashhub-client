@@ -15,7 +15,7 @@ mkdir ~/git/ && cd ~/git
 git clone git@github.com:rcaloras/bashhub-client.git
 cd ~/git/bashhub-client
 ```
-Setup a new Python 3 [venv](https://docs.python.org/3/library/venv.html) (virtual environment). 
+Set up a [venv](https://docs.python.org/3/library/venv.html) using a supported Python version (3.11–3.14).
 ```bash
 # Setup a venv.
 python3 -m venv .venv
@@ -51,7 +51,7 @@ From within this virtualenv `bh` and `bashhub` exectuables should now be wired u
 # pytest should run locally against our repo
 [rcaloras:~/git/bashhub-client] [bashhub_dev] master ± pytest
 ============= test session starts =================
-platform darwin -- Python 3.10.12, pytest-7.4.2, pluggy-1.3.0
+platform darwin -- Python 3.11.14, pytest-9.1.1, pluggy-1.6.0
 rootdir: /Users/rcaloras/git/bashhub-client, inifile:
 collected 10 items
 
