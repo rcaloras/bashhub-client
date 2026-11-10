@@ -101,6 +101,16 @@ class TestMalformedResponses:
         with pytest.raises(ValueError, match="expected a JSON array"):
             MinCommand.from_JSON_list({"detail": "an error body"})
 
+    @pytest.mark.parametrize("item", [None, 42, "a string", ["nested"]])
+    def test_from_JSON_list_rejects_a_non_dict_item(self, item):
+        """A null (or otherwise non-object) array entry must fail here with
+        a ValueError, not an AttributeError from deep inside parsing."""
+        with pytest.raises(ValueError, match="expected a JSON object"):
+            MinCommand.from_JSON_list([
+                {"command": "ls", "created": 1, "uuid": "a"},
+                item,
+            ])
+
     def test_from_JSON_list_parses_each_item(self):
         commands = MinCommand.from_JSON_list([
             {"command": "ls", "created": 1, "uuid": "a"},
