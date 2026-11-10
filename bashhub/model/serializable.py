@@ -59,6 +59,10 @@ class Serializable(object):
 
     @classmethod
     def from_dict(cls: type[T], data: dict[str, Any]) -> T:
+        if not isinstance(data, dict):
+            raise ValueError("{0}: expected a JSON object, got {1}".format(
+                cls.__name__,
+                type(data).__name__))
         attributes = _convert_keys(data, inflection.underscore)
         known = {f.name for f in dataclasses.fields(cls)}  # type: ignore[arg-type]
         # Ignore fields the server sends that this client doesn't model, so
